@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter/scheduler.dart';
 
 void main() {
   runApp(const TraxRadioApp());
@@ -29,21 +30,31 @@ class RadioHomePage extends StatefulWidget {
   State<RadioHomePage> createState() => _RadioHomePageState();
 }
 
-class _RadioHomePageState extends State<RadioHomePage> {
+class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProviderStateMixin {
   final _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
 
   final String streamUrl = 'https://hello.citrus3.com:8138/stream';
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    );
     _player.playerStateStream.listen((state) {
       setState(() {
         _isPlaying = state.playing;
         _isLoading = state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
+        if (_isPlaying) {
+          _controller.repeat();
+        } else {
+          _controller.stop();
+        }
       });
     });
   }
@@ -66,6 +77,7 @@ class _RadioHomePageState extends State<RadioHomePage> {
 
   @override
   void dispose() {
+    _controller.dispose();
     _player.dispose();
     super.dispose();
   }
@@ -96,28 +108,32 @@ class _RadioHomePageState extends State<RadioHomePage> {
                   final size = constraints.maxWidth < constraints.maxHeight
                       ? constraints.maxWidth
                       : constraints.maxHeight;
+                  const recordFactor = 0.7;
                   return SizedBox(
                     width: size,
                     height: size,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
+                        Transform.translate(
+                          offset: Offset(-0.13 * size + 10, -0.014 * size),
+                          child: FractionallySizedBox(
+                            widthFactor: recordFactor,
+                            heightFactor: recordFactor,
+                            child: RotationTransition(
+                              turns: _controller,
+                              child: Image.asset(
+                                'assets/record.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
                         Image.asset(
                           'assets/turntable.png',
                           fit: BoxFit.contain,
                           width: size,
                           height: size,
-                        ),
-                        Transform.translate(
-                          offset: const Offset(-92, -9),
-                          child: FractionallySizedBox(
-                            widthFactor: 0.67,
-                            heightFactor: 0.67,
-                            child: Image.asset(
-                              'assets/record.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ),
                         ),
                       ],
                     ),
