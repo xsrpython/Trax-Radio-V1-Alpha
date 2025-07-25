@@ -1,0 +1,69 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/.idea/
+
+# iOS/Xcode related
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/Runner.xcworkspace/
+**/ios/Runner.xcodeproj/project.xcworkspace/
+**/ios/Runner.xcodeproj/xcuserdata/
+**/ios/Runner.xcworkspace/xcuserdata/
+
+# Web related
+**/web/.dart_tool/
+
+# VS Code related
+.vscode/
+
+# macOS related
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/macos/Runner.xcworkspace/
+**/macos/Runner.xcodeproj/project.xcworkspace/
+**/macos/Runner.xcodeproj/xcuserdata/
+**/macos/Runner.xcworkspace/xcuserdata/
+
+# Windows related
+**/windows/Flutter/ephemeral/
+**/windows/Runner/ephemeral/
+
+# Linux related
+**/linux/Flutter/ephemeral/
+**/linux/Runner/ephemeral/
+
+# Other
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*.DS_Store
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.sublime-workspace
+*.sublime-project
+*.vscode/
