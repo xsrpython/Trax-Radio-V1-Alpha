@@ -94,13 +94,16 @@ class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProvider
               'Trax Radio UK',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 72,
+                fontSize: 88,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
             ),
           ),
-          const SizedBox(height: 40),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: BarVisualizer(isActive: _isPlaying, height: 64, barWidth: 12),
+          ),
           Expanded(
             child: Center(
               child: LayoutBuilder(
@@ -144,19 +147,149 @@ class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProvider
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 40.0),
-            child: IconButton(
-              iconSize: 100,
-              color: Colors.white,
-              icon: _isLoading
-                  ? const CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 6,
-                    )
-                  : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-              onPressed: _isLoading ? null : _togglePlayPause,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: IconButton(
+                    iconSize: 100,
+                    color: Colors.white,
+                    icon: _isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 6,
+                          )
+                        : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                    onPressed: _isLoading ? null : _togglePlayPause,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 16.0, bottom: 4.0),
+                      child: Text(
+                        'v1.0.0',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 16.0, bottom: 4.0),
+                      child: Text(
+                        'Developed by DJXSR',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Add BarVisualizer widget
+class BarVisualizer extends StatefulWidget {
+  final bool isActive;
+  final double height;
+  final double barWidth;
+  const BarVisualizer({Key? key, required this.isActive, this.height = 40, this.barWidth = 6}) : super(key: key);
+
+  @override
+  State<BarVisualizer> createState() => _BarVisualizerState();
+}
+
+class _BarVisualizerState extends State<BarVisualizer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(covariant BarVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive) {
+      _controller.repeat(reverse: true);
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = [
+      Colors.redAccent,
+      Colors.orangeAccent,
+      Colors.yellowAccent,
+      Colors.greenAccent,
+      Colors.blueAccent,
+      Colors.purpleAccent,
+      Colors.pinkAccent,
+      Colors.cyanAccent,
+      Colors.lightGreenAccent,
+      Colors.deepOrangeAccent,
+      Colors.indigoAccent,
+      Colors.tealAccent,
+    ];
+    return SizedBox(
+      height: widget.height,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(12, (i) {
+              final barHeight = 24.0 + 40.0 * (_animation.value * (0.5 + (i % 3) / 3));
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                child: Container(
+                  width: widget.barWidth,
+                  height: widget.isActive ? barHeight : 24.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colors[i],
+                        colors[(i + 1) % colors.length],
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
       ),
     );
   }
