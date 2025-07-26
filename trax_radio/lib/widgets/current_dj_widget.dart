@@ -1,0 +1,190 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import '../dj_service.dart';
+
+class CurrentDJWidget extends StatefulWidget {
+  const CurrentDJWidget({Key? key}) : super(key: key);
+
+  @override
+  State<CurrentDJWidget> createState() => _CurrentDJWidgetState();
+}
+
+class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProviderStateMixin {
+  String _currentDJ = 'Trax Auto DJ';
+  Timer? _timer;
+  late AnimationController _scrollController;
+  late Animation<Offset> _scrollAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDJService();
+    _startTimer();
+    _setupScrollAnimation();
+  }
+
+  void _setupScrollAnimation() {
+    _scrollController = AnimationController(
+      duration: const Duration(seconds: 6), // Reduced duration for smoother scrolling
+      vsync: this,
+    );
+    _scrollAnimation = Tween<Offset>(
+      begin: const Offset(1.0, 0.0), // Start from right
+      end: const Offset(-1.0, 0.0),   // End at left
+    ).animate(CurvedAnimation(
+      parent: _scrollController,
+      curve: Curves.linear, // Changed to linear for consistent speed
+    ));
+    _scrollController.repeat();
+  }
+
+  Future<void> _initializeDJService() async {
+    print('WIDGET DEBUG: Initializing DJ service...'); // Debug line
+    await DJService.initialize();
+    print('WIDGET DEBUG: DJ service initialized'); // Debug line
+    _updateCurrentDJ();
+  }
+
+  void _startTimer() {
+    // Update every minute to check for DJ changes
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _updateCurrentDJ();
+    });
+  }
+
+  void _updateCurrentDJ() {
+    final newDJ = DJService.getCurrentDJ();
+    print('WIDGET DEBUG: Current DJ returned: $newDJ'); // Debug line
+    if (mounted && newDJ != _currentDJ) {
+      setState(() {
+        _currentDJ = newDJ;
+      });
+      print('WIDGET DEBUG: Updated DJ to: $_currentDJ'); // Debug line
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white24, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.radio,
+            color: Colors.greenAccent,
+            size: 18,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'Now Playing: ',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+                    SizedBox(
+            width: 120, // Reduced width to minimize space around scrolling text
+            child: ClipRect(
+              child: SlideTransition(
+                position: _scrollAnimation,
+                child: Text(
+                  _currentDJ,
+                  style: const TextStyle(
+                    color: Colors.greenAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3.0,
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                  overflow: TextOverflow.visible,
+                  maxLines: 1, // Force single line
+                  softWrap: false, // Prevent text wrapping
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Alternative simpler widget if you want just the text
+class SimpleCurrentDJWidget extends StatefulWidget {
+  const SimpleCurrentDJWidget({Key? key}) : super(key: key);
+
+  @override
+  State<SimpleCurrentDJWidget> createState() => _SimpleCurrentDJWidgetState();
+}
+
+class _SimpleCurrentDJWidgetState extends State<SimpleCurrentDJWidget> {
+  String _currentDJ = 'Trax Auto DJ';
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDJService();
+    _startTimer();
+  }
+
+  Future<void> _initializeDJService() async {
+    await DJService.initialize();
+    _updateCurrentDJ();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _updateCurrentDJ();
+    });
+  }
+
+  void _updateCurrentDJ() {
+    final newDJ = DJService.getCurrentDJ();
+    if (mounted && newDJ != _currentDJ) {
+      setState(() {
+        _currentDJ = newDJ;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Live: $_currentDJ',
+      style: const TextStyle(
+        color: Colors.greenAccent,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.0,
+      ),
+    );
+  }
+} 

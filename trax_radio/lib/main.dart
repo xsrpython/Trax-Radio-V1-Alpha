@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter/scheduler.dart';
+import 'widgets/current_dj_widget.dart';
+import 'widgets/next_dj_widget.dart';
+import 'widgets/linear_3d_visualizer.dart';
 
 void main() {
   runApp(const TraxRadioApp());
@@ -67,7 +69,7 @@ class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProvider
         await _player.setUrl(streamUrl);
         await _player.play();
       } catch (e) {
-        if (!mounted) return;
+        if (!mounted) return; // Fix for "BuildContexts across async gaps"
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error playing stream: $e')),
         );
@@ -86,211 +88,156 @@ class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProvider
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          const SizedBox(height: 60),
-          const Center(
-            child: Text(
-              'Trax Radio UK',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 88,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 24.0),
-            child: BarVisualizer(isActive: _isPlaying, height: 64, barWidth: 12),
-          ),
-          Expanded(
-            child: Center(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final size = constraints.maxWidth < constraints.maxHeight
-                      ? constraints.maxWidth
-                      : constraints.maxHeight;
-                  const recordFactor = 0.7;
-                  return SizedBox(
-                    width: size,
-                    height: size,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Transform.translate(
-                          offset: Offset(-0.13 * size + 10, -0.014 * size),
-                          child: FractionallySizedBox(
-                            widthFactor: recordFactor,
-                            heightFactor: recordFactor,
-                            child: RotationTransition(
-                              turns: _controller,
-                              child: Image.asset(
-                                'assets/record.png',
-                                fit: BoxFit.contain,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isLandscape = constraints.maxWidth > constraints.maxHeight;
+            
+            return Column(
+              children: [
+                SizedBox(height: isLandscape ? 10 : 12), // Reduced from 20 to 12 in portrait
+                // Title - responsive sizing
+                Center(
+                  child: Text(
+                    'Trax Radio UK',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isLandscape ? 60 : 88,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+                SizedBox(height: isLandscape ? 8 : 16),
+                // Visualizer - responsive sizing
+                Padding(
+                  padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
+                  child: Linear3DVisualizer(
+                    audioPlayer: _player,
+                    height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
+                    width: constraints.maxWidth,
+                    barCount: isLandscape ? 48 : 64,
+                    enableBeatDetection: true,
+                    enable3DEffects: true,
+                  ),
+                ),
+                // Turntable section - responsive sizing
+                Expanded(
+                  child: Center(
+                    child: LayoutBuilder(
+                      builder: (context, turntableConstraints) {
+                        final size = isLandscape 
+                          ? turntableConstraints.maxHeight * 0.6 // Larger in landscape
+                          : turntableConstraints.maxWidth * 0.65; // Smaller in portrait to prevent overflow
+                        const recordFactor = 0.7;
+                        
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Current DJ Widget - responsive scaling
+                            Transform.scale(
+                              scale: isLandscape ? 1.4 : 1.8, // Now Playing: Larger scale
+                              child: const CurrentDJWidget(),
+                            ),
+                            SizedBox(height: isLandscape ? 12 : 8), // Reduced spacing in portrait
+                            SizedBox(
+                              width: size,
+                              height: size,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Transform.translate(
+                                    offset: Offset(-0.13 * size, -0.014 * size),
+                                    child: FractionallySizedBox(
+                                      widthFactor: recordFactor,
+                                      heightFactor: recordFactor,
+                                      child: RotationTransition(
+                                        turns: _controller,
+                                        child: Image.asset(
+                                          'assets/record.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Image.asset(
+                                    'assets/turntable.png',
+                                    fit: BoxFit.contain,
+                                    width: size,
+                                    height: size,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: isLandscape ? 8 : 6), // Reduced spacing in portrait
+                            // Next DJ Widget - responsive scaling
+                            Transform.scale(
+                              scale: isLandscape ? 1.0 : 1.0, // Up Next: Smaller scale (no internal scaling now)
+                              child: const NextDJWidget(),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Play/Pause button and version info
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(
+                        child: IconButton(
+                          iconSize: 100,
+                          color: Colors.white,
+                          icon: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 6,
+                                )
+                              : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                          onPressed: _isLoading ? null : _togglePlayPause,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              'v1.0.0',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-                        ),
-                        Image.asset(
-                          'assets/turntable.png',
-                          fit: BoxFit.contain,
-                          width: size,
-                          height: size,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Center(
-                  child: IconButton(
-                    iconSize: 100,
-                    color: Colors.white,
-                    icon: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 6,
-                          )
-                        : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-                    onPressed: _isLoading ? null : _togglePlayPause,
+                          Padding(
+                            padding: EdgeInsets.only(right: 16.0),
+                            child: Text(
+                              'Developed by DJXSR',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 16.0, bottom: 4.0),
-                      child: Text(
-                        'v1.0.0',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 16.0, bottom: 4.0),
-                      child: Text(
-                        'Developed by DJXSR',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-// Add BarVisualizer widget
-class BarVisualizer extends StatefulWidget {
-  final bool isActive;
-  final double height;
-  final double barWidth;
-  const BarVisualizer({Key? key, required this.isActive, this.height = 40, this.barWidth = 6}) : super(key: key);
 
-  @override
-  State<BarVisualizer> createState() => _BarVisualizerState();
-}
-
-class _BarVisualizerState extends State<BarVisualizer> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void didUpdateWidget(covariant BarVisualizer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isActive) {
-      _controller.repeat(reverse: true);
-    } else {
-      _controller.stop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = [
-      Colors.redAccent,
-      Colors.orangeAccent,
-      Colors.yellowAccent,
-      Colors.greenAccent,
-      Colors.blueAccent,
-      Colors.purpleAccent,
-      Colors.pinkAccent,
-      Colors.cyanAccent,
-      Colors.lightGreenAccent,
-      Colors.deepOrangeAccent,
-      Colors.indigoAccent,
-      Colors.tealAccent,
-    ];
-    return SizedBox(
-      height: widget.height,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(12, (i) {
-              final barHeight = 24.0 + 40.0 * (_animation.value * (0.5 + (i % 3) / 3));
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                child: Container(
-                  width: widget.barWidth,
-                  height: widget.isActive ? barHeight : 24.0,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colors[i],
-                        colors[(i + 1) % colors.length],
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              );
-            }),
-          );
-        },
-      ),
-    );
-  }
-}
