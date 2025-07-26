@@ -6,16 +6,16 @@ import 'dart:math' as math;
 class AudioVisualizer extends StatefulWidget {
   final AudioPlayer audioPlayer;
   final double height;
-  final double barWidth;
+  final double width;
   final int barCount;
-  
+
   const AudioVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
-    this.height = 40,
-    this.barWidth = 6,
-    this.barCount = 12,
-  }) : super(key: key);
+    required this.height,
+    required this.width,
+    this.barCount = 32,
+  });
 
   @override
   State<AudioVisualizer> createState() => _AudioVisualizerState();
@@ -146,8 +146,8 @@ class _AudioVisualizerState extends State<AudioVisualizer> with TickerProviderSt
               builder: (context, child) {
                 final barHeight = 8.0 + (widget.height - 16.0) * _animations[i].value;
                 return Container(
-                  width: widget.barWidth,
-                  height: _isPlaying ? barHeight : 8.0,
+                  width: widget.width / widget.barCount,
+                  height: barHeight,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -183,11 +183,11 @@ class FallbackVisualizer extends StatefulWidget {
   final double barWidth;
   
   const FallbackVisualizer({
-    Key? key,
+    super.key,
     required this.isActive,
     this.height = 40,
     this.barWidth = 6,
-  }) : super(key: key);
+  });
 
   @override
   State<FallbackVisualizer> createState() => _FallbackVisualizerState();

@@ -12,14 +12,14 @@ class Linear3DVisualizer extends StatefulWidget {
   final bool enable3DEffects;
 
   const Linear3DVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
     required this.height,
     required this.width,
     this.barCount = 32,
     this.enableBeatDetection = true,
     this.enable3DEffects = true,
-  }) : super(key: key);
+  });
 
   @override
   State<Linear3DVisualizer> createState() => _Linear3DVisualizerState();
@@ -41,7 +41,7 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   double _currentVolume = 0.0;
   bool _isPlaying = false;
   bool _isBeat = false;
-  List<double> _volumeHistory = [];
+  final List<double> _volumeHistory = [];
   
   final List<Color> _colors = [
     Colors.redAccent, Colors.orangeAccent, Colors.yellowAccent,

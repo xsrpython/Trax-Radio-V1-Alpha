@@ -3,7 +3,7 @@ import 'dart:async';
 import '../dj_service.dart';
 
 class NextDJWidget extends StatefulWidget {
-  const NextDJWidget({Key? key}) : super(key: key);
+  const NextDJWidget({super.key});
 
   @override
   State<NextDJWidget> createState() => _NextDJWidgetState();

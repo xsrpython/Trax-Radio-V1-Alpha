@@ -6,18 +6,18 @@ import 'dart:math' as math;
 class AdvancedAudioVisualizer extends StatefulWidget {
   final AudioPlayer audioPlayer;
   final double height;
-  final double barWidth;
+  final double width;
   final int barCount;
-  final bool enableRealTimeAnalysis;
-  
+  final bool enableBeatDetection;
+
   const AdvancedAudioVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
-    this.height = 40,
-    this.barWidth = 6,
-    this.barCount = 12,
-    this.enableRealTimeAnalysis = true,
-  }) : super(key: key);
+    required this.height,
+    required this.width,
+    this.barCount = 32,
+    this.enableBeatDetection = true,
+  });
 
   @override
   State<AdvancedAudioVisualizer> createState() => _AdvancedAudioVisualizerState();
@@ -84,7 +84,7 @@ class _AdvancedAudioVisualizerState extends State<AdvancedAudioVisualizer> with 
 
   void _startUpdateTimer() {
     _updateTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (_isPlaying && widget.enableRealTimeAnalysis) {
+      if (_isPlaying && widget.enableBeatDetection) {
         _updateBarHeights();
       }
     });
@@ -178,7 +178,7 @@ class _AdvancedAudioVisualizerState extends State<AdvancedAudioVisualizer> with 
                 final isActive = _isPlaying && _barHeights[i] > 0.1;
                 
                 return Container(
-                  width: widget.barWidth,
+                  width: widget.width / widget.barCount,
                   height: isActive ? barHeight : 6.0,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -216,11 +216,11 @@ class SimpleAudioVisualizer extends StatefulWidget {
   final double barWidth;
   
   const SimpleAudioVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
     this.height = 40,
     this.barWidth = 6,
-  }) : super(key: key);
+  });
 
   @override
   State<SimpleAudioVisualizer> createState() => _SimpleAudioVisualizerState();

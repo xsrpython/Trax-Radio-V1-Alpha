@@ -6,18 +6,18 @@ import 'dart:math' as math;
 class BeatDetectionVisualizer extends StatefulWidget {
   final AudioPlayer audioPlayer;
   final double height;
-  final double barWidth;
+  final double width;
   final int barCount;
   final bool enableBeatDetection;
-  
+
   const BeatDetectionVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
-    this.height = 40,
-    this.barWidth = 6,
-    this.barCount = 12,
+    required this.height,
+    required this.width,
+    this.barCount = 32,
     this.enableBeatDetection = true,
-  }) : super(key: key);
+  });
 
   @override
   State<BeatDetectionVisualizer> createState() => _BeatDetectionVisualizerState();
@@ -309,8 +309,8 @@ class _BeatDetectionVisualizerState extends State<BeatDetectionVisualizer> with 
                     final isBeatActive = _beatIntensities[i] > 0.1;
                     
                     return Container(
-                      width: widget.barWidth,
-                      height: isActive ? barHeight : 6.0,
+                      width: widget.width / widget.barCount,
+                      height: barHeight,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [

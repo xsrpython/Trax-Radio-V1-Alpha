@@ -3,51 +3,53 @@ import 'dart:async';
 import '../dj_service.dart';
 
 class CurrentDJWidget extends StatefulWidget {
-  const CurrentDJWidget({Key? key}) : super(key: key);
+  const CurrentDJWidget({super.key});
 
   @override
   State<CurrentDJWidget> createState() => _CurrentDJWidgetState();
 }
 
-class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProviderStateMixin {
-  String _currentDJ = 'Trax Auto DJ';
+class _CurrentDJWidgetState extends State<CurrentDJWidget>
+    with TickerProviderStateMixin {
+  String _currentDJ = 'Loading...';
   Timer? _timer;
   late AnimationController _scrollController;
-  late Animation<Offset> _scrollAnimation;
+  late Animation<double> _scrollAnimation;
 
   @override
   void initState() {
     super.initState();
     _initializeDJService();
-    _startTimer();
     _setupScrollAnimation();
   }
 
   void _setupScrollAnimation() {
     _scrollController = AnimationController(
-      duration: const Duration(seconds: 6), // Reduced duration for smoother scrolling
+      duration: const Duration(seconds: 6),
       vsync: this,
     );
-    _scrollAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0), // Start from right
-      end: const Offset(-1.0, 0.0),   // End at left
+
+    _scrollAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
     ).animate(CurvedAnimation(
       parent: _scrollController,
-      curve: Curves.linear, // Changed to linear for consistent speed
+      curve: Curves.linear,
     ));
-    _scrollController.repeat();
+
+    _scrollController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _scrollController.reset();
+        _scrollController.forward();
+      }
+    });
+
+    _scrollController.forward();
   }
 
   Future<void> _initializeDJService() async {
     await DJService.initialize();
     _updateCurrentDJ();
-  }
-
-  void _startTimer() {
-    // Update every minute to check for DJ changes
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      _updateCurrentDJ();
-    });
   }
 
   void _updateCurrentDJ() {
@@ -78,46 +80,54 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProv
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.radio,
-            color: Colors.greenAccent,
-            size: 18,
+          const Icon(
+            Icons.music_note,
+            color: Colors.white,
+            size: 16,
           ),
-          const SizedBox(width: 6),
-          Text(
+          const SizedBox(width: 8),
+          const Text(
             'Now Playing: ',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 14,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),
           ),
-                    SizedBox(
-            width: 120, // Reduced width to minimize space around scrolling text
-            child: ClipRect(
-              child: SlideTransition(
-                position: _scrollAnimation,
-                child: Text(
-                  _currentDJ,
-                  style: const TextStyle(
-                    color: Colors.greenAccent,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 3.0,
-                        color: Colors.black,
-                      ),
-                    ],
+          const SizedBox(width: 8),
+          // Scrolling DJ Name
+          SizedBox(
+            width: 120,
+            child: AnimatedBuilder(
+              animation: _scrollAnimation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(
+                    -(_scrollAnimation.value * 200),
+                    0,
                   ),
-                  overflow: TextOverflow.visible,
-                  maxLines: 1, // Force single line
-                  softWrap: false, // Prevent text wrapping
-                ),
-              ),
+                  child: Text(
+                    _currentDJ,
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 3.0,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                    overflow: TextOverflow.visible,
+                    maxLines: 1, // Force single line
+                    softWrap: false, // Prevent text wrapping
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -128,7 +138,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProv
 
 // Alternative simpler widget if you want just the text
 class SimpleCurrentDJWidget extends StatefulWidget {
-  const SimpleCurrentDJWidget({Key? key}) : super(key: key);
+  const SimpleCurrentDJWidget({super.key});
 
   @override
   State<SimpleCurrentDJWidget> createState() => _SimpleCurrentDJWidgetState();

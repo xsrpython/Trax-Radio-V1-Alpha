@@ -10,16 +10,16 @@ class ThreeDAudioVisualizer extends StatefulWidget {
   final int barCount;
   final bool enableBeatDetection;
   final bool enable3DEffects;
-  
+
   const ThreeDAudioVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
-    this.height = 200,
-    this.width = 300,
-    this.barCount = 16,
+    required this.height,
+    required this.width,
+    this.barCount = 32,
     this.enableBeatDetection = true,
     this.enable3DEffects = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ThreeDAudioVisualizer> createState() => _ThreeDAudioVisualizerState();
@@ -477,11 +477,11 @@ class Simple3DVisualizer extends StatefulWidget {
   final double width;
   
   const Simple3DVisualizer({
-    Key? key,
+    super.key,
     required this.audioPlayer,
     this.height = 150,
     this.width = 250,
-  }) : super(key: key);
+  });
 
   @override
   State<Simple3DVisualizer> createState() => _Simple3DVisualizerState();
