@@ -99,35 +99,37 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
           // Scrolling DJ Name
           SizedBox(
             width: 120,
-            child: AnimatedBuilder(
-              animation: _scrollAnimation,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(
-                    -(_scrollAnimation.value * 200),
-                    0,
-                  ),
-                  child: Text(
-                    _currentDJ,
-                    style: const TextStyle(
-                      color: Colors.greenAccent,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 3.0,
-                          color: Colors.black,
-                        ),
-                      ],
+            child: ClipRect(
+              child: AnimatedBuilder(
+                animation: _scrollAnimation,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(
+                      -(_scrollAnimation.value * 200),
+                      0,
                     ),
-                    overflow: TextOverflow.visible,
-                    maxLines: 1, // Force single line
-                    softWrap: false, // Prevent text wrapping
-                  ),
-                );
-              },
+                    child: Text(
+                      _currentDJ,
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(1, 1),
+                            blurRadius: 3.0,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      overflow: TextOverflow.visible,
+                      maxLines: 1, // Force single line
+                      softWrap: false, // Prevent text wrapping
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
