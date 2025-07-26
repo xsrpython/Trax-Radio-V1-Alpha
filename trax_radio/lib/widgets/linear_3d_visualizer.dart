@@ -31,7 +31,6 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   late List<Animation<double>> _animations;
   List<double> _barHeights = [];
   List<double> _beatIntensities = [];
-  List<double> _barRotations = [];
   List<double> _barScales = [];
   
   Timer? _updateTimer;
@@ -42,10 +41,7 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   double _currentVolume = 0.0;
   bool _isPlaying = false;
   bool _isBeat = false;
-  double _bpm = 120.0;
-  int _beatCounter = 0;
   List<double> _volumeHistory = [];
-  double _rotationAngle = 0.0;
   
   final List<Color> _colors = [
     Colors.redAccent, Colors.orangeAccent, Colors.yellowAccent,
@@ -80,7 +76,6 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     
     _barHeights = List.filled(widget.barCount, 0.0);
     _beatIntensities = List.filled(widget.barCount, 0.0);
-    _barRotations = List.filled(widget.barCount, 0.0);
     _barScales = List.filled(widget.barCount, 1.0);
   }
 
@@ -88,9 +83,6 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     _updateTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (mounted) {
         _updateBars();
-        if (widget.enable3DEffects) {
-          _update3DEffects();
-        }
       }
     });
 
@@ -200,7 +192,6 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   void _triggerBeat() {
     setState(() {
       _isBeat = true;
-      _beatCounter++;
       
       // Enhanced beat distribution - More dramatic effect
       for (int i = 0; i < widget.barCount; i++) {
@@ -224,20 +215,14 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     });
   }
 
-  void _update3DEffects() {
-    setState(() {
-      _rotationAngle += 1.0;
-    });
-  }
+
 
   void _resetBars() {
     setState(() {
       _barHeights = List.filled(widget.barCount, 0.0);
       _beatIntensities = List.filled(widget.barCount, 0.0);
-      _barRotations = List.filled(widget.barCount, 0.0);
       _barScales = List.filled(widget.barCount, 1.0);
       _volumeHistory.clear();
-      _beatCounter = 0;
       _isBeat = false;
     });
     for (var controller in _controllers) {
@@ -259,110 +244,84 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // BPM Display
-        if (widget.enableBeatDetection)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white24, width: 1),
-            ),
-            child: Text(
-              'BPM: ${_bpm.toStringAsFixed(0)}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
+    return Container(
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [
+            Colors.black.withValues(alpha: 0.9),
+            Colors.black.withValues(alpha: 0.7),
+            Colors.black.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Static background grid
+            if (widget.enable3DEffects)
+              CustomPaint(
+                size: Size(widget.width, widget.height),
+                painter: LinearGridPainter(rotationAngle: 0.0),
+              ),
+            
+            // Static Horizontal Bars
+            Center(
+              child: SizedBox(
+                width: widget.width * 0.9,
+                height: widget.height * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(widget.barCount, (i) {
+                    final isActive = _isPlaying && _barHeights[i] > 0.1;
+                    final isBeatActive = _beatIntensities[i] > 0.1;
+                    final color = _colors[i % _colors.length];
+                    
+                    return AnimatedBuilder(
+                      animation: _animations[i],
+                      builder: (context, child) {
+                        final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
+                        final barWidth = 8.0 * _barScales[i];
+                        
+                        return Container(
+                          width: barWidth,
+                          height: barHeight,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                color.withValues(alpha: 0.6),
+                                color,
+                                color.withValues(alpha: 0.8),
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: isActive ? [
+                              BoxShadow(
+                                color: color.withValues(
+                                  alpha: isBeatActive ? 0.8 : 0.5,
+                                ),
+                                blurRadius: isBeatActive ? 12 : 6,
+                                spreadRadius: isBeatActive ? 2 : 1,
+                              ),
+                            ] : null,
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ),
               ),
             ),
-          ),
-        
-        // Linear 3D Visualizer
-        Container(
-          width: widget.width,
-          height: widget.height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [
-                Colors.black.withOpacity(0.9),
-                Colors.black.withOpacity(0.7),
-                Colors.black.withOpacity(0.9),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                                 // Static background grid
-                 if (widget.enable3DEffects)
-                   CustomPaint(
-                     size: Size(widget.width, widget.height),
-                     painter: LinearGridPainter(rotationAngle: 0.0),
-                   ),
-                
-                                 // Static Horizontal Bars
-                 Center(
-                   child: SizedBox(
-                     width: widget.width * 0.9,
-                     height: widget.height * 0.9,
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                       children: List.generate(widget.barCount, (i) {
-                         final isActive = _isPlaying && _barHeights[i] > 0.1;
-                         final isBeatActive = _beatIntensities[i] > 0.1;
-                         final color = _colors[i % _colors.length];
-                         
-                         return AnimatedBuilder(
-                           animation: _animations[i],
-                           builder: (context, child) {
-                             final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
-                             final barWidth = 8.0 * _barScales[i];
-                             
-                             return Container(
-                               width: barWidth,
-                               height: barHeight,
-                               decoration: BoxDecoration(
-                                 gradient: LinearGradient(
-                                   colors: [
-                                     color.withOpacity(0.6),
-                                     color,
-                                     color.withOpacity(0.8),
-                                   ],
-                                   begin: Alignment.bottomCenter,
-                                   end: Alignment.topCenter,
-                                 ),
-                                 borderRadius: BorderRadius.circular(4),
-                                 boxShadow: isActive ? [
-                                   BoxShadow(
-                                     color: color.withOpacity(
-                                       isBeatActive ? 0.8 : 0.5,
-                                     ),
-                                     blurRadius: isBeatActive ? 12 : 6,
-                                     spreadRadius: isBeatActive ? 2 : 1,
-                                   ),
-                                 ] : null,
-                               ),
-                             );
-                           },
-                         );
-                       }),
-                     ),
-                   ),
-                 ),
-              ],
-            ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -375,7 +334,7 @@ class LinearGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withValues(alpha: 0.1)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     

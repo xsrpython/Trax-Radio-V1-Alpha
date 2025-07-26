@@ -39,9 +39,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProv
   }
 
   Future<void> _initializeDJService() async {
-    print('WIDGET DEBUG: Initializing DJ service...'); // Debug line
     await DJService.initialize();
-    print('WIDGET DEBUG: DJ service initialized'); // Debug line
     _updateCurrentDJ();
   }
 
@@ -54,12 +52,10 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProv
 
   void _updateCurrentDJ() {
     final newDJ = DJService.getCurrentDJ();
-    print('WIDGET DEBUG: Current DJ returned: $newDJ'); // Debug line
     if (mounted && newDJ != _currentDJ) {
       setState(() {
         _currentDJ = newDJ;
       });
-      print('WIDGET DEBUG: Updated DJ to: $_currentDJ'); // Debug line
     }
   }
 
@@ -75,7 +71,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget> with SingleTickerProv
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white24, width: 1),
       ),

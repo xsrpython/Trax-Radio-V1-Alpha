@@ -22,9 +22,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
   }
 
   Future<void> _initializeDJService() async {
-    print('NEXT DJ WIDGET DEBUG: Initializing DJ service...'); // Debug line
     await DJService.initialize();
-    print('NEXT DJ WIDGET DEBUG: DJ service initialized'); // Debug line
     _updateNextDJ();
   }
 
@@ -45,7 +43,6 @@ class _NextDJWidgetState extends State<NextDJWidget> {
         _nextDJ = newName;
         _nextStartTime = newStartTime;
       });
-      print('NEXT DJ WIDGET DEBUG: Updated to: $_nextDJ at $_nextStartTime'); // Debug line
     }
   }
 
@@ -62,9 +59,9 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

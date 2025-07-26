@@ -59,7 +59,6 @@ class DJService {
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
       _isInitialized = true;
     } catch (e) {
-      print('Error loading DJ schedule: $e');
       _djs = [];
     }
   }
@@ -75,18 +74,13 @@ class DJService {
     final currentDay = _getDayName(ukTime.weekday);
     final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
 
-    print('DEBUG: Current UK Time: $currentTime, Day: $currentDay'); // Debug line
-
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == currentDay && _isTimeInRange(currentTime, schedule.start, schedule.end)) {
-          print('DEBUG: Found DJ: ${dj.name} at $currentTime'); // Debug line
           return dj.name;
         }
       }
     }
-
-    print('DEBUG: No DJ found, returning Trax Auto DJ'); // Debug line
     return 'Trax Auto DJ';
   }
 
@@ -94,8 +88,6 @@ class DJService {
     // For now, let's use local time and assume we're in UK timezone
     // This is simpler and should work for testing
     final now = DateTime.now();
-    
-    print('DEBUG: Local time: $now'); // Debug line
     
     // If you're in a different timezone, you might need to adjust this
     // For now, we'll use local time and assume it's UK time
@@ -155,7 +147,6 @@ class DJService {
     }
     
     final result = currentMinutes >= startMinutes && currentMinutes < endMinutes;
-    print('DEBUG: Time range check: $currentTime ($currentMinutes) in $startTime ($startMinutes) - $endTime ($endMinutes) = $result');
     
     return result;
   }
@@ -184,8 +175,6 @@ class DJService {
     final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
-    print('DEBUG: Looking for next DJ after $currentTime on $currentDay'); // Debug line
-
     // Collect all today's slots and sort them by start time
     List<Map<String, dynamic>> todaySlots = [];
     for (final dj in _djs) {
@@ -212,13 +201,11 @@ class DJService {
       
       // If this slot starts after current time, it's the next one
       if (startMinutes > currentMinutes) {
-        print('DEBUG: Found next DJ today: ${slot['dj']} at ${slot['start']}'); // Debug line
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
       
       // If we're currently in this slot, the next one is after it ends
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-        print('DEBUG: Currently in slot ${slot['dj']}, looking for next slot after ${slot['end']}'); // Debug line
         // Continue to find the next slot
         continue;
       }
@@ -227,13 +214,10 @@ class DJService {
     // If no more slots today, find the first slot tomorrow
     final tomorrow = ukTime.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
-    
-    print('DEBUG: No more slots today, checking tomorrow ($tomorrowDay)'); // Debug line
 
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
-          print('DEBUG: Found next DJ tomorrow: ${dj.name} at ${schedule.start}'); // Debug line
           return {'name': dj.name, 'startTime': schedule.start};
         }
       }
@@ -247,14 +231,12 @@ class DJService {
       for (final dj in _djs) {
         for (final schedule in dj.schedule) {
           if (schedule.day == futureDayName) {
-            print('DEBUG: Found next DJ in $dayOffset days: ${dj.name} at ${schedule.start}'); // Debug line
             return {'name': dj.name, 'startTime': schedule.start};
           }
         }
       }
     }
 
-    print('DEBUG: No upcoming DJs found'); // Debug line
     return {'name': 'No upcoming DJs', 'startTime': ''};
   }
 } 
