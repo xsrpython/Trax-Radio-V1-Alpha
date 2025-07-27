@@ -323,47 +323,65 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
               child: SizedBox(
                 width: widget.width * 0.9,
                 height: widget.height * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(widget.barCount, (i) {
-                    final isActive = _isPlaying && _barHeights[i] > 0.1;
-                    final isBeatActive = _beatIntensities[i] > 0.1;
-                    final color = _colors[i % _colors.length];
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth;
+                    final barSpacing = 4.0;
+                    final totalBarWidth = widget.barCount * 8.0 + (widget.barCount - 1) * barSpacing;
                     
-                    return AnimatedBuilder(
-                      animation: _animations[i],
-                      builder: (context, child) {
-                        final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
-                        final barWidth = 8.0 * _barScales[i];
+                    // If bars don't fit, reduce spacing
+                    final actualSpacing = totalBarWidth > availableWidth 
+                        ? (availableWidth - widget.barCount * 8.0) / (widget.barCount - 1).clamp(1.0, 8.0)
+                        : barSpacing;
+                    
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(widget.barCount, (i) {
+                        final isActive = _isPlaying && _barHeights[i] > 0.1;
+                        final isBeatActive = _beatIntensities[i] > 0.1;
+                        final color = _colors[i % _colors.length];
                         
-                        return Container(
-                          width: barWidth,
-                          height: barHeight,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                color.withValues(alpha: 0.6),
-                                color,
-                                color.withValues(alpha: 0.8),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
-                            borderRadius: BorderRadius.circular(4),
-                            boxShadow: isActive ? [
-                              BoxShadow(
-                                color: color.withValues(
-                                  alpha: isBeatActive ? 0.8 : 0.5,
-                                ),
-                                blurRadius: isBeatActive ? 12 : 6,
-                                spreadRadius: isBeatActive ? 2 : 1,
+                        return AnimatedBuilder(
+                          animation: _animations[i],
+                          builder: (context, child) {
+                            final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
+                            final barWidth = (8.0 * _barScales[i]).clamp(4.0, 12.0);
+                            
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                right: i < widget.barCount - 1 ? actualSpacing : 0,
                               ),
-                            ] : null,
-                          ),
+                              child: Container(
+                                width: barWidth,
+                                height: barHeight,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      color.withValues(alpha: 0.6),
+                                      color,
+                                      color.withValues(alpha: 0.8),
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                  boxShadow: isActive ? [
+                                    BoxShadow(
+                                      color: color.withValues(
+                                        alpha: isBeatActive ? 0.8 : 0.5,
+                                      ),
+                                      blurRadius: isBeatActive ? 12 : 6,
+                                      spreadRadius: isBeatActive ? 2 : 1,
+                                    ),
+                                  ] : null,
+                                ),
+                              ),
+                            );
+                          },
                         );
-                      },
+                      }),
                     );
-                  }),
+                  },
                 ),
               ),
             ),
