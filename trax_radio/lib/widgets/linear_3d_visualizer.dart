@@ -42,7 +42,7 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   bool _isBeat = false;
   
   // Audio analysis variables
-  final List<double> _frequencyData = [];
+  List<double> _frequencyData = [];
   final List<double> _volumeHistory = [];
   double _currentVolume = 0.0;
   double _lastBeatTime = 0.0;
@@ -270,6 +270,7 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
       _barHeights = List.filled(widget.barCount, 0.0);
       _beatIntensities = List.filled(widget.barCount, 0.0);
       _barScales = List.filled(widget.barCount, 1.0);
+      _frequencyData = List.filled(widget.barCount, 0.0);
       _volumeHistory.clear();
       _isBeat = false;
     });
