@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
@@ -31,8 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Navigate to main app after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
+    // Navigate to main app after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -60,72 +60,81 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: Colors.black,
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: Center(
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // App Icon
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.orange.withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
+              // Top spacer to push content down
+              const SizedBox(height: 100),
+              
+              // Main content area
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // App Icon - Made larger and more prominent
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.orange.withOpacity(0.4),
+                            blurRadius: 30,
+                            spreadRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: Image.asset(
+                          'assets/traxicon.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // App Title
+                    const Text(
+                      'Trax Radio UK',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 15),
+                    
+                    // Version
+                    const Text(
+                      'V1.0.0 Beta',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/traxicon.png',
-                    fit: BoxFit.cover,
+              ),
+              
+              // Developer Info at bottom
+              Padding(
+                padding: const EdgeInsets.only(bottom: 50),
+                child: const Text(
+                  'Developed by DJXSR',
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
-              
-              const SizedBox(height: 30),
-              
-              // App Title
-              const Text(
-                'Trax Radio UK',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
-              ),
-              
-              const SizedBox(height: 10),
-              
-              // Version
-              const Text(
-                'V1.0.0 Beta',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              
-              const Spacer(),
-              
-              // Developer Info
-              const Text(
-                'Developed by DJXSR',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              
-              const SizedBox(height: 50),
             ],
           ),
         ),
