@@ -385,158 +385,159 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Stack(
-          children: [
-            // Static background grid
-            if (widget.enable3DEffects)
-              CustomPaint(
-                size: Size(widget.width, widget.height),
-                painter: LinearGridPainter(rotationAngle: 0.0),
-              ),
-            
-            // Animated Bars
-            Center(
-              child: SizedBox(
-                width: widget.width * 0.9,
-                height: widget.height * 0.9,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final availableWidth = constraints.maxWidth;
-                    final maxBarWidth = 6.0; // Reduced from 8.0
-                    final minBarWidth = 2.0; // Reduced from 4.0
-                    final barSpacing = 2.0; // Reduced from 4.0
-                    
-                    // Calculate if we need to reduce bar count or spacing
-                    final totalBarWidth = widget.barCount * maxBarWidth + (widget.barCount - 1) * barSpacing;
-                    
-                    if (totalBarWidth > availableWidth) {
+                children: [
+                  // Static background grid
+                  if (widget.enable3DEffects)
+                    CustomPaint(
+                      size: Size(widget.width, widget.height),
+                      painter: LinearGridPainter(rotationAngle: 0.0),
+                    ),
+                  
+                  // Animated Bars
+                  Center(
+                    child: SizedBox(
+                      width: widget.width * 0.9,
+                      height: widget.height * 0.9,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                                              final availableWidth = constraints.maxWidth;
+                    final maxBarWidth = 4.0; // Further reduced from 6.0
+                    final minBarWidth = 1.5; // Further reduced from 2.0
+                    final barSpacing = 1.0; // Further reduced from 2.0
+                          
+                          // Calculate if we need to reduce bar count or spacing
+                          final totalBarWidth = widget.barCount * maxBarWidth + (widget.barCount - 1) * barSpacing;
+                          
+                                              if (totalBarWidth > availableWidth) {
                       // Calculate how many bars we can fit
                       final maxBars = ((availableWidth + barSpacing) / (maxBarWidth + barSpacing)).floor();
-                      final actualBarCount = maxBars.clamp(10, widget.barCount); // Minimum 10 bars
-                      
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(actualBarCount, (i) {
-                          final isActive = _isPlaying && _barHeights[i] > 0.1;
-                          final isBeatActive = _beatIntensities[i] > 0.1;
-                          final color = _colors[i % _colors.length];
-                          
-                          return AnimatedBuilder(
-                            animation: _animations[i],
-                            builder: (context, child) {
-                              final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
-                              final barWidth = (maxBarWidth * _barScales[i]).clamp(minBarWidth, maxBarWidth);
-                              
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                  right: i < actualBarCount - 1 ? barSpacing : 0,
-                                ),
-                                child: Container(
-                                  width: barWidth,
-                                  height: barHeight,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        color.withValues(alpha: 0.6),
-                                        color,
-                                        color.withValues(alpha: 0.8),
-                                      ],
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4),
-                                    boxShadow: isActive ? [
-                                      BoxShadow(
-                                        color: color.withValues(
-                                          alpha: isBeatActive ? 0.8 : 0.5,
-                                        ),
-                                        blurRadius: isBeatActive ? 12 : 6,
-                                        spreadRadius: isBeatActive ? 2 : 1,
+                      final actualBarCount = maxBars.clamp(8, widget.barCount); // Reduced minimum to 8 bars
+                            
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(actualBarCount, (i) {
+                                final isActive = _isPlaying && _barHeights[i] > 0.1;
+                                final isBeatActive = _beatIntensities[i] > 0.1;
+                                final color = _colors[i % _colors.length];
+                                
+                                return AnimatedBuilder(
+                                  animation: _animations[i],
+                                  builder: (context, child) {
+                                    final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
+                                    final barWidth = (maxBarWidth * _barScales[i]).clamp(minBarWidth, maxBarWidth);
+                                    
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        right: i < actualBarCount - 1 ? barSpacing : 0,
                                       ),
-                                    ] : null,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }),
-                      );
-                    } else {
-                      // Use original bar count with calculated spacing
-                      final actualSpacing = (availableWidth - widget.barCount * maxBarWidth) / (widget.barCount - 1).clamp(1.0, barSpacing);
-                      
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(widget.barCount, (i) {
-                          final isActive = _isPlaying && _barHeights[i] > 0.1;
-                          final isBeatActive = _beatIntensities[i] > 0.1;
-                          final color = _colors[i % _colors.length];
-                          
-                          return AnimatedBuilder(
-                            animation: _animations[i],
-                            builder: (context, child) {
-                              final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
-                              final barWidth = (maxBarWidth * _barScales[i]).clamp(minBarWidth, maxBarWidth);
-                              
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                  right: i < widget.barCount - 1 ? actualSpacing : 0,
-                                ),
-                                child: Container(
-                                  width: barWidth,
-                                  height: barHeight,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        color.withValues(alpha: 0.6),
-                                        color,
-                                        color.withValues(alpha: 0.8),
-                                      ],
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4),
-                                    boxShadow: isActive ? [
-                                      BoxShadow(
-                                        color: color.withValues(
-                                          alpha: isBeatActive ? 0.8 : 0.5,
+                                      child: Container(
+                                        width: barWidth,
+                                        height: barHeight,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              color.withValues(alpha: 0.6),
+                                              color,
+                                              color.withValues(alpha: 0.8),
+                                            ],
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                          ),
+                                          borderRadius: BorderRadius.circular(4),
+                                          boxShadow: isActive ? [
+                                            BoxShadow(
+                                              color: color.withValues(
+                                                alpha: isBeatActive ? 0.8 : 0.5,
+                                              ),
+                                              blurRadius: isBeatActive ? 12 : 6,
+                                              spreadRadius: isBeatActive ? 2 : 1,
+                                            ),
+                                          ] : null,
                                         ),
-                                        blurRadius: isBeatActive ? 12 : 6,
-                                        spreadRadius: isBeatActive ? 2 : 1,
                                       ),
-                                    ] : null,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            
-            // Beat indicator overlay
-            if (_isBeat && widget.enableBeatDetection)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: RadialGradient(
-                      colors: [
-                        Colors.white.withValues(alpha: 0.1),
-                        Colors.transparent,
-                      ],
-                      center: Alignment.center,
-                      radius: 0.8,
+                                    );
+                                  },
+                                );
+                              }),
+                            );
+                          } else {
+                            // Use original bar count with calculated spacing
+                            final actualSpacing = (availableWidth - widget.barCount * maxBarWidth) / (widget.barCount - 1).clamp(1.0, barSpacing);
+                            
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(widget.barCount, (i) {
+                                final isActive = _isPlaying && _barHeights[i] > 0.1;
+                                final isBeatActive = _beatIntensities[i] > 0.1;
+                                final color = _colors[i % _colors.length];
+                                
+                                return AnimatedBuilder(
+                                  animation: _animations[i],
+                                  builder: (context, child) {
+                                    final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
+                                    final barWidth = (maxBarWidth * _barScales[i]).clamp(minBarWidth, maxBarWidth);
+                                    
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        right: i < widget.barCount - 1 ? actualSpacing : 0,
+                                      ),
+                                      child: Container(
+                                        width: barWidth,
+                                        height: barHeight,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              color.withValues(alpha: 0.6),
+                                              color,
+                                              color.withValues(alpha: 0.8),
+                                            ],
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                          ),
+                                          borderRadius: BorderRadius.circular(4),
+                                          boxShadow: isActive ? [
+                                            BoxShadow(
+                                              color: color.withValues(
+                                                alpha: isBeatActive ? 0.8 : 0.5,
+                                              ),
+                                              blurRadius: isBeatActive ? 12 : 6,
+                                              spreadRadius: isBeatActive ? 2 : 1,
+                                            ),
+                                          ] : null,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }),
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ),
-                ),
+                  
+                  // Beat indicator overlay
+                  if (_isBeat && widget.enableBeatDetection)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: RadialGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.1),
+                              Colors.transparent,
+                            ],
+                            center: Alignment.center,
+                            radius: 0.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-          ],
-        ),
-      ),
+            ),
+          ),
         );
       },
     );

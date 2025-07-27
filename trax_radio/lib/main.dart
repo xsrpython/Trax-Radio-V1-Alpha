@@ -146,7 +146,7 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
                           audioPlayer: _player,
                           height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
                           width: constraints.maxWidth,
-                          barCount: isLandscape ? 32 : 48, // Reduced bar count to prevent overflow
+                          barCount: isLandscape ? 24 : 32, // Further reduced bar count to prevent overflow
                           enableBeatDetection: true,
                           enable3DEffects: true,
                         ),
