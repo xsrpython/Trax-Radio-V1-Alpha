@@ -71,6 +71,8 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       timeText = 'Coming Soon';
     }
 
+    print('Next DJ Widget Debug: Final display - displayText: "$displayText", timeText: "$timeText"');
+
     return Transform.scale(
       scale: 1.0, // Reduced from 1.5 to 1.0 (no internal scaling)
       child: Container(

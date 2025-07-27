@@ -58,7 +58,15 @@ class DJService {
       final List<dynamic> jsonList = json.decode(jsonString);
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
       _isInitialized = true;
+      print('DJ Service Debug: Initialized with ${_djs.length} DJs');
+      for (final dj in _djs) {
+        print('  - ${dj.name}: ${dj.schedule.length} schedule(s)');
+        for (final schedule in dj.schedule) {
+          print('    * ${schedule.day} ${schedule.start}-${schedule.end}');
+        }
+      }
     } catch (e) {
+      print('DJ Service Debug: Error initializing: $e');
       _djs = [];
     }
   }
@@ -167,7 +175,8 @@ class DJService {
 
   static Map<String, String> getNextDJ() {
     if (!_isInitialized || _djs.isEmpty) {
-      return {'name': 'No upcoming DJs', 'startTime': ''};
+      print('DJ Service Debug: Not initialized or no DJs available');
+      return {'name': 'Auto DJ', 'startTime': 'Now'};
     }
 
     final ukTime = _getUKTime();
