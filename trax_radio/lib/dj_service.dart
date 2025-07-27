@@ -234,8 +234,8 @@ class DJService {
       final ukDateTime = tz.TZDateTime(_ukLocation, DateTime.now().year, 
           _getMonthFromDay(day), _getDayOfMonth(day), hour, minute);
       
-      // Convert to user's timezone
-      final localDateTime = ukDateTime.toLocation(_userLocation!);
+      // Convert to user's timezone using the correct method
+      final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
       
       return '${localDateTime.hour.toString().padLeft(2, '0')}:${localDateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
