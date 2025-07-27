@@ -14,7 +14,7 @@ class TraxRadioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trax Radio',
+      title: 'Trax Radio V1.0.0 Beta',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -207,7 +207,7 @@ class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProvider
                           Padding(
                             padding: EdgeInsets.only(left: 16.0),
                             child: Text(
-                              'v1.0.0',
+                              'V1.0.0 Beta',
                               style: TextStyle(
                                 color: Colors.white54,
                                 fontSize: 14,
