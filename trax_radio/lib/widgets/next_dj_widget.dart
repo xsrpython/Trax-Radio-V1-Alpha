@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import '../dj_service.dart';
 
 class NextDJWidget extends StatefulWidget {
@@ -17,37 +17,8 @@ class _NextDJWidgetState extends State<NextDJWidget> {
   @override
   void initState() {
     super.initState();
-    _initializeDJService();
-    _startTimer();
-  }
-
-  Future<void> _initializeDJService() async {
-    await DJService.initialize();
     _updateNextDJ();
-  }
-
-  void _startTimer() {
-    // Update every minute to check for DJ changes
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      _updateNextDJ();
-    });
-  }
-
-  void _updateNextDJ() {
-    final nextDJInfo = DJService.getNextDJ();
-    final newName = nextDJInfo['name'] ?? '';
-    final newStartTime = nextDJInfo['startTime'] ?? '';
-    
-    // Debug: Print what we're getting from the service
-    print('Next DJ Widget Debug: Received - name: "$newName", startTime: "$newStartTime"');
-    
-    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime)) {
-      setState(() {
-        _nextDJ = newName;
-        _nextStartTime = newStartTime;
-      });
-      print('Next DJ Widget Debug: Updated state - _nextDJ: "$_nextDJ", _nextStartTime: "$_nextStartTime"');
-    }
+    _startTimer();
   }
 
   @override
@@ -56,12 +27,32 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     super.dispose();
   }
 
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (mounted) {
+        _updateNextDJ();
+      }
+    });
+  }
+
+  void _updateNextDJ() {
+    final nextDJInfo = DJService.getNextDJ();
+    final newName = nextDJInfo['name'] ?? '';
+    final newStartTime = nextDJInfo['startTime'] ?? '';
+
+    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime)) {
+      setState(() {
+        _nextDJ = newName;
+        _nextStartTime = newStartTime;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Determine what text to show based on the DJ info
     String displayText = _nextDJ;
     String timeText = '';
-    
+
     if (_nextDJ.isEmpty || _nextDJ == 'No upcoming DJs') {
       displayText = 'Auto DJ';
       timeText = 'Now';
@@ -71,32 +62,33 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       timeText = 'Coming Soon';
     }
 
-    print('Next DJ Widget Debug: Final display - displayText: "$displayText", timeText: "$timeText"');
-
     return Transform.scale(
-      scale: 1.0, // Reduced from 1.5 to 1.0 (no internal scaling)
+      scale: 1.0,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.7),
+          color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 1),
+          border: Border.all(
+            color: Colors.orange.withOpacity(0.5),
+            width: 1,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.schedule,
               color: Colors.orange,
-              size: 20,
+              size: 16,
             ),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               'Next: ',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
                 letterSpacing: 0.5,
               ),
             ),
