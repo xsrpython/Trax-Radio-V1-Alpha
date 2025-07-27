@@ -17,20 +17,20 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1500), // Faster initial fade-in
       vsync: this,
     );
-
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeIn,
+      curve: Curves.easeInOut,
     ));
-
+    
+    // Start animation immediately
     _animationController.forward();
-
+    
     // Navigate to main app after 5 seconds
     Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
-            transitionDuration: const Duration(milliseconds: 1000), // Longer, smoother transition
+            transitionDuration: const Duration(milliseconds: 2000), // Much longer, smoother transition
           ),
         );
       }
