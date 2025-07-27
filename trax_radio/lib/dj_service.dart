@@ -86,8 +86,7 @@ class DJService {
     final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
     
-    // Debug: Log current time for DJ transition monitoring
-    print('DJ Monitor: Current time - $currentDay $currentTime (${currentMinutes} minutes)');
+
 
 
 
@@ -102,19 +101,18 @@ class DJService {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, currentDay);
           final localEndTime = _convertUKTimeToLocalMinutes(schedule.end, currentDay);
 
-          if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
-            currentDJ = dj;
-            currentEndMinutes = localEndTime;
-            print('DJ Monitor: Found current DJ - ${dj.name} (${_minutesToTimeString(localStartTime)} to ${_minutesToTimeString(localEndTime)})');
-            break;
-          }
+                  if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
+          currentDJ = dj;
+          currentEndMinutes = localEndTime;
+          break;
+        }
         }
       }
       if (currentDJ != null) break;
     }
 
     if (currentDJ == null) {
-      print('DJ Monitor: No current DJ found for $currentDay at $currentTime - Auto DJ active');
+      // Auto DJ active
     }
 
     return currentDJ;
@@ -159,19 +157,17 @@ class DJService {
       final endMinutes = slot['endMinutes'];
 
       // If this slot starts in the future, it's the next one
-      if (startMinutes > currentMinutes) {
-        print('DJ Monitor: Next DJ - ${slot['dj']} at ${slot['start']}');
-        return {'name': slot['dj'], 'startTime': slot['start']};
-      }
+              if (startMinutes > currentMinutes) {
+          return {'name': slot['dj'], 'startTime': slot['start']};
+        }
 
       // If we're currently in this slot, find the next one
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
         // Look for the next slot after this one ends
         for (final nextSlot in todaySlots) {
-          if (nextSlot['startMinutes'] >= endMinutes) {
-            print('DJ Monitor: Next DJ - ${nextSlot['dj']} at ${nextSlot['start']}');
-            return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
-          }
+                  if (nextSlot['startMinutes'] >= endMinutes) {
+          return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
+        }
         }
         // If no more slots today, look for tomorrow
         break;
