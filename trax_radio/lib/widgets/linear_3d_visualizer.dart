@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import '../bpm_service.dart';
 
 class Linear3DVisualizer extends StatefulWidget {
   final AudioPlayer audioPlayer;
@@ -33,6 +34,13 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   List<double> _beatIntensities = [];
   List<double> _barScales = [];
   
+  // Global pulse animation for BPM sync
+  late AnimationController _globalPulseController;
+  late Animation<double> _globalPulseAnimation;
+  StreamSubscription<int>? _bpmSubscription;
+  int _currentBPM = 0;
+  Timer? _bpmPulseTimer;
+  
   Timer? _updateTimer;
   StreamSubscription? _playingSubscription;
   StreamSubscription? _processingStateSubscription;
@@ -60,7 +68,9 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
   void initState() {
     super.initState();
     _initializeControllers();
+    _initializeGlobalPulse();
     _setupAudioListeners();
+    _setupBPMSubscription();
   }
 
   void _initializeControllers() {
@@ -84,6 +94,51 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     _frequencyData = List.filled(widget.barCount, 0.0);
   }
 
+  void _initializeGlobalPulse() {
+    _globalPulseController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    
+    _globalPulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: _globalPulseController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  void _setupBPMSubscription() {
+    _bpmSubscription = BMPService().bpmStream.listen((bpm) {
+      if (mounted) {
+        setState(() {
+          _currentBPM = bpm;
+        });
+        _updateBPMTempo();
+      }
+    });
+  }
+
+  void _updateBPMTempo() {
+    _bpmPulseTimer?.cancel();
+    
+    if (_currentBPM > 0 && _isPlaying) {
+      // Calculate pulse interval based on BPM
+      final pulseInterval = (60000 / _currentBPM).round(); // Convert BPM to milliseconds
+      
+      _bpmPulseTimer = Timer.periodic(Duration(milliseconds: pulseInterval), (timer) {
+        if (mounted && _isPlaying) {
+          _globalPulseController.forward().then((_) {
+            _globalPulseController.reverse();
+          });
+        } else {
+          timer.cancel();
+        }
+      });
+    }
+  }
+
   void _setupAudioListeners() {
     // Listen to playing state
     _playingSubscription = widget.audioPlayer.playingStream.listen((playing) {
@@ -94,9 +149,11 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
         
         if (playing) {
           _startVisualization();
+          _updateBPMTempo(); // Start BPM pulse when playing
         } else {
           _stopVisualization();
           _resetBars();
+          _bpmPulseTimer?.cancel(); // Stop BPM pulse when paused
         }
       }
     });
@@ -294,6 +351,9 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     _updateTimer?.cancel();
     _playingSubscription?.cancel();
     _processingStateSubscription?.cancel();
+    _bpmSubscription?.cancel();
+    _bpmPulseTimer?.cancel();
+    _globalPulseController.dispose();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -302,24 +362,29 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            Colors.black.withValues(alpha: 0.9),
-            Colors.black.withValues(alpha: 0.7),
-            Colors.black.withValues(alpha: 0.9),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
+    return AnimatedBuilder(
+      animation: _globalPulseAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _globalPulseAnimation.value,
+          child: Container(
+            width: widget.width,
+            height: widget.height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withValues(alpha: 0.9),
+                  Colors.black.withValues(alpha: 0.7),
+                  Colors.black.withValues(alpha: 0.9),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
           children: [
             // Static background grid
             if (widget.enable3DEffects)
@@ -472,6 +537,8 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
           ],
         ),
       ),
+        );
+      },
     );
   }
 }
