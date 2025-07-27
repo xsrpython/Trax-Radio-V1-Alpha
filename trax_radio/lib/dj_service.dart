@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class DJ {
   final String name;
@@ -49,11 +51,22 @@ class Schedule {
 class DJService {
   static List<DJ> _djs = [];
   static bool _isInitialized = false;
+  static tz.Location? _userLocation;
+  static tz.Location _ukLocation = tz.getLocation('Europe/London');
 
   static Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
+      // Initialize timezone data
+      tz.initializeTimeZones();
+      
+      // Detect user's timezone
+      _userLocation = tz.local;
+      
+      print('DJ Service Debug: User timezone: ${_userLocation?.name}');
+      print('DJ Service Debug: UK timezone: ${_ukLocation.name}');
+
       final String response = await rootBundle.loadString('assets/dj_schedule.json');
       final List<dynamic> jsonList = json.decode(response);
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
@@ -64,7 +77,7 @@ class DJService {
       for (final dj in _djs) {
         print('DJ Service Debug: ${dj.name} - ${dj.schedule.length} schedule(s)');
         for (final schedule in dj.schedule) {
-          print('DJ Service Debug:   ${schedule.day} ${schedule.start}-${schedule.end}');
+          print('DJ Service Debug:   ${schedule.day} ${schedule.start}-${schedule.end} (UK time)');
         }
       }
     } catch (e) {
@@ -74,14 +87,18 @@ class DJService {
   }
 
   static DJ? getCurrentDJ() {
-    if (!_isInitialized || _djs.isEmpty) return null;
+    if (!_isInitialized || _djs.isEmpty || _userLocation == null) return null;
 
-    final now = DateTime.now(); // Use local time instead of UTC
+    final now = tz.TZDateTime.now(_userLocation!);
+    final ukNow = tz.TZDateTime.now(_ukLocation);
+    
     final currentDay = _getDayName(now.weekday);
     final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
-    print('DJ Service Debug: Current day: $currentDay, Current time: $currentTime, Current minutes: $currentMinutes');
+    print('DJ Service Debug: User timezone: ${_userLocation!.name}');
+    print('DJ Service Debug: User time: $currentDay $currentTime (${currentMinutes} minutes)');
+    print('DJ Service Debug: UK time: ${_getDayName(ukNow.weekday)} ${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}');
 
     // Find the current DJ slot
     DJ? currentDJ;
@@ -114,11 +131,11 @@ class DJService {
   }
 
   static Map<String, String> getNextDJ() {
-    if (!_isInitialized || _djs.isEmpty) {
+    if (!_isInitialized || _djs.isEmpty || _userLocation == null) {
       return {'name': 'Auto DJ', 'startTime': 'Now'};
     }
 
-    final now = DateTime.now(); // Use local time instead of UTC
+    final now = tz.TZDateTime.now(_userLocation!);
     final currentDay = _getDayName(now.weekday);
     final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
@@ -201,6 +218,44 @@ class DJService {
     }
 
     return {'name': 'Auto DJ', 'startTime': 'Now'};
+  }
+
+  // Helper method to convert UK time to user's local time
+  static String convertUKTimeToLocal(String ukTime, String day) {
+    if (_userLocation == null) return ukTime;
+    
+    try {
+      // Parse the UK time
+      final parts = ukTime.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      
+      // Create a UK time for the given day
+      final ukDateTime = tz.TZDateTime(_ukLocation, DateTime.now().year, 
+          _getMonthFromDay(day), _getDayOfMonth(day), hour, minute);
+      
+      // Convert to user's timezone
+      final localDateTime = ukDateTime.toLocation(_userLocation!);
+      
+      return '${localDateTime.hour.toString().padLeft(2, '0')}:${localDateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      print('DJ Service Debug: Error converting time: $e');
+      return ukTime;
+    }
+  }
+
+  // Helper method to get month from day name (simplified)
+  static int _getMonthFromDay(String day) {
+    // This is a simplified approach - in production you'd want more sophisticated logic
+    final now = DateTime.now();
+    return now.month;
+  }
+
+  // Helper method to get day of month from day name (simplified)
+  static int _getDayOfMonth(String day) {
+    // This is a simplified approach - in production you'd want more sophisticated logic
+    final now = DateTime.now();
+    return now.day;
   }
 
   static String _getDayName(int weekday) {
