@@ -396,23 +396,23 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
                   // Animated Bars
                   Center(
                     child: SizedBox(
-                      width: widget.width * 0.9,
+                      width: widget.width * 0.95, // Increased from 0.9 to use more width
                       height: widget.height * 0.9,
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           final availableWidth = constraints.maxWidth;
-                          final maxBarWidth = 3.0; // Even more reduced
-                          final minBarWidth = 1.0; // Even more reduced
-                          final barSpacing = 0.5; // Even more reduced
+                          final maxBarWidth = 8.0; // Increased for better visual impact
+                          final minBarWidth = 4.0; // Increased minimum width
+                          final barSpacing = 2.0; // Increased spacing for better separation
                           
                           // Calculate how many bars we can actually fit
                           final maxBars = ((availableWidth + barSpacing) / (maxBarWidth + barSpacing)).floor();
-                          final actualBarCount = maxBars.clamp(6, widget.barCount); // Reduced minimum to 6 bars
+                          final actualBarCount = maxBars.clamp(12, widget.barCount); // Increased minimum to 12 bars
                           
                           // Always use the calculated bar count to prevent overflow
                             
                             return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Changed from center to spaceEvenly for better distribution
                               children: List.generate(actualBarCount, (i) {
                                 final isActive = _isPlaying && _barHeights[i] > 0.1;
                                 final isBeatActive = _beatIntensities[i] > 0.1;
