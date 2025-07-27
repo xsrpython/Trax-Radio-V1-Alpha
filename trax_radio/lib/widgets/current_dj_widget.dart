@@ -83,7 +83,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white24, width: 1),
+        border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

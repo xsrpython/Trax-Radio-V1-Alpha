@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Transparent background - no Android native splash screen -->
+<!-- Completely transparent - no Android native splash at all -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Transparent background -->
+    <!-- Completely transparent background -->
     <item android:drawable="@android:color/transparent" />
 </layer-list>
