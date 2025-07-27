@@ -58,19 +58,30 @@ class DJService {
       final List<dynamic> jsonList = json.decode(response);
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
       _isInitialized = true;
+      print('DJ Service Debug: Initialized with ${_djs.length} DJs');
+      
+      // Print all DJs and their schedules for debugging
+      for (final dj in _djs) {
+        print('DJ Service Debug: ${dj.name} - ${dj.schedule.length} schedule(s)');
+        for (final schedule in dj.schedule) {
+          print('DJ Service Debug:   ${schedule.day} ${schedule.start}-${schedule.end}');
+        }
+      }
     } catch (e) {
       _djs = [];
+      print('DJ Service Debug: Error initializing: $e');
     }
   }
 
   static DJ? getCurrentDJ() {
     if (!_isInitialized || _djs.isEmpty) return null;
 
-    final now = DateTime.now();
-    final ukTime = now.toUtc().add(const Duration(hours: 0)); // Simplified timezone handling
-    final currentDay = _getDayName(ukTime.weekday);
-    final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
+    final now = DateTime.now(); // Use local time instead of UTC
+    final currentDay = _getDayName(now.weekday);
+    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
+
+    print('DJ Service Debug: Current day: $currentDay, Current time: $currentTime, Current minutes: $currentMinutes');
 
     // Find the current DJ slot
     DJ? currentDJ;
@@ -82,14 +93,21 @@ class DJService {
           final startMinutes = _timeStringToMinutes(schedule.start);
           final endMinutes = _timeStringToMinutes(schedule.end);
 
+          print('DJ Service Debug: Checking ${dj.name} - ${schedule.start} to ${schedule.end} (${startMinutes} to ${endMinutes})');
+
           if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
             currentDJ = dj;
             currentEndMinutes = endMinutes;
+            print('DJ Service Debug: Found current DJ: ${dj.name}');
             break;
           }
         }
       }
       if (currentDJ != null) break;
+    }
+
+    if (currentDJ == null) {
+      print('DJ Service Debug: No current DJ found for $currentDay at $currentTime');
     }
 
     return currentDJ;
@@ -100,10 +118,9 @@ class DJService {
       return {'name': 'Auto DJ', 'startTime': 'Now'};
     }
 
-    final now = DateTime.now();
-    final ukTime = now.toUtc().add(const Duration(hours: 0));
-    final currentDay = _getDayName(ukTime.weekday);
-    final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
+    final now = DateTime.now(); // Use local time instead of UTC
+    final currentDay = _getDayName(now.weekday);
+    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
     // Get all slots for today
@@ -149,7 +166,7 @@ class DJService {
     }
 
     // Check tomorrow
-    final tomorrow = ukTime.add(const Duration(days: 1));
+    final tomorrow = now.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
 
     for (final dj in _djs) {
@@ -162,7 +179,7 @@ class DJService {
 
     // Check next 7 days
     for (int dayOffset = 2; dayOffset <= 7; dayOffset++) {
-      final futureDate = ukTime.add(Duration(days: dayOffset));
+      final futureDate = now.add(Duration(days: dayOffset));
       final futureDayName = _getDayName(futureDate.weekday);
 
       for (final dj in _djs) {
