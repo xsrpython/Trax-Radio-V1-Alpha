@@ -12,6 +12,7 @@ class NextDJWidget extends StatefulWidget {
 class _NextDJWidgetState extends State<NextDJWidget> {
   String _nextDJ = '';
   String _nextStartTime = '';
+  bool _isLoading = true;
   Timer? _timer;
 
   @override
@@ -40,16 +41,56 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     final newName = nextDJInfo['name'] ?? '';
     final newStartTime = nextDJInfo['startTime'] ?? '';
 
-    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime)) {
+    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime || _isLoading)) {
       setState(() {
         _nextDJ = newName;
         _nextStartTime = newStartTime;
+        _isLoading = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Transform.scale(
+        scale: 1.0,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.orange.withOpacity(0.5),
+              width: 1,
+            ),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                ),
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Loading DJ Schedule...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     String displayText = _nextDJ;
     String timeText = '';
 

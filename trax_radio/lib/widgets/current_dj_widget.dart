@@ -12,6 +12,7 @@ class CurrentDJWidget extends StatefulWidget {
 class _CurrentDJWidgetState extends State<CurrentDJWidget>
     with TickerProviderStateMixin {
   String _currentDJ = 'Loading...';
+  bool _isLoading = true;
   Timer? _timer;
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
@@ -19,8 +20,9 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
   @override
   void initState() {
     super.initState();
-    _initializeDJService();
     _setupScrollAnimation();
+    _updateCurrentDJ();
+    _startTimer();
   }
 
   void _setupScrollAnimation() {
@@ -47,12 +49,6 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
     _scrollController.forward();
   }
 
-  Future<void> _initializeDJService() async {
-    await DJService.initialize();
-    _updateCurrentDJ();
-    _startTimer();
-  }
-
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) {
@@ -65,9 +61,10 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
     final currentDJ = DJService.getCurrentDJ();
     final newDJ = currentDJ?.name ?? 'Auto DJ';
     
-    if (mounted && newDJ != _currentDJ) {
+    if (mounted && (newDJ != _currentDJ || _isLoading)) {
       setState(() {
         _currentDJ = newDJ;
+        _isLoading = false;
       });
     }
   }

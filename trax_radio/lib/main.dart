@@ -3,8 +3,14 @@ import 'package:just_audio/just_audio.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
+import 'dj_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Prefetch DJ data on app startup
+  await DJService.initialize();
+  
   runApp(const TraxRadioApp());
 }
 
