@@ -190,14 +190,11 @@ This project is proprietary software developed by DJXSR for Trax Radio UK.
 lib/
 ├── main.dart              # Main application entry
 ├── dj_service.dart        # DJ scheduling logic
+├── splash_screen.dart     # Custom splash screen
 └── widgets/
     ├── current_dj_widget.dart
     ├── next_dj_widget.dart
-    ├── linear_3d_visualizer.dart
-    ├── audio_visualizer.dart
-    ├── beat_detection_visualizer.dart
-    ├── advanced_audio_visualizer.dart
-    └── three_d_audio_visualizer.dart
+    └── linear_3d_visualizer.dart
 ```
 
 ### **Contributing**

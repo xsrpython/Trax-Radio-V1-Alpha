@@ -43,7 +43,6 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
   final _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
-  bool _isVisible = false; // Add fade-in state
 
   final String streamUrl = 'https://hello.citrus3.com:8138/stream';
   late final AnimationController _controller;
@@ -65,9 +64,6 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) {
         _fadeController.forward();
-        setState(() {
-          _isVisible = true;
-        });
       }
     });
     
