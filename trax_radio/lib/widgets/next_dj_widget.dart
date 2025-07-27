@@ -54,6 +54,19 @@ class _NextDJWidgetState extends State<NextDJWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine what text to show based on the DJ info
+    String displayText = _nextDJ;
+    String timeText = '';
+    
+    if (_nextDJ.isEmpty || _nextDJ == 'No upcoming DJs') {
+      displayText = 'Auto DJ';
+      timeText = 'Now';
+    } else if (_nextStartTime.isNotEmpty) {
+      timeText = 'at $_nextStartTime';
+    } else {
+      timeText = 'Coming Soon';
+    }
+
     return Transform.scale(
       scale: 1.0, // Reduced from 1.5 to 1.0 (no internal scaling)
       child: Container(
@@ -82,7 +95,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
               ),
             ),
             Text(
-              _nextDJ,
+              displayText,
               style: const TextStyle(
                 color: Colors.orange,
                 fontSize: 16,
@@ -90,16 +103,18 @@ class _NextDJWidgetState extends State<NextDJWidget> {
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(width: 10),
-            Text(
-              'at $_nextStartTime',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
+            if (timeText.isNotEmpty) ...[
+              const SizedBox(width: 10),
+              Text(
+                timeText,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.5,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

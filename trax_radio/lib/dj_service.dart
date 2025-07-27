@@ -175,6 +175,9 @@ class DJService {
     final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
+    // Debug: Print current time info
+    print('DJ Service Debug: Current day: $currentDay, Current time: $currentTime');
+
     // Collect all today's slots and sort them by start time
     List<Map<String, dynamic>> todaySlots = [];
     for (final dj in _djs) {
@@ -191,6 +194,12 @@ class DJService {
       }
     }
     
+    // Debug: Print today's slots
+    print('DJ Service Debug: Found ${todaySlots.length} slots for today');
+    for (final slot in todaySlots) {
+      print('  - ${slot['dj']}: ${slot['start']} to ${slot['end']}');
+    }
+    
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
     
@@ -201,11 +210,13 @@ class DJService {
       
       // If this slot starts after current time, it's the next one
       if (startMinutes > currentMinutes) {
+        print('DJ Service Debug: Found next DJ today: ${slot['dj']} at ${slot['start']}');
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
       
       // If we're currently in this slot, the next one is after it ends
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+        print('DJ Service Debug: Currently in slot: ${slot['dj']}');
         // Continue to find the next slot
         continue;
       }
@@ -214,10 +225,12 @@ class DJService {
     // If no more slots today, find the first slot tomorrow
     final tomorrow = ukTime.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
+    print('DJ Service Debug: Looking for tomorrow ($tomorrowDay)');
 
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
+          print('DJ Service Debug: Found next DJ tomorrow: ${dj.name} at ${schedule.start}');
           return {'name': dj.name, 'startTime': schedule.start};
         }
       }
@@ -231,12 +244,24 @@ class DJService {
       for (final dj in _djs) {
         for (final schedule in dj.schedule) {
           if (schedule.day == futureDayName) {
+            print('DJ Service Debug: Found next DJ in ${dayOffset} days: ${dj.name} at ${schedule.start}');
             return {'name': dj.name, 'startTime': schedule.start};
           }
         }
       }
     }
 
-    return {'name': 'No upcoming DJs', 'startTime': ''};
+    // If still no DJs found, return the first available DJ in the schedule
+    if (_djs.isNotEmpty) {
+      final firstDJ = _djs.first;
+      if (firstDJ.schedule.isNotEmpty) {
+        final firstSchedule = firstDJ.schedule.first;
+        print('DJ Service Debug: Using fallback DJ: ${firstDJ.name} at ${firstSchedule.start}');
+        return {'name': firstDJ.name, 'startTime': firstSchedule.start};
+      }
+    }
+
+    print('DJ Service Debug: No DJs found, using Auto DJ');
+    return {'name': 'Auto DJ', 'startTime': 'Now'};
   }
 } 
