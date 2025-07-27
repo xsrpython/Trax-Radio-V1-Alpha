@@ -107,14 +107,15 @@ class DJService {
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == currentDay) {
-          final startMinutes = _timeStringToMinutes(schedule.start);
-          final endMinutes = _timeStringToMinutes(schedule.end);
+          // Convert UK schedule times to user's local timezone
+          final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, currentDay);
+          final localEndTime = _convertUKTimeToLocalMinutes(schedule.end, currentDay);
 
-          print('DJ Service Debug: Checking ${dj.name} - ${schedule.start} to ${schedule.end} (${startMinutes} to ${endMinutes})');
+          print('DJ Service Debug: Checking ${dj.name} - UK: ${schedule.start} to ${schedule.end} | Local: ${_minutesToTimeString(localStartTime)} to ${_minutesToTimeString(localEndTime)}');
 
-          if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+          if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
             currentDJ = dj;
-            currentEndMinutes = endMinutes;
+            currentEndMinutes = localEndTime;
             print('DJ Service Debug: Found current DJ: ${dj.name}');
             break;
           }
@@ -145,12 +146,16 @@ class DJService {
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == currentDay) {
+          // Convert UK schedule times to user's local timezone
+          final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, currentDay);
+          final localEndTime = _convertUKTimeToLocalMinutes(schedule.end, currentDay);
+          
           todaySlots.add({
             'dj': dj.name,
-            'start': schedule.start,
-            'end': schedule.end,
-            'startMinutes': _timeStringToMinutes(schedule.start),
-            'endMinutes': _timeStringToMinutes(schedule.end),
+            'start': _minutesToTimeString(localStartTime), // Use converted local time
+            'end': _minutesToTimeString(localEndTime),
+            'startMinutes': localStartTime,
+            'endMinutes': localEndTime,
           });
         }
       }
@@ -189,7 +194,8 @@ class DJService {
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
-          return {'name': dj.name, 'startTime': schedule.start};
+          final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
+          return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
         }
       }
     }
@@ -202,7 +208,8 @@ class DJService {
       for (final dj in _djs) {
         for (final schedule in dj.schedule) {
           if (schedule.day == futureDayName) {
-            return {'name': dj.name, 'startTime': schedule.start};
+            final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, futureDayName);
+            return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
           }
         }
       }
@@ -213,7 +220,8 @@ class DJService {
       final firstDJ = _djs.first;
       if (firstDJ.schedule.isNotEmpty) {
         final firstSchedule = firstDJ.schedule.first;
-        return {'name': firstDJ.name, 'startTime': firstSchedule.start};
+        final localStartTime = _convertUKTimeToLocalMinutes(firstSchedule.start, firstSchedule.day);
+        return {'name': firstDJ.name, 'startTime': _minutesToTimeString(localStartTime)};
       }
     }
 
@@ -287,5 +295,30 @@ class DJService {
       return hours * 60 + minutes;
     }
     return 0;
+  }
+
+  static int _convertUKTimeToLocalMinutes(String ukTime, String day) {
+    if (_userLocation == null) return _timeStringToMinutes(ukTime);
+
+    try {
+      final parts = ukTime.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+
+      final ukDateTime = tz.TZDateTime(_ukLocation, DateTime.now().year, 
+          _getMonthFromDay(day), _getDayOfMonth(day), hour, minute);
+
+      final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
+      return localDateTime.hour * 60 + localDateTime.minute;
+    } catch (e) {
+      print('DJ Service Debug: Error converting UK time to local minutes: $e');
+      return _timeStringToMinutes(ukTime);
+    }
+  }
+
+  static String _minutesToTimeString(int minutes) {
+    final hours = (minutes / 60).floor();
+    final remainingMinutes = minutes % 60;
+    return '${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}';
   }
 } 
