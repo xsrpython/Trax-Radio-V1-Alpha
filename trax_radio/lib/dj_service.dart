@@ -163,25 +163,37 @@ class DJService {
 
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
+    
+    print('DJ Service Debug: Today slots sorted:');
+    for (final slot in todaySlots) {
+      print('DJ Service Debug:   ${slot['dj']}: ${slot['start']} to ${slot['end']} (${slot['startMinutes']} to ${slot['endMinutes']})');
+    }
 
     // Find the next slot that starts after current time
     for (final slot in todaySlots) {
       final startMinutes = slot['startMinutes'];
       final endMinutes = slot['endMinutes'];
 
+      print('DJ Service Debug: Checking slot ${slot['dj']} - ${slot['start']} to ${slot['end']} (${startMinutes} to ${endMinutes}) vs current ${currentMinutes}');
+
       // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
+        print('DJ Service Debug: Found future slot: ${slot['dj']} at ${slot['start']}');
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
 
       // If we're currently in this slot, find the next one
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-        // Look for the next slot after this one
+        print('DJ Service Debug: Currently in slot: ${slot['dj']}, looking for next slot after ${slot['end']}');
+        // Look for the next slot after this one ends
         for (final nextSlot in todaySlots) {
-          if (nextSlot['startMinutes'] > endMinutes) {
+          print('DJ Service Debug: Checking next slot ${nextSlot['dj']} at ${nextSlot['start']} (${nextSlot['startMinutes']})');
+          if (nextSlot['startMinutes'] >= endMinutes) {
+            print('DJ Service Debug: Found next slot: ${nextSlot['dj']} at ${nextSlot['start']}');
             return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
           }
         }
+        print('DJ Service Debug: No more slots today, checking tomorrow');
         // If no more slots today, look for tomorrow
         break;
       }
@@ -190,11 +202,13 @@ class DJService {
     // Check tomorrow
     final tomorrow = now.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
+    print('DJ Service Debug: Checking tomorrow: $tomorrowDay');
 
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
+          print('DJ Service Debug: Found tomorrow DJ: ${dj.name} at ${_minutesToTimeString(localStartTime)}');
           return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
         }
       }
@@ -204,11 +218,13 @@ class DJService {
     for (int dayOffset = 2; dayOffset <= 7; dayOffset++) {
       final futureDate = now.add(Duration(days: dayOffset));
       final futureDayName = _getDayName(futureDate.weekday);
+      print('DJ Service Debug: Checking future day $dayOffset: $futureDayName');
 
       for (final dj in _djs) {
         for (final schedule in dj.schedule) {
           if (schedule.day == futureDayName) {
             final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, futureDayName);
+            print('DJ Service Debug: Found future DJ: ${dj.name} at ${_minutesToTimeString(localStartTime)}');
             return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
           }
         }
