@@ -38,11 +38,15 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     final newName = nextDJInfo['name'] ?? '';
     final newStartTime = nextDJInfo['startTime'] ?? '';
     
+    // Debug: Print what we're getting from the service
+    print('Next DJ Widget Debug: Received - name: "$newName", startTime: "$newStartTime"');
+    
     if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime)) {
       setState(() {
         _nextDJ = newName;
         _nextStartTime = newStartTime;
       });
+      print('Next DJ Widget Debug: Updated state - _nextDJ: "$_nextDJ", _nextStartTime: "$_nextStartTime"');
     }
   }
 
