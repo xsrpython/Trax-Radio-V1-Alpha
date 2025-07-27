@@ -39,7 +39,7 @@ class RadioHomePage extends StatefulWidget {
   State<RadioHomePage> createState() => _RadioHomePageState();
 }
 
-class _RadioHomePageState extends State<RadioHomePage> with SingleTickerProviderStateMixin {
+class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateMixin {
   final _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
