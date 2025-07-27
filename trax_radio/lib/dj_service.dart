@@ -64,25 +64,15 @@ class DJService {
       // Detect user's timezone
       _userLocation = tz.local;
       
-      print('DJ Service Debug: User timezone: ${_userLocation?.name}');
-      print('DJ Service Debug: UK timezone: ${_ukLocation.name}');
+
 
       final String response = await rootBundle.loadString('assets/dj_schedule.json');
       final List<dynamic> jsonList = json.decode(response);
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
       _isInitialized = true;
-      print('DJ Service Debug: Initialized with ${_djs.length} DJs');
-      
-      // Print all DJs and their schedules for debugging
-      for (final dj in _djs) {
-        print('DJ Service Debug: ${dj.name} - ${dj.schedule.length} schedule(s)');
-        for (final schedule in dj.schedule) {
-          print('DJ Service Debug:   ${schedule.day} ${schedule.start}-${schedule.end} (UK time)');
-        }
-      }
     } catch (e) {
       _djs = [];
-      print('DJ Service Debug: Error initializing: $e');
+      print('DJ Service Error: $e');
     }
   }
 
@@ -96,9 +86,7 @@ class DJService {
     final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
-    print('DJ Service Debug: User timezone: ${_userLocation!.name}');
-    print('DJ Service Debug: User time: $currentDay $currentTime (${currentMinutes} minutes)');
-    print('DJ Service Debug: UK time: ${_getDayName(ukNow.weekday)} ${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}');
+
 
     // Find the current DJ slot
     DJ? currentDJ;
@@ -111,12 +99,9 @@ class DJService {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, currentDay);
           final localEndTime = _convertUKTimeToLocalMinutes(schedule.end, currentDay);
 
-          print('DJ Service Debug: Checking ${dj.name} - UK: ${schedule.start} to ${schedule.end} | Local: ${_minutesToTimeString(localStartTime)} to ${_minutesToTimeString(localEndTime)}');
-
           if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
             currentDJ = dj;
             currentEndMinutes = localEndTime;
-            print('DJ Service Debug: Found current DJ: ${dj.name}');
             break;
           }
         }
@@ -124,9 +109,7 @@ class DJService {
       if (currentDJ != null) break;
     }
 
-    if (currentDJ == null) {
-      print('DJ Service Debug: No current DJ found for $currentDay at $currentTime');
-    }
+
 
     return currentDJ;
   }
