@@ -11,6 +11,7 @@ class BMPService {
   static const int _bufferSize = 1024;
   static const double _minBPM = 60.0;
   static const double _maxBPM = 200.0;
+  static const double _bpmDoublingThreshold = 80.0; // BPM values at or below this will be doubled
   
   final List<double> _audioBuffer = [];
   final List<double> _beatTimes = [];
@@ -140,8 +141,15 @@ class BMPService {
     // Convert to BPM
     final calculatedBPM = (60000 / _averageInterval).round();
     
+    // Apply BPM doubling rule for low BPM values
+    var adjustedBPM = calculatedBPM;
+    if (calculatedBPM <= _bpmDoublingThreshold) {
+      adjustedBPM = calculatedBPM * 2;
+      print('BPM Service: Detected low BPM $calculatedBPM, doubling to $adjustedBPM');
+    }
+    
     // Apply BPM range constraints
-    final constrainedBPM = calculatedBPM.clamp(_minBPM.round(), _maxBPM.round());
+    final constrainedBPM = adjustedBPM.clamp(_minBPM.round(), _maxBPM.round());
     
     // Smooth BPM changes
     if (_currentBPM == 0) {
