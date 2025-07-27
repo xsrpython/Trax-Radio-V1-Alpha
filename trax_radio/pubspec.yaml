@@ -72,6 +72,7 @@ flutter:
     - assets/turntable.png
     - assets/record.png
     - assets/dj_schedule.json
+    - assets/traxicon.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
