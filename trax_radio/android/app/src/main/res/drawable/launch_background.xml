@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Plain black background - Flutter splash screen handles the content -->
+<!-- Transparent background - no Android native splash screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Black background only -->
-    <item android:drawable="@android:color/black" />
+    <!-- Transparent background -->
+    <item android:drawable="@android:color/transparent" />
 </layer-list>

@@ -31,8 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Navigate to main app after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
+    // Navigate to main app after 4 seconds
+    Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -66,34 +66,34 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               // App Icon - Centered and prominent
               Container(
-                width: 150,
-                height: 150,
+                width: 200,
+                height: 200,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.orange.withOpacity(0.4),
-                      blurRadius: 30,
-                      spreadRadius: 8,
+                      blurRadius: 40,
+                      spreadRadius: 10,
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(30),
                   child: Image.asset(
                     'assets/traxicon.png',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        width: 150,
-                        height: 150,
+                        width: 200,
+                        height: 200,
                         decoration: BoxDecoration(
                           color: Colors.orange,
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         child: const Icon(
                           Icons.music_note,
-                          size: 80,
+                          size: 100,
                           color: Colors.white,
                         ),
                       );
@@ -102,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               
-              const SizedBox(height: 40),
+              const SizedBox(height: 50),
               
               // App Title
               const Text(
@@ -127,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               
-              const SizedBox(height: 100),
+              const SizedBox(height: 120),
               
               // Developer Info
               const Text(
