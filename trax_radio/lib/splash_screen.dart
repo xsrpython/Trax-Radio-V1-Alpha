@@ -31,8 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Navigate to main app after 4 seconds
-    Future.delayed(const Duration(seconds: 4), () {
+    // Navigate to main app after 5 seconds
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(

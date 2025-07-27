@@ -27,7 +27,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
 
   void _setupScrollAnimation() {
     _scrollController = AnimationController(
-      duration: const Duration(seconds: 6),
+      duration: const Duration(seconds: 8), // Slower animation
       vsync: this,
     );
 
@@ -36,7 +36,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _scrollController,
-      curve: Curves.linear,
+      curve: Curves.easeInOut, // Smoother curve
     ));
 
     _scrollController.addStatusListener((status) {
@@ -110,11 +110,12 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
               child: AnimatedBuilder(
                 animation: _scrollAnimation,
                 builder: (context, child) {
+                  // Only scroll if text is long enough to need it
+                  final shouldScroll = _currentDJ.length > 8;
+                  final offset = shouldScroll ? -(_scrollAnimation.value * 200) : 0.0;
+                  
                   return Transform.translate(
-                    offset: Offset(
-                      -(_scrollAnimation.value * 200),
-                      0,
-                    ),
+                    offset: Offset(offset, 0),
                     child: Text(
                       _currentDJ,
                       style: const TextStyle(
