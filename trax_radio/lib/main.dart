@@ -3,7 +3,9 @@ import 'package:just_audio/just_audio.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
+import 'widgets/bpm_display.dart';
 import 'dj_service.dart';
+import 'bpm_service.dart';
 import 'splash_screen.dart';
 
 void main() async {
@@ -74,8 +76,10 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
             state.processingState == ProcessingState.buffering;
         if (_isPlaying) {
           _controller.repeat();
+          BMPService().startAnalysis(_player);
         } else {
           _controller.stop();
+          BMPService().stopAnalysis();
         }
       });
     });
@@ -101,6 +105,7 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
   void dispose() {
     _controller.dispose();
     _fadeController.dispose(); // Dispose fade controller
+    BMPService().stopAnalysis();
     _player.dispose();
     super.dispose();
   }
@@ -132,16 +137,22 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
                     ),
                   ),
                   SizedBox(height: isLandscape ? 8 : 16),
-                  // Visualizer - responsive sizing
+                  // Visualizer and BPM Display - responsive sizing
                   Padding(
                     padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
-                    child: Linear3DVisualizer(
-                      audioPlayer: _player,
-                      height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
-                      width: constraints.maxWidth,
-                      barCount: isLandscape ? 48 : 64,
-                      enableBeatDetection: true,
-                      enable3DEffects: true,
+                    child: Column(
+                      children: [
+                        Linear3DVisualizer(
+                          audioPlayer: _player,
+                          height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
+                          width: constraints.maxWidth,
+                          barCount: isLandscape ? 48 : 64,
+                          enableBeatDetection: true,
+                          enable3DEffects: true,
+                        ),
+                        const SizedBox(height: 8),
+                        const BPMDisplay(),
+                      ],
                     ),
                   ),
                   // Turntable section - responsive sizing

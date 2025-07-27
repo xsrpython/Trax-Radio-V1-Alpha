@@ -17,14 +17,11 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
   Timer? _timer;
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
-  String _timezoneInfo = '';
-
   @override
   void initState() {
     super.initState();
     _setupScrollAnimation();
     _updateCurrentDJ();
-    _updateTimezoneInfo();
     _startTimer();
   }
 
@@ -56,7 +53,6 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (mounted) {
         _updateCurrentDJ();
-        _updateTimezoneInfo();
       }
     });
   }
@@ -73,24 +69,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
     }
   }
 
-  void _updateTimezoneInfo() {
-    try {
-      final userLocation = tz.local;
-      final ukLocation = tz.getLocation('Europe/London');
-      final userTime = tz.TZDateTime.now(userLocation);
-      final ukTime = tz.TZDateTime.now(ukLocation);
-      
-      final timezoneInfo = '${userLocation.name} ${userTime.hour.toString().padLeft(2, '0')}:${userTime.minute.toString().padLeft(2, '0')} | UK ${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
-      
-      if (mounted) {
-        setState(() {
-          _timezoneInfo = timezoneInfo;
-        });
-      }
-    } catch (e) {
-      print('Error updating timezone info: $e');
-    }
-  }
+
 
   @override
   void dispose() {
@@ -169,24 +148,6 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
             ],
           ),
         ),
-        if (_timezoneInfo.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              _timezoneInfo,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 10,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }

@@ -114,7 +114,7 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
 
   void _startVisualization() {
     _updateTimer?.cancel();
-    _updateTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+    _updateTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) { // 60 FPS for smoother animation
       if (mounted && _isPlaying) {
         _updateBars();
         if (widget.enableBeatDetection) {
@@ -136,54 +136,56 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
 
     final time = DateTime.now().millisecondsSinceEpoch / 1000.0;
     final random = math.Random();
+    final position = widget.audioPlayer.position.inMilliseconds / 1000.0;
+    final volume = widget.audioPlayer.volume;
     
     setState(() {
       for (int i = 0; i < widget.barCount; i++) {
-        // Generate realistic frequency data based on position
+        // Generate more responsive frequency data based on audio position and volume
         double frequency = 0.0;
         
         // Bass frequencies (left side) - More prominent for beats
         if (i < widget.barCount ~/ 4) {
-          frequency = 0.3 + 0.4 * math.sin(time * 0.8 + i * 0.3);
-          frequency += random.nextDouble() * 0.2;
+          frequency = 0.4 + 0.5 * math.sin(position * 0.5 + i * 0.2);
+          frequency += random.nextDouble() * 0.3 * volume;
         }
         // Mid frequencies (center) - Balanced response
         else if (i < (widget.barCount * 3) ~/ 4) {
-          frequency = 0.2 + 0.5 * math.sin(time * 1.2 + i * 0.5);
-          frequency += random.nextDouble() * 0.15;
+          frequency = 0.3 + 0.6 * math.sin(position * 0.8 + i * 0.4);
+          frequency += random.nextDouble() * 0.25 * volume;
         }
         // High frequencies (right side) - More dynamic
         else {
-          frequency = 0.1 + 0.6 * math.sin(time * 1.8 + i * 0.7);
-          frequency += random.nextDouble() * 0.1;
+          frequency = 0.2 + 0.7 * math.sin(position * 1.2 + i * 0.6);
+          frequency += random.nextDouble() * 0.2 * volume;
         }
         
         // Apply beat influence when beat is detected
         if (_isBeat) {
           // Bass frequencies get more beat influence
           if (i < widget.barCount ~/ 4) {
-            frequency *= 2.5;
+            frequency *= 3.0;
           } else if (i < (widget.barCount * 3) ~/ 4) {
-            frequency *= 2.0;
+            frequency *= 2.5;
           } else {
-            frequency *= 1.8;
+            frequency *= 2.0;
           }
         }
         
         // Add beat intensity influence
-        frequency += _beatIntensities[i] * 0.6;
+        frequency += _beatIntensities[i] * 0.8;
         
         // Clamp frequency to valid range
         frequency = frequency.clamp(0.0, 1.0);
         
-        // Smooth bar height updates
-        _barHeights[i] += (frequency - _barHeights[i]) * 0.4;
+        // More responsive bar height updates
+        _barHeights[i] += (frequency - _barHeights[i]) * 0.6;
         
         // Update bar scale based on beat intensity
-        _barScales[i] = 1.0 + (_beatIntensities[i] * 0.8);
+        _barScales[i] = 1.0 + (_beatIntensities[i] * 1.2);
         
-        // Decay beat intensity
-        _beatIntensities[i] *= 0.92;
+        // Slower decay for more visible beat effects
+        _beatIntensities[i] *= 0.95;
         
         // Animate the bar
         _controllers[i].animateTo(_barHeights[i]);
@@ -196,27 +198,28 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
     final currentVolume = _barHeights.reduce((a, b) => a + b) / _barHeights.length;
     
     _volumeHistory.add(currentVolume);
-    if (_volumeHistory.length > 20) {
+    if (_volumeHistory.length > 30) { // Increased history for better detection
       _volumeHistory.removeAt(0);
     }
     
     // Calculate average volume
-    if (_volumeHistory.length >= 10) {
+    if (_volumeHistory.length >= 15) {
       _averageVolume = _volumeHistory.reduce((a, b) => a + b) / _volumeHistory.length;
     }
     
     final time = DateTime.now().millisecondsSinceEpoch / 1000.0;
+    final position = widget.audioPlayer.position.inMilliseconds / 1000.0;
     
-    // Beat detection logic
-    if (_volumeHistory.length >= 5) {
-      final recentVolumes = _volumeHistory.skip(_volumeHistory.length - 5).toList();
+    // Beat detection logic - more sensitive
+    if (_volumeHistory.length >= 8) {
+      final recentVolumes = _volumeHistory.skip(_volumeHistory.length - 8).toList();
       final volumeChange = currentVolume - recentVolumes.first;
-      final volumeThreshold = _averageVolume * 0.3;
+      final volumeThreshold = _averageVolume * 0.2; // Lower threshold for more sensitivity
       
       // Detect sudden volume increases (beats)
       if (volumeChange > volumeThreshold && 
-          currentVolume > _averageVolume * 1.2 &&
-          time - _lastBeatTime > 0.2) { // Minimum time between beats
+          currentVolume > _averageVolume * 1.1 && // Lower threshold
+          time - _lastBeatTime > 0.15) { // Shorter minimum time between beats
         
         _triggerBeat();
         _lastBeatTime = time;
@@ -226,8 +229,15 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
       final bassVolume = _barHeights.take(widget.barCount ~/ 4)
           .reduce((a, b) => a + b) / (widget.barCount ~/ 4);
       
-      if (bassVolume > _averageVolume * 1.5 && 
-          time - _lastBeatTime > 0.15) {
+      if (bassVolume > _averageVolume * 1.3 && // Lower threshold
+          time - _lastBeatTime > 0.1) { // Even shorter for bass
+        _triggerBeat();
+        _lastBeatTime = time;
+      }
+      
+      // Detect rhythmic patterns based on position
+      final beatPattern = (position * 2) % 1.0; // 120 BPM pattern
+      if (beatPattern < 0.1 && time - _lastBeatTime > 0.2) {
         _triggerBeat();
         _lastBeatTime = time;
       }
