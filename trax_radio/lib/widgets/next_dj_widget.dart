@@ -29,7 +29,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (mounted) {
         _updateNextDJ();
       }

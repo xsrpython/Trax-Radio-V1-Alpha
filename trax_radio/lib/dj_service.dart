@@ -72,6 +72,10 @@ class DJService {
     final currentTime = '${ukTime.hour.toString().padLeft(2, '0')}:${ukTime.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
+    // Find the current DJ slot
+    DJ? currentDJ;
+    int? currentEndMinutes;
+
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == currentDay) {
@@ -79,12 +83,16 @@ class DJService {
           final endMinutes = _timeStringToMinutes(schedule.end);
 
           if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-            return dj;
+            currentDJ = dj;
+            currentEndMinutes = endMinutes;
+            break;
           }
         }
       }
+      if (currentDJ != null) break;
     }
-    return null;
+
+    return currentDJ;
   }
 
   static Map<String, String> getNextDJ() {
@@ -117,17 +125,26 @@ class DJService {
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
 
-    // Find the next slot
+    // Find the next slot that starts after current time
     for (final slot in todaySlots) {
       final startMinutes = slot['startMinutes'];
       final endMinutes = slot['endMinutes'];
 
+      // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
 
+      // If we're currently in this slot, find the next one
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-        continue;
+        // Look for the next slot after this one
+        for (final nextSlot in todaySlots) {
+          if (nextSlot['startMinutes'] > endMinutes) {
+            return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
+          }
+        }
+        // If no more slots today, look for tomorrow
+        break;
       }
     }
 
