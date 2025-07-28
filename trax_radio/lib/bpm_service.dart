@@ -145,7 +145,6 @@ class BMPService {
     var adjustedBPM = calculatedBPM;
     if (calculatedBPM <= _bpmDoublingThreshold) {
       adjustedBPM = calculatedBPM * 2;
-      print('BPM Service: Detected low BPM $calculatedBPM, doubling to $adjustedBPM');
     }
     
     // Apply BPM range constraints

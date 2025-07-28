@@ -72,7 +72,6 @@ class DJService {
       _isInitialized = true;
     } catch (e) {
       _djs = [];
-      print('DJ Service Error: $e');
     }
   }
 
@@ -234,7 +233,6 @@ class DJService {
       
       return '${localDateTime.hour.toString().padLeft(2, '0')}:${localDateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
-      print('DJ Service Debug: Error converting time: $e');
       return ukTime;
     }
   }
@@ -298,7 +296,6 @@ class DJService {
       final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
       return localDateTime.hour * 60 + localDateTime.minute;
     } catch (e) {
-      print('DJ Service Debug: Error converting UK time to local minutes: $e');
       return _timeStringToMinutes(ukTime);
     }
   }
