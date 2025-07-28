@@ -156,37 +156,41 @@ class DJService {
       final endMinutes = slot['endMinutes'];
 
       // If this slot starts in the future, it's the next one
-              if (startMinutes > currentMinutes) {
-          return {'name': slot['dj'], 'startTime': slot['start']};
-        }
+      if (startMinutes > currentMinutes) {
+        return {'name': slot['dj'], 'startTime': slot['start']};
+      }
 
       // If we're currently in this slot, find the next one
       if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
         // Look for the next slot after this one ends
         for (final nextSlot in todaySlots) {
-                  if (nextSlot['startMinutes'] >= endMinutes) {
-          return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
-        }
+          if (nextSlot['startMinutes'] >= endMinutes) {
+            return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
+          }
         }
         // If no more slots today, look for tomorrow
         break;
       }
     }
 
-    // Check tomorrow
+    // Check tomorrow with proper date calculation
     final tomorrow = now.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
 
+    // Get tomorrow's first DJ slot
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
-          return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
+          return {
+            'name': '${dj.name} (Tomorrow)', 
+            'startTime': _minutesToTimeString(localStartTime)
+          };
         }
       }
     }
 
-    // Check next 7 days
+    // Check next 7 days with proper date calculation
     for (int dayOffset = 2; dayOffset <= 7; dayOffset++) {
       final futureDate = now.add(Duration(days: dayOffset));
       final futureDayName = _getDayName(futureDate.weekday);
@@ -195,7 +199,11 @@ class DJService {
         for (final schedule in dj.schedule) {
           if (schedule.day == futureDayName) {
             final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, futureDayName);
-            return {'name': dj.name, 'startTime': _minutesToTimeString(localStartTime)};
+            final dayName = _getShortDayName(futureDate.weekday);
+            return {
+              'name': '${dj.name} ($dayName)', 
+              'startTime': _minutesToTimeString(localStartTime)
+            };
           }
         }
       }
@@ -214,6 +222,28 @@ class DJService {
     return {'name': 'Auto DJ', 'startTime': 'Now'};
   }
 
+  // Helper method to get short day name
+  static String _getShortDayName(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Mon';
+      case DateTime.tuesday:
+        return 'Tue';
+      case DateTime.wednesday:
+        return 'Wed';
+      case DateTime.thursday:
+        return 'Thu';
+      case DateTime.friday:
+        return 'Fri';
+      case DateTime.saturday:
+        return 'Sat';
+      case DateTime.sunday:
+        return 'Sun';
+      default:
+        return 'Mon';
+    }
+  }
+
   // Helper method to convert UK time to user's local time
   static String convertUKTimeToLocal(String ukTime, String day) {
     if (_userLocation == null) return ukTime;
@@ -224,9 +254,8 @@ class DJService {
       final hour = int.parse(parts[0]);
       final minute = int.parse(parts[1]);
       
-      // Create a UK time for the given day
-      final ukDateTime = tz.TZDateTime(_ukLocation, DateTime.now().year, 
-          _getMonthFromDay(day), _getDayOfMonth(day), hour, minute);
+      // Create a UK time for the given day using proper date calculation
+      final ukDateTime = _createUKDateTime(day, hour, minute);
       
       // Convert to user's timezone using the correct method
       final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
@@ -234,6 +263,44 @@ class DJService {
       return '${localDateTime.hour.toString().padLeft(2, '0')}:${localDateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
       return ukTime;
+    }
+  }
+
+  // Helper method to create proper UK DateTime for a given day
+  static tz.TZDateTime _createUKDateTime(String day, int hour, int minute) {
+    final now = tz.TZDateTime.now(_userLocation!);
+    final targetWeekday = _getWeekdayFromDayName(day);
+    
+    // Calculate days to add to get to the target weekday
+    int daysToAdd = targetWeekday - now.weekday;
+    if (daysToAdd <= 0) {
+      daysToAdd += 7; // Move to next week
+    }
+    
+    final targetDate = now.add(Duration(days: daysToAdd));
+    
+    return tz.TZDateTime(_ukLocation, targetDate.year, targetDate.month, targetDate.day, hour, minute);
+  }
+
+  // Helper method to get weekday number from day name
+  static int _getWeekdayFromDayName(String day) {
+    switch (day.toLowerCase()) {
+      case 'monday':
+        return DateTime.monday;
+      case 'tuesday':
+        return DateTime.tuesday;
+      case 'wednesday':
+        return DateTime.wednesday;
+      case 'thursday':
+        return DateTime.thursday;
+      case 'friday':
+        return DateTime.friday;
+      case 'saturday':
+        return DateTime.saturday;
+      case 'sunday':
+        return DateTime.sunday;
+      default:
+        return DateTime.monday;
     }
   }
 
@@ -290,8 +357,8 @@ class DJService {
       final hour = int.parse(parts[0]);
       final minute = int.parse(parts[1]);
 
-      final ukDateTime = tz.TZDateTime(_ukLocation, DateTime.now().year, 
-          _getMonthFromDay(day), _getDayOfMonth(day), hour, minute);
+      // Use the new proper date calculation method
+      final ukDateTime = _createUKDateTime(day, hour, minute);
 
       final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
       return localDateTime.hour * 60 + localDateTime.minute;
