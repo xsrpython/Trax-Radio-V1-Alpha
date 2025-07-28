@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'dj_service.dart';
+import 'bpm_service.dart';
+import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
 import 'widgets/bpm_display.dart';
-import 'dj_service.dart';
-import 'bpm_service.dart';
-import 'splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Prefetch DJ data on app startup
   await DJService.initialize();
-  
   runApp(const TraxRadioApp());
 }
 
@@ -25,8 +22,8 @@ class TraxRadioApp extends StatelessWidget {
     return MaterialApp(
       title: 'Trax Radio V1.0.0 Beta',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.orange,
+        brightness: Brightness.dark,
       ),
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
@@ -41,22 +38,31 @@ class RadioHomePage extends StatefulWidget {
   State<RadioHomePage> createState() => _RadioHomePageState();
 }
 
-class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateMixin {
-  final _player = AudioPlayer();
+class _RadioHomePageState extends State<RadioHomePage>
+    with TickerProviderStateMixin {
+  final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
+  late AnimationController _controller;
+  late AnimationController _fadeController; // Add fade controller
 
-  final String streamUrl = 'https://hello.citrus3.com:8138/stream';
-  late final AnimationController _controller;
-  late final AnimationController _fadeController; // Add fade controller
+  // Beta expiration date - set to 2 weeks from now
+  static final DateTime _betaExpirationDate = DateTime(2024, 2, 15); // Adjust this date as needed
 
   @override
   void initState() {
     super.initState();
+    
+    // Check if beta has expired
+    if (_isBetaExpired()) {
+      return; // Don't initialize audio if expired
+    }
+    
     _controller = AnimationController(
+      duration: const Duration(seconds: 3),
       vsync: this,
-      duration: const Duration(seconds: 4),
     );
+    
     _fadeController = AnimationController( // Initialize fade controller
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -85,6 +91,19 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
     });
   }
 
+  bool _isBetaExpired() {
+    final now = DateTime.now();
+    return now.isAfter(_betaExpirationDate);
+  }
+
+  String _getDaysUntilExpiration() {
+    final now = DateTime.now();
+    final difference = _betaExpirationDate.difference(now);
+    return difference.inDays.toString();
+  }
+
+  final String streamUrl = 'https://hello.citrus3.com:8138/stream';
+
   Future<void> _togglePlayPause() async {
     if (_isPlaying) {
       await _player.pause();
@@ -110,8 +129,68 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
     super.dispose();
   }
 
+  Widget _buildExpirationScreen() {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orange,
+              size: 100,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Beta Version Expired',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'This beta version of Trax Radio has expired. Please update to the latest version.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white54,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                // Optionally navigate back to splash screen or main app
+                // For now, just show a message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Beta expired. Please update the app.')),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Check if beta has expired
+    if (_isBetaExpired()) {
+      return _buildExpirationScreen();
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: FadeTransition( // Add fade transition wrapper
@@ -137,6 +216,35 @@ class _RadioHomePageState extends State<RadioHomePage> with TickerProviderStateM
                     ),
                   ),
                   SizedBox(height: isLandscape ? 8 : 16),
+                  // Beta expiration warning
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Beta expires in ${_getDaysUntilExpiration()} days',
+                          style: const TextStyle(
+                            color: Colors.orange,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   // Visualizer and BPM Display - responsive sizing
                   Padding(
                     padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
