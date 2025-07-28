@@ -106,6 +106,10 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     return Transform.scale(
       scale: 1.0,
       child: Container(
+        constraints: const BoxConstraints(
+          minWidth: 200,
+          maxWidth: 350,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.7),
@@ -133,24 +137,38 @@ class _NextDJWidgetState extends State<NextDJWidget> {
                 letterSpacing: 0.5,
               ),
             ),
-            Text(
-              displayText,
-              style: const TextStyle(
-                color: Colors.orange,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
+            Flexible(
+              child: Tooltip(
+                message: displayText,
+                child: Text(
+                  displayText,
+                  style: const TextStyle(
+                    color: Colors.orange,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
             ),
             if (timeText.isNotEmpty) ...[
               const SizedBox(width: 10),
-              Text(
-                timeText,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.5,
+              Flexible(
+                child: Tooltip(
+                  message: timeText,
+                  child: Text(
+                    timeText,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
               ),
             ],
