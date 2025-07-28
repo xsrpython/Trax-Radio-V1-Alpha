@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dj_service.dart';
-import 'bpm_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
-import 'widgets/bpm_display.dart';
+import 'widgets/current_track_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,10 +81,8 @@ class _RadioHomePageState extends State<RadioHomePage>
             state.processingState == ProcessingState.buffering;
         if (_isPlaying) {
           _controller.repeat();
-          BMPService().startAnalysis(_player);
         } else {
           _controller.stop();
-          BMPService().stopAnalysis();
         }
       });
     });
@@ -125,7 +122,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   void dispose() {
     _controller.dispose();
     _fadeController.dispose(); // Dispose fade controller
-    BMPService().stopAnalysis();
     _player.dispose();
     super.dispose();
   }
@@ -204,20 +200,20 @@ class _RadioHomePageState extends State<RadioHomePage>
               
               return Column(
                 children: [
-                  SizedBox(height: isLandscape ? 10 : 12), // Reduced from 20 to 12 in portrait
+                  SizedBox(height: isLandscape ? 8 : 8), // Further reduced spacing
                   // Title - responsive sizing
                   Center(
                     child: Text(
                       'Trax Radio UK',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: isLandscape ? 60 : 88,
+                        fontSize: isLandscape ? 60 : 72, // Reduced font size in portrait
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
                     ),
                   ),
-                  SizedBox(height: isLandscape ? 8 : 16),
+                  SizedBox(height: isLandscape ? 6 : 12), // Reduced spacing
                   // Beta expiration warning
                   // Container(
                   //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -254,16 +250,26 @@ class _RadioHomePageState extends State<RadioHomePage>
                       children: [
                         Linear3DVisualizer(
                           audioPlayer: _player,
-                          height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
+                          height: isLandscape ? 80 : 100, // Further reduced height to fix overflow
                           width: constraints.maxWidth,
                           barCount: isLandscape ? 40 : 50, // Increased bar count for better visual coverage
                           enableBeatDetection: true,
                           enable3DEffects: true,
                         ),
-                        const SizedBox(height: 8),
-                        const BPMDisplay(),
                       ],
                     ),
+                  ),
+                  // Metadata Widget
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 1 : 2),
+                    child: const CurrentTrackWidget(),
+                  ),
+                  // Extra space between metadata and DJ widget
+                  SizedBox(height: isLandscape ? 24 : 48),
+                  // Now Playing DJ Widget - Centered with more spacing to push down
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 16 : 32),
+                    child: const CurrentDJWidget(),
                   ),
                   // Turntable section - responsive sizing
                   Expanded(
@@ -271,19 +277,13 @@ class _RadioHomePageState extends State<RadioHomePage>
                       child: LayoutBuilder(
                         builder: (context, turntableConstraints) {
                           final size = isLandscape 
-                            ? turntableConstraints.maxHeight * 0.6 // Larger in landscape
-                            : turntableConstraints.maxWidth * 0.65; // Smaller in portrait to prevent overflow
+                            ? turntableConstraints.maxHeight * 0.6 // Reduced size
+                            : turntableConstraints.maxWidth * 0.65; // Reduced size to fix overflow
                           const recordFactor = 0.7;
                           
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Current DJ Widget - responsive scaling
-                              Transform.scale(
-                                scale: isLandscape ? 1.4 : 1.8, // Now Playing: Larger scale
-                                child: const CurrentDJWidget(),
-                              ),
-                              SizedBox(height: isLandscape ? 12 : 8), // Reduced spacing in portrait
                               SizedBox(
                                 width: size,
                                 height: size,
@@ -327,7 +327,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                   ),
                   // Play/Pause button and version info
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                    padding: const EdgeInsets.only(bottom: 6.0), // Final adjustment to eliminate 19px overflow
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -344,7 +344,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                             onPressed: _isLoading ? null : _togglePlayPause,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8), // Reduced spacing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

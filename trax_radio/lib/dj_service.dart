@@ -116,9 +116,12 @@ class DJService {
     }
 
     final now = tz.TZDateTime.now(_userLocation!);
+    final ukNow = tz.TZDateTime.now(_ukLocation);
     final currentDay = _getDayName(now.weekday);
-    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
+    
+    print('DEBUG: Current UK time: $currentTime ($currentMinutes minutes) on $currentDay');
 
     // Get all slots for today
     List<Map<String, dynamic>> todaySlots = [];
@@ -142,14 +145,19 @@ class DJService {
 
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
+    
+    print('DEBUG: Today\'s slots: ${todaySlots.map((s) => '${s['dj']} ${s['start']}-${s['end']} (${s['startMinutes']}min)').join(', ')}');
 
     // Find the next slot that starts after current time
     for (final slot in todaySlots) {
       final startMinutes = slot['startMinutes'];
       final endMinutes = slot['endMinutes'];
+      
+      print('DEBUG: Checking slot ${slot['dj']} ${slot['start']} (${startMinutes}min) vs current ${currentMinutes}min');
 
       // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
+        print('DEBUG: Found next DJ: ${slot['dj']} at ${slot['start']}');
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
 
@@ -266,7 +274,7 @@ class DJService {
     
     // Calculate days to add to get to the target weekday
     int daysToAdd = targetWeekday - now.weekday;
-    if (daysToAdd <= 0) {
+    if (daysToAdd < 0) {
       daysToAdd += 7; // Move to next week
     }
     
@@ -329,21 +337,9 @@ class DJService {
   }
 
   static int _convertUKTimeToLocalMinutes(String ukTime, String day) {
-    if (_userLocation == null) return _timeStringToMinutes(ukTime);
-
-    try {
-      final parts = ukTime.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-
-      // Use the new proper date calculation method
-      final ukDateTime = _createUKDateTime(day, hour, minute);
-
-      final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
-      return localDateTime.hour * 60 + localDateTime.minute;
-    } catch (e) {
-      return _timeStringToMinutes(ukTime);
-    }
+    // For now, just use the UK time directly without conversion
+    // This will display times in UK timezone as intended
+    return _timeStringToMinutes(ukTime);
   }
 
   static String _minutesToTimeString(int minutes) {
