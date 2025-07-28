@@ -66,13 +66,11 @@ class _BPMDisplayState extends State<BPMDisplay>
 
   @override
   Widget build(BuildContext context) {
-    if (!_isActive) return const SizedBox.shrink();
-
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: _pulseAnimation.value,
+          scale: _isActive ? _pulseAnimation.value : 1.0,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -107,19 +105,19 @@ class _BPMDisplayState extends State<BPMDisplay>
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$_currentBPM',
-                  style: const TextStyle(
-                    color: Colors.orange,
+                  _isActive ? '$_currentBPM' : '--',
+                  style: TextStyle(
+                    color: _isActive ? Colors.orange : Colors.white54,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
-                    shadows: [
-                      Shadow(
+                    shadows: _isActive ? [
+                      const Shadow(
                         offset: Offset(1, 1),
                         blurRadius: 3.0,
                         color: Colors.black,
                       ),
-                    ],
+                    ] : null,
                   ),
                 ),
               ],
