@@ -52,7 +52,7 @@ class DJService {
   static List<DJ> _djs = [];
   static bool _isInitialized = false;
   static tz.Location? _userLocation;
-  static tz.Location _ukLocation = tz.getLocation('Europe/London');
+  static final tz.Location _ukLocation = tz.getLocation('Europe/London');
 
   static Future<void> initialize() async {
     if (_isInitialized) return;
@@ -79,19 +79,13 @@ class DJService {
     if (!_isInitialized || _djs.isEmpty || _userLocation == null) return null;
 
     final now = tz.TZDateTime.now(_userLocation!);
-    final ukNow = tz.TZDateTime.now(_ukLocation);
     
     final currentDay = _getDayName(now.weekday);
     final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
-    
-
-
-
 
     // Find the current DJ slot
     DJ? currentDJ;
-    int? currentEndMinutes;
 
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
@@ -100,11 +94,10 @@ class DJService {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, currentDay);
           final localEndTime = _convertUKTimeToLocalMinutes(schedule.end, currentDay);
 
-                  if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
-          currentDJ = dj;
-          currentEndMinutes = localEndTime;
-          break;
-        }
+          if (currentMinutes >= localStartTime && currentMinutes < localEndTime) {
+            currentDJ = dj;
+            break;
+          }
         }
       }
       if (currentDJ != null) break;
@@ -302,20 +295,6 @@ class DJService {
       default:
         return DateTime.monday;
     }
-  }
-
-  // Helper method to get month from day name (simplified)
-  static int _getMonthFromDay(String day) {
-    // This is a simplified approach - in production you'd want more sophisticated logic
-    final now = DateTime.now();
-    return now.month;
-  }
-
-  // Helper method to get day of month from day name (simplified)
-  static int _getDayOfMonth(String day) {
-    // This is a simplified approach - in production you'd want more sophisticated logic
-    final now = DateTime.now();
-    return now.day;
   }
 
   static String _getDayName(int weekday) {

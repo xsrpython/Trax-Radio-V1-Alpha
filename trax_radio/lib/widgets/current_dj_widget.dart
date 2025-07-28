@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import '../dj_service.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class CurrentDJWidget extends StatefulWidget {
   const CurrentDJWidget({super.key});

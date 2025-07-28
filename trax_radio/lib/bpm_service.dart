@@ -7,7 +7,6 @@ class BMPService {
   factory BMPService() => _instance;
   BMPService._internal();
 
-  static const int _sampleRate = 44100;
   static const int _bufferSize = 1024;
   static const double _minBPM = 60.0;
   static const double _maxBPM = 200.0;
