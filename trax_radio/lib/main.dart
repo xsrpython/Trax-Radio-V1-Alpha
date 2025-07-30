@@ -201,23 +201,29 @@ class _RadioHomePageState extends State<RadioHomePage>
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isLandscape = constraints.maxWidth > constraints.maxHeight;
+              final screenHeight = MediaQuery.of(context).size.height;
+              final screenWidth = MediaQuery.of(context).size.width;
+              final isSmallScreen = screenHeight < 700;
+              final isMediumScreen = screenHeight >= 700 && screenHeight <= 900;
+              final isLargeScreen = screenHeight > 900;
+              final isExtraSmallScreen = screenHeight < 600;
               
               return Column(
                 children: [
-                  SizedBox(height: isLandscape ? 10 : 12), // Reduced from 20 to 12 in portrait
+                  SizedBox(height: isExtraSmallScreen ? 2 : (isSmallScreen ? 4 : (isLandscape ? 8 : 12))),
                   // Title - responsive sizing
                   Center(
                     child: Text(
                       'Trax Radio UK',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: isLandscape ? 60 : 88,
+                        fontSize: isExtraSmallScreen ? 18 : (isSmallScreen ? 22 : (isLandscape ? 28 : 36)),
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
-                  SizedBox(height: isLandscape ? 8 : 16),
+                  SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : 8))),
                   // Beta expiration warning
                   // Container(
                   //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -254,14 +260,17 @@ class _RadioHomePageState extends State<RadioHomePage>
                       children: [
                         Linear3DVisualizer(
                           audioPlayer: _player,
-                          height: isLandscape ? 120 : 150, // Reduced from 200 to 150 in portrait
+                          height: isExtraSmallScreen ? 40 : (isSmallScreen ? 55 : (isLandscape ? 70 : 90)),
                           width: constraints.maxWidth,
-                          barCount: isLandscape ? 40 : 50, // Increased bar count for better visual coverage
+                          barCount: isLandscape ? 30 : 40, // Reduced bar count
                           enableBeatDetection: true,
                           enable3DEffects: true,
                         ),
-                        const SizedBox(height: 8),
-                        const BPMDisplay(),
+                        SizedBox(height: isLandscape ? 8 : 16),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: isLandscape ? 4 : 12),
+                          child: const BPMDisplay(),
+                        ),
                       ],
                     ),
                   ),
@@ -270,23 +279,34 @@ class _RadioHomePageState extends State<RadioHomePage>
                     child: Center(
                       child: LayoutBuilder(
                         builder: (context, turntableConstraints) {
+                          // Calculate consistent width for all widgets
+                          final widgetWidth = isLandscape 
+                            ? turntableConstraints.maxWidth * 0.8
+                            : turntableConstraints.maxWidth * 0.9;
+                          
                           final size = isLandscape 
-                            ? turntableConstraints.maxHeight * 0.6 // Larger in landscape
-                            : turntableConstraints.maxWidth * 0.65; // Smaller in portrait to prevent overflow
+                            ? turntableConstraints.maxHeight * (isExtraSmallScreen ? 0.3 : (isSmallScreen ? 0.35 : 0.45))
+                            : widgetWidth * 0.8; // Make turntable 80% of widget width
                           const recordFactor = 0.7;
                           
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Current DJ Widget - responsive scaling
-                              Transform.scale(
-                                scale: isLandscape ? 1.4 : 1.8, // Now Playing: Larger scale
-                                child: const CurrentDJWidget(),
-                              ),
-                              SizedBox(height: isLandscape ? 12 : 8), // Reduced spacing in portrait
+                              // Current DJ Widget - responsive scaling with consistent width
                               SizedBox(
-                                width: size,
-                                height: size,
+                                width: widgetWidth,
+                                child: Transform.scale(
+                                  scale: isExtraSmallScreen ? 0.6 : (isSmallScreen ? 0.7 : (isLandscape ? 0.8 : 0.85)),
+                                  child: const CurrentDJWidget(),
+                                ),
+                              ),
+                              SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : 8))),
+                              SizedBox(
+                                width: widgetWidth,
+                                child: Center(
+                                  child: SizedBox(
+                                    width: size,
+                                    height: size,
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -313,11 +333,16 @@ class _RadioHomePageState extends State<RadioHomePage>
                                   ],
                                 ),
                               ),
-                              SizedBox(height: isLandscape ? 8 : 6), // Reduced spacing in portrait
-                              // Next DJ Widget - responsive scaling
-                              Transform.scale(
-                                scale: isLandscape ? 1.0 : 1.0, // Up Next: Smaller scale (no internal scaling now)
-                                child: const NextDJWidget(),
+                            ),
+                          ),
+                              SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 2 : (isLandscape ? 4 : 6))),
+                              // Next DJ Widget - responsive scaling with consistent width
+                              SizedBox(
+                                width: widgetWidth,
+                                child: Transform.scale(
+                                  scale: isExtraSmallScreen ? 0.6 : (isSmallScreen ? 0.7 : (isLandscape ? 0.8 : 0.85)),
+                                  child: const NextDJWidget(),
+                                ),
                               ),
                             ],
                           );
@@ -327,13 +352,13 @@ class _RadioHomePageState extends State<RadioHomePage>
                   ),
                   // Play/Pause button and version info
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                    padding: EdgeInsets.only(bottom: isExtraSmallScreen ? 3.0 : (isSmallScreen ? 8.0 : 15.0)),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Center(
                           child: IconButton(
-                            iconSize: 100,
+                            iconSize: isExtraSmallScreen ? 45 : (isSmallScreen ? 55 : 70),
                             color: Colors.white,
                             icon: _isLoading
                                 ? const CircularProgressIndicator(
@@ -344,7 +369,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                             onPressed: _isLoading ? null : _togglePlayPause,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : 6)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

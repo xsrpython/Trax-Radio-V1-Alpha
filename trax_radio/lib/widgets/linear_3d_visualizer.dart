@@ -414,15 +414,15 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Changed from center to spaceEvenly for better distribution
                               children: List.generate(actualBarCount, (i) {
-                                final isActive = _isPlaying && _barHeights[i] > 0.1;
-                                final isBeatActive = _beatIntensities[i] > 0.1;
+                                final isActive = _isPlaying && _barHeights[i % _barHeights.length] > 0.1;
+                                final isBeatActive = _beatIntensities[i % _beatIntensities.length] > 0.1;
                                 final color = _colors[i % _colors.length];
                                 
                                 return AnimatedBuilder(
                                   animation: _animations[i],
                                   builder: (context, child) {
-                                    final barHeight = 4.0 + (_barHeights[i] * (widget.height * 0.6));
-                                    final barWidth = (maxBarWidth * _barScales[i]).clamp(minBarWidth, maxBarWidth);
+                                    final barHeight = 4.0 + (_barHeights[i % _barHeights.length] * (widget.height * 0.6));
+                                    final barWidth = (maxBarWidth * _barScales[i % _barScales.length]).clamp(minBarWidth, maxBarWidth);
                                     
                                     return Padding(
                                       padding: EdgeInsets.only(

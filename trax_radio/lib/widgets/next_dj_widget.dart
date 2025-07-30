@@ -56,17 +56,16 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       return Transform.scale(
         scale: 1.0,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: Colors.orange.withOpacity(0.5),
-              width: 1,
+              width: 2,
             ),
           ),
           child: const Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
                 width: 16,
@@ -106,21 +105,16 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     return Transform.scale(
       scale: 1.0,
       child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 200,
-          maxWidth: 350,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.orange.withOpacity(0.5),
-            width: 1,
-          ),
+                      border: Border.all(
+              color: Colors.orange.withOpacity(0.5),
+              width: 2,
+            ),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(
               Icons.schedule,
@@ -137,14 +131,14 @@ class _NextDJWidgetState extends State<NextDJWidget> {
                 letterSpacing: 0.5,
               ),
             ),
-            Flexible(
+            Expanded(
               child: Tooltip(
-                message: displayText,
+                message: '$displayText (UK Time)',
                 child: Text(
                   displayText,
                   style: const TextStyle(
                     color: Colors.orange,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -155,14 +149,14 @@ class _NextDJWidgetState extends State<NextDJWidget> {
             ),
             if (timeText.isNotEmpty) ...[
               const SizedBox(width: 10),
-              Flexible(
+              Expanded(
                 child: Tooltip(
-                  message: timeText,
+                  message: '$timeText (UK Time)',
                   child: Text(
-                    timeText,
+                    '$timeText (UK)',
                     style: const TextStyle(
                       color: Colors.white70,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.5,
                     ),

@@ -87,10 +87,9 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1),
+            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 2),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.music_note,
@@ -99,7 +98,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
               ),
               const SizedBox(width: 8),
               const Text(
-                'Now Playing: ',
+                'Now Playing (UK): ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -108,8 +107,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
                 ),
               ),
               const SizedBox(width: 8),
-              SizedBox(
-                width: 120,
+              Expanded(
                 child: ClipRect(
                   child: AnimatedBuilder(
                     animation: _scrollAnimation,

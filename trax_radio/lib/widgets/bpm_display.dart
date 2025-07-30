@@ -72,16 +72,16 @@ class _BPMDisplayState extends State<BPMDisplay>
         return Transform.scale(
           scale: _isActive ? _pulseAnimation.value : 1.0,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.orange.withOpacity(0.6), width: 1),
               boxShadow: [
                 BoxShadow(
                   color: Colors.orange.withOpacity(0.3),
-                  blurRadius: 8,
-                  spreadRadius: 1,
+                  blurRadius: 6,
+                  spreadRadius: 0.5,
                 ),
               ],
             ),
@@ -91,24 +91,24 @@ class _BPMDisplayState extends State<BPMDisplay>
                 const Icon(
                   Icons.speed,
                   color: Colors.orange,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'BPM: ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
+                  size: 10,
                 ),
                 const SizedBox(width: 4),
+                                  const Text(
+                    'BPM: ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                const SizedBox(width: 2),
                 Text(
                   _isActive ? '$_currentBPM' : '--',
                   style: TextStyle(
                     color: _isActive ? Colors.orange : Colors.white54,
-                    fontSize: 18,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
                     shadows: _isActive ? [
