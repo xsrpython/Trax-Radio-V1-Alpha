@@ -112,7 +112,7 @@ class DJService {
 
   static Map<String, String> getNextDJ() {
     if (!_isInitialized || _djs.isEmpty || _userLocation == null) {
-      return {'name': 'Auto DJ', 'startTime': 'Now'};
+      return {'name': 'Auto DJ', 'startTime': 'Now', 'day': ''};
     }
 
     final now = tz.TZDateTime.now(_userLocation!);
@@ -150,7 +150,7 @@ class DJService {
 
       // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
-        return {'name': slot['dj'], 'startTime': slot['start']};
+        return {'name': slot['dj'], 'startTime': slot['start'], 'day': 'Today'};
       }
 
       // If we're currently in this slot, find the next one
@@ -158,7 +158,7 @@ class DJService {
         // Look for the next slot after this one ends
         for (final nextSlot in todaySlots) {
           if (nextSlot['startMinutes'] >= endMinutes) {
-            return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
+            return {'name': nextSlot['dj'], 'startTime': nextSlot['start'], 'day': 'Today'};
           }
         }
         // If no more slots today, look for tomorrow
@@ -176,8 +176,9 @@ class DJService {
         if (schedule.day == tomorrowDay) {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
           return {
-            'name': '${dj.name} (Tomorrow)', 
-            'startTime': _minutesToTimeString(localStartTime)
+            'name': dj.name, 
+            'startTime': _minutesToTimeString(localStartTime),
+            'day': 'Tomorrow'
           };
         }
       }
@@ -194,8 +195,9 @@ class DJService {
             final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, futureDayName);
             final dayName = _getShortDayName(futureDate.weekday);
             return {
-              'name': '${dj.name} ($dayName)', 
-              'startTime': _minutesToTimeString(localStartTime)
+              'name': dj.name, 
+              'startTime': _minutesToTimeString(localStartTime),
+              'day': dayName
             };
           }
         }
@@ -208,11 +210,11 @@ class DJService {
       if (firstDJ.schedule.isNotEmpty) {
         final firstSchedule = firstDJ.schedule.first;
         final localStartTime = _convertUKTimeToLocalMinutes(firstSchedule.start, firstSchedule.day);
-        return {'name': firstDJ.name, 'startTime': _minutesToTimeString(localStartTime)};
+        return {'name': firstDJ.name, 'startTime': _minutesToTimeString(localStartTime), 'day': firstSchedule.day};
       }
     }
 
-    return {'name': 'Auto DJ', 'startTime': 'Now'};
+    return {'name': 'Auto DJ', 'startTime': 'Now', 'day': ''};
   }
 
   // Helper method to get short day name
@@ -329,7 +331,9 @@ class DJService {
   }
 
   static int _convertUKTimeToLocalMinutes(String ukTime, String day) {
-    if (_userLocation == null) return _timeStringToMinutes(ukTime);
+    if (_userLocation == null) {
+      return _timeStringToMinutes(ukTime);
+    }
 
     try {
       final parts = ukTime.split(':');
@@ -340,7 +344,9 @@ class DJService {
       final ukDateTime = _createUKDateTime(day, hour, minute);
 
       final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
-      return localDateTime.hour * 60 + localDateTime.minute;
+      final result = localDateTime.hour * 60 + localDateTime.minute;
+      
+      return result;
     } catch (e) {
       return _timeStringToMinutes(ukTime);
     }

@@ -207,23 +207,25 @@ class _RadioHomePageState extends State<RadioHomePage>
               final isMediumScreen = screenHeight >= 700 && screenHeight <= 900;
               final isLargeScreen = screenHeight > 900;
               final isExtraSmallScreen = screenHeight < 600;
+              final isTallScreen = screenHeight > 2400; // For very tall devices
+              final isA54 = screenHeight >= 800 && screenHeight <= 850; // Samsung Galaxy A54 specific
               
               return Column(
                 children: [
-                  SizedBox(height: isExtraSmallScreen ? 2 : (isSmallScreen ? 4 : (isLandscape ? 8 : 12))),
+                  SizedBox(height: isExtraSmallScreen ? 2 : (isSmallScreen ? 4 : (isLandscape ? 8 : (isA54 ? 2 : (isTallScreen ? 8 : 12))))),
                   // Title - responsive sizing
                   Center(
                     child: Text(
                       'Trax Radio UK',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: isExtraSmallScreen ? 18 : (isSmallScreen ? 22 : (isLandscape ? 28 : 36)),
+                        fontSize: isExtraSmallScreen ? 18 : (isSmallScreen ? 22 : (isLandscape ? 28 : (isA54 ? 16 : (isTallScreen ? 30 : 36)))),
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
                       ),
                     ),
                   ),
-                  SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : 8))),
+                  SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : (isA54 ? 1 : (isTallScreen ? 4 : 8))))),
                   // Beta expiration warning
                   // Container(
                   //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -253,60 +255,82 @@ class _RadioHomePageState extends State<RadioHomePage>
                   //     ],
                   //   ),
                   // ),
-                  // Visualizer and BPM Display - responsive sizing
-                  Padding(
-                    padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
-                    child: Column(
-                      children: [
-                        Linear3DVisualizer(
-                          audioPlayer: _player,
-                          height: isExtraSmallScreen ? 40 : (isSmallScreen ? 55 : (isLandscape ? 70 : 90)),
-                          width: constraints.maxWidth,
-                          barCount: isLandscape ? 30 : 40, // Reduced bar count
-                          enableBeatDetection: true,
-                          enable3DEffects: true,
-                        ),
-                        SizedBox(height: isLandscape ? 8 : 16),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: isLandscape ? 4 : 12),
-                          child: const BPMDisplay(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Turntable section - responsive sizing
-                  Expanded(
-                    child: Center(
-                      child: LayoutBuilder(
-                        builder: (context, turntableConstraints) {
-                          // Calculate consistent width for all widgets
-                          final widgetWidth = isLandscape 
-                            ? turntableConstraints.maxWidth * 0.8
-                            : turntableConstraints.maxWidth * 0.9;
-                          
-                          final size = isLandscape 
-                            ? turntableConstraints.maxHeight * (isExtraSmallScreen ? 0.3 : (isSmallScreen ? 0.35 : 0.45))
-                            : widgetWidth * 0.8; // Make turntable 80% of widget width
-                          const recordFactor = 0.7;
-                          
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Current DJ Widget - responsive scaling with consistent width
-                              SizedBox(
+                  // Visualizer and DJ Widgets - responsive sizing
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
+                      child: Column(
+                        children: [
+                          Linear3DVisualizer(
+                            audioPlayer: _player,
+                            height: isExtraSmallScreen ? 40 : (isSmallScreen ? 55 : (isLandscape ? 50 : (isA54 ? 30 : (isTallScreen ? 60 : 90)))),
+                            width: constraints.maxWidth,
+                            barCount: isLandscape ? 30 : 40, // Reduced bar count
+                            enableBeatDetection: true,
+                            enable3DEffects: true,
+                          ),
+                          SizedBox(height: isLandscape ? 2 : 8), // Reduced spacing in landscape
+                          // Current DJ Widget - directly under visualizer
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final widgetWidth = isLandscape 
+                                ? constraints.maxWidth * 0.9
+                                : constraints.maxWidth * 0.95;
+                              
+                              return SizedBox(
                                 width: widgetWidth,
                                 child: Transform.scale(
-                                  scale: isExtraSmallScreen ? 0.6 : (isSmallScreen ? 0.7 : (isLandscape ? 0.8 : 0.85)),
+                                  scale: isExtraSmallScreen ? 0.7 : (isSmallScreen ? 0.8 : (isLandscape ? 0.7 : (isA54 ? 0.6 : (isTallScreen ? 0.75 : 0.95)))),
                                   child: const CurrentDJWidget(),
                                 ),
-                              ),
-                              SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : 8))),
-                              SizedBox(
+                              );
+                            },
+                          ),
+                          SizedBox(height: isLandscape ? 1 : 6), // Reduced spacing in landscape
+                          // Next DJ Widget - directly under Now Playing
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final widgetWidth = isLandscape 
+                                ? constraints.maxWidth * 0.9
+                                : constraints.maxWidth * 0.95;
+                              
+                              return SizedBox(
                                 width: widgetWidth,
-                                child: Center(
-                                  child: SizedBox(
-                                    width: size,
-                                    height: size,
+                                child: Transform.scale(
+                                  scale: isExtraSmallScreen ? 0.7 : (isSmallScreen ? 0.8 : (isLandscape ? 0.7 : (isA54 ? 0.6 : (isTallScreen ? 0.75 : 0.95)))),
+                                  child: const NextDJWidget(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Turntable section - responsive sizing (hidden in landscape)
+                  if (!isLandscape) ...[
+                    Expanded(
+                      child: Center(
+                        child: LayoutBuilder(
+                          builder: (context, turntableConstraints) {
+                            final widgetWidth = isLandscape 
+                              ? turntableConstraints.maxWidth * 0.8
+                              : turntableConstraints.maxWidth * 0.9;
+                            
+                            // Use the smaller dimension to ensure proper fit
+                            final availableSize = turntableConstraints.maxHeight < turntableConstraints.maxWidth 
+                              ? turntableConstraints.maxHeight 
+                              : turntableConstraints.maxWidth;
+                            
+                            final size = isLandscape 
+                              ? availableSize * (isExtraSmallScreen ? 0.3 : (isSmallScreen ? 0.35 : 0.45))
+                              : availableSize * (isA54 ? 0.5 : (isTallScreen ? 0.6 : 0.7));
+                            const recordFactor = 0.7;
+                            
+                            return Center(
+                              child: SizedBox(
+                                width: size,
+                                height: size,
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -333,32 +357,21 @@ class _RadioHomePageState extends State<RadioHomePage>
                                   ],
                                 ),
                               ),
-                            ),
-                          ),
-                              SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 2 : (isLandscape ? 4 : 6))),
-                              // Next DJ Widget - responsive scaling with consistent width
-                              SizedBox(
-                                width: widgetWidth,
-                                child: Transform.scale(
-                                  scale: isExtraSmallScreen ? 0.6 : (isSmallScreen ? 0.7 : (isLandscape ? 0.8 : 0.85)),
-                                  child: const NextDJWidget(),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                   // Play/Pause button and version info
                   Padding(
-                    padding: EdgeInsets.only(bottom: isExtraSmallScreen ? 3.0 : (isSmallScreen ? 8.0 : 15.0)),
+                    padding: EdgeInsets.only(bottom: isExtraSmallScreen ? 3.0 : (isSmallScreen ? 8.0 : (isA54 ? 2.0 : (isTallScreen ? 10.0 : 15.0)))),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Center(
                           child: IconButton(
-                            iconSize: isExtraSmallScreen ? 45 : (isSmallScreen ? 55 : 70),
+                            iconSize: isExtraSmallScreen ? 45 : (isSmallScreen ? 55 : (isTallScreen ? 60 : 70)),
                             color: Colors.white,
                             icon: _isLoading
                                 ? const CircularProgressIndicator(
@@ -369,7 +382,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                             onPressed: _isLoading ? null : _togglePlayPause,
                           ),
                         ),
-                        SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : 6)),
+                        SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isTallScreen ? 2 : 6))),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

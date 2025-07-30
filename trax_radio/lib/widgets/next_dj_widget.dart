@@ -12,6 +12,7 @@ class NextDJWidget extends StatefulWidget {
 class _NextDJWidgetState extends State<NextDJWidget> {
   String _nextDJ = '';
   String _nextStartTime = '';
+  String _nextDay = '';
   bool _isLoading = true;
   Timer? _timer;
 
@@ -40,11 +41,13 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     final nextDJInfo = DJService.getNextDJ();
     final newName = nextDJInfo['name'] ?? '';
     final newStartTime = nextDJInfo['startTime'] ?? '';
+    final newDay = nextDJInfo['day'] ?? '';
 
-    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime || _isLoading)) {
+    if (mounted && (newName != _nextDJ || newStartTime != _nextStartTime || newDay != _nextDay || _isLoading)) {
       setState(() {
         _nextDJ = newName;
         _nextStartTime = newStartTime;
+        _nextDay = newDay;
         _isLoading = false;
       });
     }
@@ -53,41 +56,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Transform.scale(
-        scale: 1.0,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.orange.withOpacity(0.5),
-              width: 2,
-            ),
-          ),
-          child: const Row(
-            children: [
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                ),
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Loading DJ Schedule...',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     String displayText = _nextDJ;
@@ -97,7 +66,71 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       displayText = 'Auto DJ';
       timeText = 'Now';
     } else if (_nextStartTime.isNotEmpty) {
-      timeText = 'at $_nextStartTime';
+      if (_nextDay.isNotEmpty) {
+        // Use shorter day names to save space
+        String shortDay = _nextDay;
+        if (_nextDay == 'Today') {
+          // Don't show "Today", just show the time
+          timeText = 'at $_nextStartTime';
+        } else if (_nextDay == 'Tomorrow') {
+          // Get the actual short day name for tomorrow
+          final now = DateTime.now();
+          final tomorrow = now.add(const Duration(days: 1));
+          final tomorrowWeekday = tomorrow.weekday;
+          
+          switch (tomorrowWeekday) {
+            case DateTime.monday:
+              shortDay = 'Mon';
+              break;
+            case DateTime.tuesday:
+              shortDay = 'Tue';
+              break;
+            case DateTime.wednesday:
+              shortDay = 'Wed';
+              break;
+            case DateTime.thursday:
+              shortDay = 'Thu';
+              break;
+            case DateTime.friday:
+              shortDay = 'Fri';
+              break;
+            case DateTime.saturday:
+              shortDay = 'Sat';
+              break;
+            case DateTime.sunday:
+              shortDay = 'Sun';
+              break;
+            default:
+              shortDay = 'Mon';
+          }
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Monday') {
+          shortDay = 'Mon';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Tuesday') {
+          shortDay = 'Tue';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Wednesday') {
+          shortDay = 'Wed';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Thursday') {
+          shortDay = 'Thu';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Friday') {
+          shortDay = 'Fri';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Saturday') {
+          shortDay = 'Sat';
+          timeText = '$shortDay at $_nextStartTime';
+        } else if (_nextDay == 'Sunday') {
+          shortDay = 'Sun';
+          timeText = '$shortDay at $_nextStartTime';
+        } else {
+          timeText = '$shortDay at $_nextStartTime';
+        }
+      } else {
+        timeText = 'at $_nextStartTime';
+      }
     } else {
       timeText = 'Coming Soon';
     }
@@ -109,10 +142,10 @@ class _NextDJWidgetState extends State<NextDJWidget> {
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-              color: Colors.orange.withOpacity(0.5),
-              width: 2,
-            ),
+          border: Border.all(
+            color: Colors.orange.withOpacity(0.5),
+            width: 2,
+          ),
         ),
         child: Row(
           children: [
@@ -147,25 +180,23 @@ class _NextDJWidgetState extends State<NextDJWidget> {
                 ),
               ),
             ),
-            if (timeText.isNotEmpty) ...[
-              const SizedBox(width: 10),
-              Expanded(
-                child: Tooltip(
-                  message: '$timeText (UK Time)',
-                  child: Text(
-                    '$timeText (UK)',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.5,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+            const SizedBox(width: 4), // Reduced spacing from 8 to 4
+            Expanded(
+              child: Tooltip(
+                message: '$timeText (UK Time)',
+                child: Text(
+                  '$timeText (UK)',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
-            ],
+            ),
           ],
         ),
       ),

@@ -56,6 +56,18 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Responsive sizing
+    final iconSize = isLandscape ? 120.0 : 200.0;
+    final titleFontSize = isLandscape ? 24.0 : 32.0;
+    final versionFontSize = isLandscape ? 14.0 : 18.0;
+    final developerFontSize = isLandscape ? 14.0 : 18.0;
+    final spacing = isLandscape ? 20.0 : 50.0;
+    final bottomSpacing = isLandscape ? 40.0 : 120.0;
+    
     return Scaffold(
       backgroundColor: Colors.black,
       body: FadeTransition(
@@ -66,34 +78,34 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               // App Icon - Centered and prominent
               Container(
-                width: 200,
-                height: 200,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(iconSize * 0.15),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.orange.withOpacity(0.4),
-                      blurRadius: 40,
-                      spreadRadius: 10,
+                      blurRadius: iconSize * 0.2,
+                      spreadRadius: iconSize * 0.05,
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(iconSize * 0.15),
                   child: Image.asset(
                     'assets/traxicon.png',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        width: 200,
-                        height: 200,
+                        width: iconSize,
+                        height: iconSize,
                         decoration: BoxDecoration(
                           color: Colors.orange,
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(iconSize * 0.15),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.music_note,
-                          size: 100,
+                          size: iconSize * 0.5,
                           color: Colors.white,
                         ),
                       );
@@ -102,39 +114,39 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               
-              const SizedBox(height: 50),
+              SizedBox(height: spacing),
               
               // App Title
-              const Text(
+              Text(
                 'Trax Radio UK',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 32,
+                  fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
+                  letterSpacing: isLandscape ? 1 : 2,
                 ),
               ),
               
-              const SizedBox(height: 15),
+              SizedBox(height: spacing * 0.3),
               
               // Version
-              const Text(
+              Text(
                 'V1.0.0 Beta',
                 style: TextStyle(
                   color: Colors.white70,
-                  fontSize: 18,
+                  fontSize: versionFontSize,
                   fontWeight: FontWeight.w300,
                 ),
               ),
               
-              const SizedBox(height: 120),
+              SizedBox(height: bottomSpacing),
               
               // Developer Info
-              const Text(
+              Text(
                 'Developed by DJXSR',
                 style: TextStyle(
                   color: Colors.orange,
-                  fontSize: 18,
+                  fontSize: developerFontSize,
                   fontWeight: FontWeight.w500,
                   fontStyle: FontStyle.italic,
                 ),

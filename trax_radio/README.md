@@ -92,6 +92,45 @@ A professional Flutter-based radio streaming application featuring real-time DJ 
 - **macOS**: Compatible
 - **Linux**: Compatible
 
+## 📦 App Size & Installation
+
+### **Download Size:**
+- **Small devices (arm)**: ~25-30MB
+- **Modern devices (arm64)**: ~30-35MB
+- **Universal APK**: ~35-40MB
+
+### **Installed Size:**
+- **After installation**: ~40-50MB
+- **With cache/data**: ~50-60MB
+
+### **Size Optimization:**
+- ✅ **Lightweight** - Similar to other radio apps
+- ✅ **Fast download** - Under 40MB download size
+- ✅ **Efficient storage** - Minimal space usage
+- ✅ **Optimized assets** - Images are appropriately sized
+- ✅ **Tree-shaking** - Icon font reduced by 99.9%
+
+## 🎵 Bluetooth Audio Support
+
+### **Compatible Devices:**
+- ✅ **Car Audio Systems** - Any car with Bluetooth connectivity
+- ✅ **Bluetooth Speakers** - Portable speakers, home speakers
+- ✅ **Bluetooth Headphones** - Wireless earbuds, over-ear headphones
+- ✅ **Bluetooth Earbuds** - AirPods, Galaxy Buds, etc.
+- ✅ **Smart Home Speakers** - Google Home, Amazon Echo, etc.
+- ✅ **Bluetooth Receivers** - Adapters for older car systems
+
+### **Car Integration:**
+- **Steering Wheel Controls**: Play/pause, volume, track skip (if supported)
+- **Car Display**: Shows track info (artist/title) if car supports metadata
+- **Auto-resume**: App continues playing when car Bluetooth reconnects
+- **Background Play**: Continues playing when app is minimized
+
+### **Audio Quality:**
+- **Stream Quality**: Depends on the radio station's bitrate (typically 128-320kbps)
+- **Bluetooth Codec**: Uses device's default Bluetooth codec (AAC, SBC, aptX, etc.)
+- **Latency**: Standard Bluetooth audio latency (~100-200ms)
+
 ## 🎛️ Technical Architecture
 
 ### **Core Components**

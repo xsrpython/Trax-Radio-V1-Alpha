@@ -3,7 +3,9 @@
 ## 🎯 **CURRENT STATUS**
 **App Version**: V1.0.0 Beta  
 **Status**: Ready for Beta Testing  
-**Last Updated**: January 2024  
+**App Size**: ~30-35MB download, ~50MB installed  
+**Bluetooth**: Full support for car systems, speakers, headphones  
+**Last Updated**: July 30, 2025  
 
 ---
 
@@ -24,11 +26,15 @@
 - ✅ **Package Updates** - timezone 0.10.1, flutter_launcher_icons 0.14.4
 - ✅ **Code Cleanup** - Removed debug prints and unused code
 - ✅ **Beta Expiration System** - Implemented (currently disabled)
+- ✅ **Responsive Design** - 4-tier screen size system implemented
+- ✅ **Widget Consistency** - Uniform sizing and text hierarchy
+- ✅ **App Size Optimized** - Lightweight ~30-35MB download size
 
 ### **Documentation**
-- ✅ **README.md** - Updated with latest features
+- ✅ **README.md** - Updated with latest features, app size, and Bluetooth info
 - ✅ **Marketing Materials** - APP_LAUNCH_BLURBS.md created
 - ✅ **Workflow Documentation** - TODAYS_WORKFLOW.md updated
+- ✅ **Responsive Design Docs** - RESPONSIVE_DESIGN_REQUIREMENTS.md created
 
 ---
 
@@ -117,8 +123,8 @@
 ## 📋 **BETA TESTER LIST** (6/20)
 
 ### **Current Testers**
-1. **Clive Ward** - clive.ward@hotmail.com - Various devices - Advanced - Monitoring
-2. **Simon Bradbury** - bigsime_7@yahoo.co.uk - Unknown device - Intermediate - Trax Radio Owner
+1. **Clive Ward** - clive.ward@hotmail.com - Samsung S21 5G - Advanced - Monitoring
+2. **Simon Bradbury** - bigsime_7@yahoo.co.uk - Apple Device - Intermediate - Trax Radio Owner (EXCLUDED - iOS not supported yet)
 3. **Martyn Hixon** - [Email needed] - [Device needed] - [Tech level needed] - [Relationship needed]
 4. **Tammie Russell** - tamrussell56@gmail.com - Samsung S25 - Beginner - Partner
 5. **Taylor Russell** - tayrussell123@gmail.com - Samsung A5 - Beginner - Daughter

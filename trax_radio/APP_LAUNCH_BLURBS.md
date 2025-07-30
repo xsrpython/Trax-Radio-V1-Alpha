@@ -25,6 +25,8 @@ Experience the ultimate UK radio streaming app with Trax Radio UK!
 • **Interactive Visualizer** - Watch the music come to life
 • **BPM Display** - Real-time beat detection and display
 • **Professional Audio** - Studio-quality streaming
+• **Full Bluetooth Support** - Works with car systems, speakers, headphones
+• **Lightweight App** - Only ~30MB download, ~50MB installed
 • **User-Friendly Interface** - Easy to use, beautiful to look at
 
 **📱 Available Now for Android**
@@ -207,4 +209,29 @@ Experience the ultimate UK radio streaming app with real DJs, real music, and re
 
 **📱 Download Trax Radio UK today and experience radio the way it should be!**
 
-*Available for Android devices* 
+*Available for Android devices*
+
+---
+
+## 📊 TECHNICAL SPECIFICATIONS
+
+### **App Size & Performance**
+- **Download Size**: ~30-35MB (arm64 devices)
+- **Installed Size**: ~50MB with cache
+- **Minimum Android**: 6.0 (API 23)
+- **Target Android**: 14 (API 34)
+- **RAM Required**: 2GB minimum, 4GB recommended
+
+### **Bluetooth Compatibility**
+- ✅ **Car Audio Systems** - Full steering wheel control support
+- ✅ **Bluetooth Speakers** - Portable and home speakers
+- ✅ **Bluetooth Headphones** - All wireless headphones and earbuds
+- ✅ **Smart Home Speakers** - Google Home, Amazon Echo, etc.
+- ✅ **Audio Quality**: 128-320kbps streaming, standard Bluetooth latency
+
+### **Key Technical Features**
+- **Background Playback** - Continues playing when app is minimized
+- **Auto-resume** - Automatically reconnects to Bluetooth devices
+- **Metadata Support** - Track info displayed on car systems (if supported)
+- **Responsive Design** - Optimized for all screen sizes and orientations
+- **Memory Efficient** - Optimized for long listening sessions 
