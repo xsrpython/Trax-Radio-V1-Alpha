@@ -80,11 +80,13 @@ class MetadataService {
         _currentTrack = TrackInfo.fromJson(data);
         _lastFetch = DateTime.now();
         
-        print('Metadata fetched: ${_currentTrack!.artist} - ${_currentTrack!.title}');
-        return _currentTrack;
+              print('Metadata fetched: ${_currentTrack!.artist} - ${_currentTrack!.title}');
+      print('Listeners: ${_currentTrack!.listeners}, Bitrate: ${_currentTrack!.bitrate}');
+      return _currentTrack;
       } else {
-        print('Failed to fetch metadata: HTTP ${response.statusCode}');
-        return _currentTrack; // Return last known track
+              print('Failed to fetch metadata: HTTP ${response.statusCode}');
+      print('Response body: ${response.body}');
+      return _currentTrack; // Return last known track
       }
     } catch (e) {
       print('Error fetching metadata: $e');

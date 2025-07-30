@@ -32,7 +32,7 @@
   - Fallback BPM range (100-140)
   - Continuous display regardless of detection
 
-### **4. Metadata Integration - IMPLEMENTED** ✅
+### **4. Metadata Integration - ENHANCED** ✅
 - **New Files Created**:
   - `metadata_service.dart` - Fetches live track data
   - `current_track_widget.dart` - Displays metadata
@@ -41,6 +41,8 @@
   - Compact two-line format
   - Listener count and bitrate display
   - Auto-refresh every 30 seconds
+- **Success**: 8/28 DJ slots with working metadata (28.6% coverage)
+- **Confirmed Working**: Tim Bee, Simon Bradbury, DJ N-SANE, STEVIE B
 
 ### **5. Layout Optimization - COMPLETED** ✅
 - **Refactored**: `main.dart` layout structure
@@ -61,7 +63,7 @@
 ### **App State**: ✅ **FULLY FUNCTIONAL**
 - **Audio Streaming**: Working
 - **DJ Scheduling**: Accurate
-- **Metadata Display**: Live updates
+- **Metadata Display**: ✅ **WORKING** (8/28 slots confirmed)
 - **Visualizer**: Responsive
 - **BPM Detection**: Enhanced
 - **Layout**: No overflow errors

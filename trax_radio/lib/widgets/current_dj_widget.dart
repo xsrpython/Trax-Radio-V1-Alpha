@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../dj_service.dart';
+import '../monitoring_service.dart';
 
 class CurrentDJWidget extends StatefulWidget {
   const CurrentDJWidget({super.key});
@@ -16,6 +17,8 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
   Timer? _timer;
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
+  final MonitoringService _monitoringService = MonitoringService();
+
   @override
   void initState() {
     super.initState();
@@ -65,10 +68,11 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
         _currentDJ = newDJ;
         _isLoading = false;
       });
+      
+      // Check for overflow and record it
+      _checkAndRecordOverflow(newDJ);
     }
   }
-
-
 
   @override
   void dispose() {
@@ -99,7 +103,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
               ),
               const SizedBox(width: 8),
               const Text(
-                'Now Playing: ',
+                'Now Playing (UK): ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -149,5 +153,25 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
         ),
       ],
     );
+  }
+
+  void _checkAndRecordOverflow(String djName) {
+    // Check if DJ name is long enough to trigger scrolling
+    const maxRecommendedLength = 8; // Length at which scrolling starts
+    
+    if (djName.length > maxRecommendedLength) {
+      _monitoringService.recordOverflow(
+        widgetName: 'CurrentDJWidget',
+        content: djName,
+        overflowType: 'text_scrolling',
+        resolution: 'animated_scroll',
+        additionalData: {
+          'djNameLength': djName.length,
+          'maxRecommendedLength': maxRecommendedLength,
+          'scrollEnabled': true,
+          'containerWidth': 120,
+        },
+      );
+    }
   }
 } 

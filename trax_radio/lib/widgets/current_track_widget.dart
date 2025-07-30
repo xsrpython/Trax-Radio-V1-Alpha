@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../metadata_service.dart';
 import '../dj_service.dart';
+import '../monitoring_service.dart';
 
 class CurrentTrackWidget extends StatefulWidget {
   const CurrentTrackWidget({Key? key}) : super(key: key);
@@ -12,6 +13,7 @@ class CurrentTrackWidget extends StatefulWidget {
 
 class _CurrentTrackWidgetState extends State<CurrentTrackWidget> {
   final MetadataService _metadataService = MetadataService();
+  final MonitoringService _monitoringService = MonitoringService();
   TrackInfo? _currentTrack;
   String _currentDJ = 'Loading...';
   bool _isLoading = false;
@@ -52,6 +54,11 @@ class _CurrentTrackWidgetState extends State<CurrentTrackWidget> {
           _currentTrack = trackInfo;
           _isLoading = false;
         });
+        
+        // Check for overflow and record it
+        if (trackInfo != null) {
+          _checkAndRecordOverflow(trackInfo);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -233,6 +240,28 @@ class _CurrentTrackWidgetState extends State<CurrentTrackWidget> {
         ),
       ],
     );
+  }
+
+  void _checkAndRecordOverflow(TrackInfo trackInfo) {
+    final artistTitleText = '${trackInfo.artist} - ${trackInfo.title}';
+    const maxRecommendedLength = 50; // Approximate max chars that fit well
+    
+    if (artistTitleText.length > maxRecommendedLength) {
+      _monitoringService.recordOverflow(
+        widgetName: 'CurrentTrackWidget',
+        content: artistTitleText,
+        overflowType: 'artist_title_length',
+        resolution: 'ellipsis',
+        additionalData: {
+          'artistLength': trackInfo.artist.length,
+          'titleLength': trackInfo.title.length,
+          'totalLength': artistTitleText.length,
+          'maxRecommendedLength': maxRecommendedLength,
+          'listeners': trackInfo.listeners,
+          'bitrate': trackInfo.bitrate,
+        },
+      );
+    }
   }
 
   String _formatTime(DateTime time) {
