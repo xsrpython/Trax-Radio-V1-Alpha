@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../dj_service.dart';
+import '../monitoring_service.dart';
 
 class CurrentDJWidget extends StatefulWidget {
   const CurrentDJWidget({super.key});
@@ -16,7 +17,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
   Timer? _timer;
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
-
+  final MonitoringService _monitoringService = MonitoringService();
 
   @override
   void initState() {
@@ -68,7 +69,8 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
         _isLoading = false;
       });
       
-
+      // Check for overflow and record it
+      _checkAndRecordOverflow(newDJ);
     }
   }
 
@@ -85,27 +87,24 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          constraints: const BoxConstraints(
-            minWidth: 250,
-            maxWidth: 400,
-          ),
+          width: double.infinity, // Fill available width
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 4),
           ),
-                     child: Row(
-             mainAxisSize: MainAxisSize.max,
-             children: [
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               const Icon(
-                Icons.mic,
+                Icons.music_note,
                 color: Colors.white,
                 size: 16,
               ),
               const SizedBox(width: 8),
               const Text(
-                'ON AIR: ',
+                'Now Playing (UK): ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -132,7 +131,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
                             color: Colors.greenAccent,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                            letterSpacing: 1.0,
                             shadows: [
                               Shadow(
                                 offset: Offset(1, 1),
@@ -157,4 +156,23 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
     );
   }
 
+  void _checkAndRecordOverflow(String djName) {
+    // Check if DJ name is long enough to trigger scrolling
+    const maxRecommendedLength = 8; // Length at which scrolling starts
+    
+    if (djName.length > maxRecommendedLength) {
+      _monitoringService.recordOverflow(
+        widgetName: 'CurrentDJWidget',
+        content: djName,
+        overflowType: 'text_scrolling',
+        resolution: 'animated_scroll',
+        additionalData: {
+          'djNameLength': djName.length,
+          'maxRecommendedLength': maxRecommendedLength,
+          'scrollEnabled': true,
+          'containerWidth': 120,
+        },
+      );
+    }
+  }
 } 

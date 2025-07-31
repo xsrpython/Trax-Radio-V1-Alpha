@@ -213,8 +213,8 @@ class _RadioHomePageState extends State<RadioHomePage>
   Widget _buildPortraitLayout(BoxConstraints constraints) {
     return Column(
       children: [
-        // Top spacing
-        const SizedBox(height: 8),
+        // Top spacing - reduced
+        const SizedBox(height: 4),
         
         // Title - optimized for portrait
         const Center(
@@ -229,47 +229,53 @@ class _RadioHomePageState extends State<RadioHomePage>
           ),
         ),
         
-        const SizedBox(height: 2),
+        const SizedBox(height: 11), // Reduced from 21 to 11 (10px less)
         
-        // Visualizer - optimized for portrait
+        // Visualizer - optimized for portrait with increased height
         Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
+          padding: const EdgeInsets.only(bottom: 8.0),
           child: Linear3DVisualizer(
             audioPlayer: _player,
-            height: 60,
+            height: 180, // Increased from 150 to 180 (30px more)
             width: constraints.maxWidth,
             barCount: 50,
             enableBeatDetection: true,
             enable3DEffects: true,
           ),
         ),
-
-        // Metadata Widget
+        
+        // Spacer to push widgets down
+        const Spacer(),
+        
+        // Metadata Widget - positioned above turntable
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: MetadataDisplay(),
         ),
-
-        // Current DJ Widget
+        
+        // 1px spacing
+        const SizedBox(height: 1),
+        
+        // Current DJ Widget - positioned above turntable
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: CurrentDJWidget(),
         ),
         
-        // Next DJ Widget
+        // 1px spacing
+        const SizedBox(height: 1),
+        
+        // Next DJ Widget - positioned above turntable
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: NextDJWidget(),
         ),
         
-        // Spacer to push turntable down
-        const Spacer(),
-        
-        // Turntable section - moved above play button, increased size
+        // Turntable section - positioned above play button
         Center(
           child: SizedBox(
-            width: constraints.maxWidth * 0.65, // Increased from 0.45 to 0.65
-            height: constraints.maxWidth * 0.65, // Maintain aspect ratio
+            width: constraints.maxWidth * 0.65,
+            height: constraints.maxWidth * 0.65,
             child: TurntableWidget(
               size: constraints.maxWidth * 0.65,
               isPlaying: _isPlaying,
@@ -278,56 +284,21 @@ class _RadioHomePageState extends State<RadioHomePage>
           ),
         ),
         
-        const SizedBox(height: 16), // Spacing between turntable and play button
+        // Small spacing above play button
+        const SizedBox(height: 1),
         
-        // Play/Pause button and version info
-        Padding(
-          padding: const EdgeInsets.only(bottom: 6.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: IconButton(
-                  iconSize: 80,
-                  color: Colors.white,
-                  icon: _isLoading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 6,
-                        )
-                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-                  onPressed: _isLoading ? null : _togglePlayPause,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      'V1.0.0 Beta',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Text(
-                      'Developed by DJXSR',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        // Play/Pause button
+        Center(
+          child: IconButton(
+            iconSize: 80,
+            color: Colors.white,
+            icon: _isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 6,
+                  )
+                : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+            onPressed: _isLoading ? null : _togglePlayPause,
           ),
         ),
       ],

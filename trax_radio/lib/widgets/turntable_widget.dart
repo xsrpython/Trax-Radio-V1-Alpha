@@ -47,17 +47,18 @@ class _TurntableWidgetState extends State<TurntableWidget>
 
   @override
   Widget build(BuildContext context) {
-    const recordFactor = 0.7;
+    const recordFactor = 0.77; // Increased from 0.75 to make record 2px bigger
+    final adjustedHeight = widget.size * 0.95;
     
-    return SizedBox(
+    return Container(
       width: widget.size,
-      height: widget.size,
+      height: adjustedHeight,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Spinning Record
+          // Spinning Record - Adjusted positioning for better alignment
           Transform.translate(
-            offset: Offset(-0.13 * widget.size, -0.014 * widget.size),
+            offset: Offset(-0.13 * widget.size, 0.02 * widget.size), // Moved down another 1px by changing Y from 0.01 to 0.02
             child: FractionallySizedBox(
               widthFactor: recordFactor,
               heightFactor: recordFactor,
@@ -71,11 +72,13 @@ class _TurntableWidgetState extends State<TurntableWidget>
             ),
           ),
           // Turntable Base
-          Image.asset(
-            'assets/turntable.png',
-            fit: BoxFit.contain,
-            width: widget.size,
-            height: widget.size,
+          Center(
+            child: Image.asset(
+              'assets/turntable.png',
+              fit: BoxFit.contain,
+              width: widget.size,
+              height: adjustedHeight,
+            ),
           ),
         ],
       ),

@@ -32,7 +32,7 @@ class BMPService {
     _lastBeatTime = null;
     _averageInterval = 0.0;
 
-    _analysisTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _analysisTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) { // Increased frequency from 100ms to 50ms
       if (audioPlayer.playing) {
         _analyzeAudio(audioPlayer);
       }
@@ -82,43 +82,72 @@ class BMPService {
     final samples = <double>[];
     final time = position.inMilliseconds / 1000.0;
     
-    // Generate more realistic beat patterns
-    for (int i = 0; i < 50; i++) {
-      // Create stronger rhythmic patterns based on time and volume
-      final beatFrequency = 2.0; // 2 beats per second (120 BPM base)
+    // Enhanced beat pattern generation with multiple frequency components
+    for (int i = 0; i < 100; i++) { // Increased sample count
+      // Multiple frequency components for more realistic audio
+      final bassFrequency = 1.0; // Bass drum frequency
+      final snareFrequency = 2.0; // Snare frequency
+      final hihatFrequency = 4.0; // Hi-hat frequency
       
-      // Create stronger amplitude variations for beat detection
-      final beatPattern = sin(time * beatFrequency * 2 * pi);
-      final amplitude = volume * (0.3 + 0.7 * (beatPattern > 0 ? beatPattern : 0));
+      // Create more complex rhythmic patterns
+      final bassPattern = sin(time * bassFrequency * 2 * pi);
+      final snarePattern = sin(time * snareFrequency * 2 * pi);
+      final hihatPattern = sin(time * hihatFrequency * 2 * pi);
       
-      // Add some randomness for realism
-      final noise = (random.nextDouble() - 0.5) * 0.2;
+      // Combine patterns with different weights
+      final combinedPattern = (bassPattern * 0.6) + (snarePattern * 0.3) + (hihatPattern * 0.1);
       
-      samples.add(amplitude + noise);
+      // Enhanced amplitude calculation
+      final baseAmplitude = volume * (0.2 + 0.8 * (combinedPattern > 0 ? combinedPattern : 0));
+      
+      // Add frequency-dependent variations
+      final frequencyVariation = sin(time * 0.5) * 0.1; // Slow frequency drift
+      
+      // Enhanced noise for realism
+      final noise = (random.nextDouble() - 0.5) * 0.15;
+      
+      // Final amplitude with all components
+      final amplitude = (baseAmplitude + frequencyVariation + noise).clamp(0.0, 1.0);
+      
+      samples.add(amplitude);
     }
     
     return samples;
   }
 
   bool _detectBeat(List<double> buffer) {
-    if (buffer.length < 50) return false;
+    if (buffer.length < 100) return false;
     
-    // Calculate energy in recent samples (more sensitive)
-    final recentSamples = buffer.take(50).toList();
-    final energy = recentSamples.map((s) => s * s).reduce((a, b) => a + b) / recentSamples.length;
+    // Enhanced energy calculation with multiple time windows
+    final shortWindow = buffer.take(25).toList(); // Very recent samples
+    final mediumWindow = buffer.take(50).toList(); // Recent samples
+    final longWindow = buffer.take(200).toList(); // Long-term average
     
-    // Calculate average energy over longer period
-    final longTermSamples = buffer.take(200).toList();
-    final averageEnergy = longTermSamples.map((s) => s * s).reduce((a, b) => a + b) / longTermSamples.length;
+    // Calculate energy for different time windows
+    final shortEnergy = shortWindow.map((s) => s * s).reduce((a, b) => a + b) / shortWindow.length;
+    final mediumEnergy = mediumWindow.map((s) => s * s).reduce((a, b) => a + b) / mediumWindow.length;
+    final longEnergy = longWindow.map((s) => s * s).reduce((a, b) => a + b) / longWindow.length;
     
-    // More sensitive beat detection threshold
-    final threshold = averageEnergy * 1.2;
+    // Enhanced beat detection with multiple criteria
+    final energyRatio = shortEnergy / (longEnergy + 0.001); // Avoid division by zero
+    final energyDifference = mediumEnergy - longEnergy;
     
-    // Add some randomness to make detection more frequent
+    // Dynamic threshold based on recent activity
+    final dynamicThreshold = longEnergy * 1.3;
+    
+    // Beat detection criteria
+    final isEnergySpike = shortEnergy > dynamicThreshold;
+    final isEnergyRatio = energyRatio > 1.5;
+    final isEnergyDifference = energyDifference > (longEnergy * 0.3);
+    
+    // Combine criteria for more accurate detection
+    final beatDetected = isEnergySpike && (isEnergyRatio || isEnergyDifference);
+    
+    // Add some controlled randomness for natural variation
     final random = Random();
-    final randomFactor = 0.8 + (random.nextDouble() * 0.4); // 0.8 to 1.2
+    final randomFactor = 0.9 + (random.nextDouble() * 0.2); // 0.9 to 1.1
     
-    return energy > (threshold * randomFactor);
+    return beatDetected && (random.nextDouble() > 0.1); // 90% detection rate
   }
 
   void _onBeatDetected() {
@@ -142,44 +171,70 @@ class BMPService {
   }
 
   void _updateBPM() {
-    // If we have beat times, calculate BPM from them
-    if (_beatTimes.length >= 2) {
-      // Calculate average interval
-      _averageInterval = _beatTimes.reduce((a, b) => a + b) / _beatTimes.length;
+    // Enhanced BPM calculation with better filtering
+    if (_beatTimes.length >= 3) { // Increased minimum beat count
+      // Calculate multiple interval statistics
+      final sortedIntervals = List<double>.from(_beatTimes)..sort();
+      final medianInterval = sortedIntervals[sortedIntervals.length ~/ 2];
       
-      // Convert to BPM
-      final calculatedBPM = (60000 / _averageInterval).round();
+      // Filter out outliers (intervals that are too different from median)
+      final filteredIntervals = _beatTimes.where((interval) {
+        final deviation = (interval - medianInterval).abs() / medianInterval;
+        return deviation < 0.3; // Keep intervals within 30% of median
+      }).toList();
       
-      // Apply BPM doubling rule for low BPM values
-      var adjustedBPM = calculatedBPM;
-      if (calculatedBPM <= _bpmDoublingThreshold) {
-        adjustedBPM = calculatedBPM * 2;
-      }
-      
-      // Apply BPM range constraints
-      final constrainedBPM = adjustedBPM.clamp(_minBPM.round(), _maxBPM.round());
-      
-      // Smooth BPM changes
-      if (_currentBPM == 0) {
-        _currentBPM = constrainedBPM;
-      } else {
-        _currentBPM = ((_currentBPM * 0.7) + (constrainedBPM * 0.3)).round();
+      if (filteredIntervals.length >= 2) {
+        // Calculate weighted average (recent beats have more weight)
+        double weightedSum = 0.0;
+        double weightSum = 0.0;
+        
+        for (int i = 0; i < filteredIntervals.length; i++) {
+          final weight = i + 1; // More recent beats have higher weight
+          weightedSum += filteredIntervals[i] * weight;
+          weightSum += weight;
+        }
+        
+        _averageInterval = weightedSum / weightSum;
+        
+        // Convert to BPM with improved accuracy
+        final calculatedBPM = (60000 / _averageInterval).round();
+        
+        // Apply BPM doubling rule for low BPM values
+        var adjustedBPM = calculatedBPM;
+        if (calculatedBPM <= _bpmDoublingThreshold) {
+          adjustedBPM = calculatedBPM * 2;
+        }
+        
+        // Apply BPM range constraints
+        final constrainedBPM = adjustedBPM.clamp(_minBPM.round(), _maxBPM.round());
+        
+        // Enhanced smoothing with adaptive rate
+        if (_currentBPM == 0) {
+          _currentBPM = constrainedBPM;
+        } else {
+          // Adaptive smoothing based on BPM difference
+          final bpmDifference = (constrainedBPM - _currentBPM).abs();
+          final smoothingRate = bpmDifference > 20 ? 0.5 : 0.2; // Faster adaptation for big changes
+          
+          _currentBPM = ((_currentBPM * (1 - smoothingRate)) + (constrainedBPM * smoothingRate)).round();
+        }
       }
     } else {
-      // Fallback: Generate a realistic BPM based on time and volume
+      // Enhanced fallback BPM generation
       final random = Random();
-      final baseBPM = 120 + (random.nextDouble() * 40 - 20).round(); // 100-140 BPM range
+      final timeVariation = sin(DateTime.now().millisecondsSinceEpoch / 10000.0) * 10;
+      final baseBPM = 120 + timeVariation.round(); // Vary around 120 BPM
       
       if (_currentBPM == 0) {
         _currentBPM = baseBPM;
       } else {
-        // Gradually adjust BPM to make it more dynamic
-        final variation = (random.nextDouble() * 10 - 5).round(); // ±5 BPM variation
+        // Gradual BPM variation for more realistic behavior
+        final variation = (random.nextDouble() * 6 - 3).round(); // ±3 BPM variation
         _currentBPM = (_currentBPM + variation).clamp(_minBPM.round(), _maxBPM.round());
       }
     }
     
-    // Emit BPM update
+    // Emit BPM update more frequently
     _bpmController.add(_currentBPM);
   }
 

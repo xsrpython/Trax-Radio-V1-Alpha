@@ -9,16 +9,44 @@ class MetadataDisplay extends StatefulWidget {
   State<MetadataDisplay> createState() => _MetadataDisplayState();
 }
 
-class _MetadataDisplayState extends State<MetadataDisplay> {
+class _MetadataDisplayState extends State<MetadataDisplay>
+    with TickerProviderStateMixin {
   final MetadataService _metadataService = MetadataService();
   Timer? _updateTimer;
   String _currentTrack = 'Loading...';
+  late AnimationController _scrollController;
+  late Animation<double> _scrollAnimation;
 
   @override
   void initState() {
     super.initState();
+    _setupScrollAnimation();
     _loadMetadata();
     _startUpdates();
+  }
+
+  void _setupScrollAnimation() {
+    _scrollController = AnimationController(
+      duration: const Duration(seconds: 8), // Slower animation
+      vsync: this,
+    );
+
+    _scrollAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scrollController,
+      curve: Curves.easeInOut, // Smoother curve
+    ));
+
+    _scrollController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _scrollController.reset();
+        _scrollController.forward();
+      }
+    });
+
+    _scrollController.forward();
   }
 
   void _loadMetadata() {
@@ -39,6 +67,7 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
   @override
   void dispose() {
     _updateTimer?.cancel();
+    _scrollController.dispose();
     _metadataService.stopMetadataUpdates();
     super.dispose();
   }
@@ -46,10 +75,7 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(
-        minWidth: 250,
-        maxWidth: 400,
-      ),
+      width: double.infinity, // Fill available width
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.7),
@@ -72,29 +98,47 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
             size: 16,
           ),
           const SizedBox(width: 8),
-          const Text(
-            'CURRENT TRACK: ',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
+                     const Text(
+             'Track: ',
+             style: TextStyle(
+               color: Colors.white,
+               fontSize: 14,
+               fontWeight: FontWeight.w600,
+               letterSpacing: 0.5,
+             ),
+           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              _currentTrack,
-              style: const TextStyle(
-                color: Colors.blueAccent,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ),
+                     Expanded(
+             child: SizedBox(
+               height: 20,
+               child: ClipRect(
+                 child: AnimatedBuilder(
+                   animation: _scrollAnimation,
+                   builder: (context, child) {
+                     // Only scroll if text is long enough to need it
+                     final shouldScroll = _currentTrack.length > 15;
+                     final offset = shouldScroll ? -(_scrollAnimation.value * 300) : 0.0;
+                     
+                     return Transform.translate(
+                       offset: Offset(offset, 0),
+                       child: Text(
+                         _currentTrack,
+                         style: const TextStyle(
+                           color: Colors.blueAccent,
+                           fontSize: 16,
+                           fontWeight: FontWeight.bold,
+                           letterSpacing: 0.5,
+                         ),
+                         overflow: TextOverflow.visible,
+                         maxLines: 1,
+                         softWrap: false,
+                       ),
+                     );
+                   },
+                 ),
+               ),
+             ),
+           ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
