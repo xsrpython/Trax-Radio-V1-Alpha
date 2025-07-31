@@ -121,9 +121,8 @@ class DJService {
       return {'name': 'Auto DJ', 'startTime': 'Now'};
     }
 
-    final now = tz.TZDateTime.now(_userLocation!);
     final ukNow = tz.TZDateTime.now(_ukLocation);
-    final currentDay = _getDayName(now.weekday);
+    final currentDay = _getDayName(ukNow.weekday);
     final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
     
@@ -181,25 +180,37 @@ class DJService {
     }
 
     // Check tomorrow with proper date calculation
-    final tomorrow = now.add(const Duration(days: 1));
+    final tomorrow = ukNow.add(const Duration(days: 1));
     final tomorrowDay = _getDayName(tomorrow.weekday);
 
-    // Get tomorrow's first DJ slot
+    // Get all tomorrow's DJ slots and find the earliest one
+    List<Map<String, dynamic>> tomorrowSlots = [];
     for (final dj in _djs) {
       for (final schedule in dj.schedule) {
         if (schedule.day == tomorrowDay) {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
-          return {
-            'name': '${dj.name} (Tomorrow)', 
-            'startTime': _minutesToTimeString(localStartTime)
-          };
+          tomorrowSlots.add({
+            'dj': dj.name,
+            'startTime': _minutesToTimeString(localStartTime),
+            'startMinutes': localStartTime,
+          });
         }
       }
     }
 
+    // Sort by start time and return the earliest
+    if (tomorrowSlots.isNotEmpty) {
+      tomorrowSlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
+      final earliestSlot = tomorrowSlots.first;
+      return {
+        'name': '${earliestSlot['dj']} (Tomorrow)', 
+        'startTime': earliestSlot['startTime']
+      };
+    }
+
     // Check next 7 days with proper date calculation
     for (int dayOffset = 2; dayOffset <= 7; dayOffset++) {
-      final futureDate = now.add(Duration(days: dayOffset));
+      final futureDate = ukNow.add(Duration(days: dayOffset));
       final futureDayName = _getDayName(futureDate.weekday);
 
       for (final dj in _djs) {
@@ -343,8 +354,7 @@ class DJService {
   }
 
   static int _convertUKTimeToLocalMinutes(String ukTime, String day) {
-    // For now, just use the UK time directly without conversion
-    // This will display times in UK timezone as intended
+    // Use UK time directly for consistent comparison
     return _timeStringToMinutes(ukTime);
   }
 
