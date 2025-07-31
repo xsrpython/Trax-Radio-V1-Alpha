@@ -384,32 +384,32 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Stack(
-                children: [
-                  // Static background grid
-                  if (widget.enable3DEffects)
-                    CustomPaint(
-                      size: Size(widget.width, widget.height),
-                      painter: LinearGridPainter(rotationAngle: 0.0),
-                    ),
-                  
-                  // Animated Bars
-                  Center(
-                    child: SizedBox(
-                      width: widget.width * 0.95, // Increased from 0.9 to use more width
-                      height: widget.height * 0.9,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final availableWidth = constraints.maxWidth;
-                          final maxBarWidth = 8.0; // Increased for better visual impact
-                          final minBarWidth = 4.0; // Increased minimum width
-                          final barSpacing = 2.0; // Increased spacing for better separation
-                          
-                          // Calculate how many bars we can actually fit
-                          final maxBars = ((availableWidth + barSpacing) / (maxBarWidth + barSpacing)).floor();
-                          final actualBarCount = maxBars.clamp(12, widget.barCount); // Increased minimum to 12 bars
-                          
-                          // Always use the calculated bar count to prevent overflow
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20), // Add padding for blur effects
+                child: Stack(
+                  children: [
+                    // Static background grid - removed for cleaner look
+                    // if (widget.enable3DEffects)
+                    //   CustomPaint(
+                    //     size: Size(widget.width, widget.height),
+                    //     painter: LinearGridPainter(rotationAngle: 0.0),
+                    //   ),
+                    
+                    // Animated Bars
+                    Center(
+                      child: SizedBox(
+                        width: widget.width * 0.95, // Increased from 0.9 to use more width
+                        height: widget.height * 0.9,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final availableWidth = constraints.maxWidth;
+                            final maxBarWidth = 8.0; // Increased for better visual impact
+                            final minBarWidth = 4.0; // Increased minimum width
+                            final barSpacing = 2.0; // Increased spacing for better separation
+                            
+                            // Calculate how many bars we can actually fit
+                            final maxBars = ((availableWidth + barSpacing) / (maxBarWidth + barSpacing)).floor();
+                            final actualBarCount = maxBars.clamp(12, widget.barCount); // Increased minimum to 12 bars
                             
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Changed from center to spaceEvenly for better distribution
@@ -458,29 +458,30 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
                                 );
                               }),
                             );
-                        },
-                      ),
-                    ),
-                  ),
-                  
-                  // Beat indicator overlay
-                  if (_isBeat && widget.enableBeatDetection)
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.white.withValues(alpha: 0.1),
-                              Colors.transparent,
-                            ],
-                            center: Alignment.center,
-                            radius: 0.8,
-                          ),
+                          },
                         ),
                       ),
                     ),
-                ],
+                    
+                    // Beat indicator overlay
+                    if (_isBeat && widget.enableBeatDetection)
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.white.withValues(alpha: 0.1),
+                                Colors.transparent,
+                              ],
+                              center: Alignment.center,
+                              radius: 0.8,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
