@@ -112,13 +112,16 @@ class DJService {
 
   static Map<String, String> getNextDJ() {
     if (!_isInitialized || _djs.isEmpty || _userLocation == null) {
-      return {'name': 'Auto DJ', 'startTime': 'Now', 'day': ''};
+      return {'name': 'Auto DJ', 'startTime': 'Now'};
     }
 
     final now = tz.TZDateTime.now(_userLocation!);
+    final ukNow = tz.TZDateTime.now(_ukLocation);
     final currentDay = _getDayName(now.weekday);
-    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
+    
+
 
     // Get all slots for today
     List<Map<String, dynamic>> todaySlots = [];
@@ -142,15 +145,20 @@ class DJService {
 
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
+    
+
 
     // Find the next slot that starts after current time
     for (final slot in todaySlots) {
       final startMinutes = slot['startMinutes'];
       final endMinutes = slot['endMinutes'];
+      
+
 
       // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
-        return {'name': slot['dj'], 'startTime': slot['start'], 'day': 'Today'};
+
+        return {'name': slot['dj'], 'startTime': slot['start']};
       }
 
       // If we're currently in this slot, find the next one
@@ -158,7 +166,7 @@ class DJService {
         // Look for the next slot after this one ends
         for (final nextSlot in todaySlots) {
           if (nextSlot['startMinutes'] >= endMinutes) {
-            return {'name': nextSlot['dj'], 'startTime': nextSlot['start'], 'day': 'Today'};
+            return {'name': nextSlot['dj'], 'startTime': nextSlot['start']};
           }
         }
         // If no more slots today, look for tomorrow
@@ -176,9 +184,8 @@ class DJService {
         if (schedule.day == tomorrowDay) {
           final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, tomorrowDay);
           return {
-            'name': dj.name, 
-            'startTime': _minutesToTimeString(localStartTime),
-            'day': 'Tomorrow'
+            'name': '${dj.name} (Tomorrow)', 
+            'startTime': _minutesToTimeString(localStartTime)
           };
         }
       }
@@ -195,9 +202,8 @@ class DJService {
             final localStartTime = _convertUKTimeToLocalMinutes(schedule.start, futureDayName);
             final dayName = _getShortDayName(futureDate.weekday);
             return {
-              'name': dj.name, 
-              'startTime': _minutesToTimeString(localStartTime),
-              'day': dayName
+              'name': '${dj.name} ($dayName)', 
+              'startTime': _minutesToTimeString(localStartTime)
             };
           }
         }
@@ -210,11 +216,11 @@ class DJService {
       if (firstDJ.schedule.isNotEmpty) {
         final firstSchedule = firstDJ.schedule.first;
         final localStartTime = _convertUKTimeToLocalMinutes(firstSchedule.start, firstSchedule.day);
-        return {'name': firstDJ.name, 'startTime': _minutesToTimeString(localStartTime), 'day': firstSchedule.day};
+        return {'name': firstDJ.name, 'startTime': _minutesToTimeString(localStartTime)};
       }
     }
 
-    return {'name': 'Auto DJ', 'startTime': 'Now', 'day': ''};
+    return {'name': 'Auto DJ', 'startTime': 'Now'};
   }
 
   // Helper method to get short day name
@@ -268,7 +274,7 @@ class DJService {
     
     // Calculate days to add to get to the target weekday
     int daysToAdd = targetWeekday - now.weekday;
-    if (daysToAdd <= 0) {
+    if (daysToAdd < 0) {
       daysToAdd += 7; // Move to next week
     }
     
@@ -331,25 +337,9 @@ class DJService {
   }
 
   static int _convertUKTimeToLocalMinutes(String ukTime, String day) {
-    if (_userLocation == null) {
-      return _timeStringToMinutes(ukTime);
-    }
-
-    try {
-      final parts = ukTime.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-
-      // Use the new proper date calculation method
-      final ukDateTime = _createUKDateTime(day, hour, minute);
-
-      final localDateTime = tz.TZDateTime.from(ukDateTime, _userLocation!);
-      final result = localDateTime.hour * 60 + localDateTime.minute;
-      
-      return result;
-    } catch (e) {
-      return _timeStringToMinutes(ukTime);
-    }
+    // For now, just use the UK time directly without conversion
+    // This will display times in UK timezone as intended
+    return _timeStringToMinutes(ukTime);
   }
 
   static String _minutesToTimeString(int minutes) {

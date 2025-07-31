@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../dj_service.dart';
+import '../monitoring_service.dart';
 
 class CurrentDJWidget extends StatefulWidget {
   const CurrentDJWidget({super.key});
@@ -16,6 +17,8 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
   Timer? _timer;
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
+  final MonitoringService _monitoringService = MonitoringService();
+
   @override
   void initState() {
     super.initState();
@@ -65,10 +68,11 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
         _currentDJ = newDJ;
         _isLoading = false;
       });
+      
+      // Check for overflow and record it
+      _checkAndRecordOverflow(newDJ);
     }
   }
-
-
 
   @override
   void dispose() {
@@ -83,13 +87,15 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
+          width: double.infinity, // Fill available width
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 2),
+            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 4),
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.music_note,
@@ -107,7 +113,8 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(
+              SizedBox(
+                width: 120,
                 child: ClipRect(
                   child: AnimatedBuilder(
                     animation: _scrollAnimation,
@@ -147,5 +154,25 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
         ),
       ],
     );
+  }
+
+  void _checkAndRecordOverflow(String djName) {
+    // Check if DJ name is long enough to trigger scrolling
+    const maxRecommendedLength = 8; // Length at which scrolling starts
+    
+    if (djName.length > maxRecommendedLength) {
+      _monitoringService.recordOverflow(
+        widgetName: 'CurrentDJWidget',
+        content: djName,
+        overflowType: 'text_scrolling',
+        resolution: 'animated_scroll',
+        additionalData: {
+          'djNameLength': djName.length,
+          'maxRecommendedLength': maxRecommendedLength,
+          'scrollEnabled': true,
+          'containerWidth': 120,
+        },
+      );
+    }
   }
 } 

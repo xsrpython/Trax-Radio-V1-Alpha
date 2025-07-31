@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dj_service.dart';
-import 'bpm_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
-import 'widgets/bpm_display.dart';
+import 'widgets/metadata_display.dart';
+import 'widgets/turntable_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +43,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
-  late AnimationController _controller;
   late AnimationController _fadeController; // Add fade controller
 
   // Beta expiration date - DISABLED FOR NOW
@@ -57,11 +56,6 @@ class _RadioHomePageState extends State<RadioHomePage>
     // if (_isBetaExpired()) {
     //   return; // Don't initialize audio if expired
     // }
-    
-    _controller = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
     
     _fadeController = AnimationController( // Initialize fade controller
       vsync: this,
@@ -80,13 +74,6 @@ class _RadioHomePageState extends State<RadioHomePage>
         _isPlaying = state.playing;
         _isLoading = state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
-        if (_isPlaying) {
-          _controller.repeat();
-          BMPService().startAnalysis(_player);
-        } else {
-          _controller.stop();
-          BMPService().stopAnalysis();
-        }
       });
     });
   }
@@ -115,7 +102,11 @@ class _RadioHomePageState extends State<RadioHomePage>
       } catch (e) {
         if (!mounted) return; // Fix for "BuildContexts across async gaps"
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error playing stream: $e')),
+          SnackBar(
+            content: Text('Error playing stream: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }
@@ -123,9 +114,7 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   void dispose() {
-    _controller.dispose();
     _fadeController.dispose(); // Dispose fade controller
-    BMPService().stopAnalysis();
     _player.dispose();
     super.dispose();
   }
@@ -188,237 +177,241 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   Widget build(BuildContext context) {
-    // Check if beta has expired
+    // Check if beta has expired - DISABLED FOR NOW
     // if (_isBetaExpired()) {
     //   return _buildExpirationScreen();
     // }
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: FadeTransition( // Add fade transition wrapper
-        opacity: _fadeController,
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isLandscape = constraints.maxWidth > constraints.maxHeight;
-              final screenHeight = MediaQuery.of(context).size.height;
-              final screenWidth = MediaQuery.of(context).size.width;
-              final isSmallScreen = screenHeight < 700;
-              final isMediumScreen = screenHeight >= 700 && screenHeight <= 900;
-              final isLargeScreen = screenHeight > 900;
-              final isExtraSmallScreen = screenHeight < 600;
-              final isTallScreen = screenHeight > 2400; // For very tall devices
-              final isA54 = screenHeight >= 800 && screenHeight <= 850; // Samsung Galaxy A54 specific
-              
-              return Column(
+      body: AnimatedBuilder(
+        animation: _fadeController,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fadeController.value,
+            child: SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isLandscape = constraints.maxWidth > constraints.maxHeight;
+                  
+                  // Use separate layouts for portrait and landscape
+                  if (isLandscape) {
+                    return _buildLandscapeLayout(constraints);
+                  } else {
+                    return _buildPortraitLayout(constraints);
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Dedicated portrait layout - optimized and locked down
+  Widget _buildPortraitLayout(BoxConstraints constraints) {
+    return Column(
+      children: [
+        // Top spacing - reduced
+        const SizedBox(height: 4),
+        
+        // Title - optimized for portrait
+        const Center(
+          child: Text(
+            'Trax Radio UK',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 11), // Reduced from 21 to 11 (10px less)
+        
+        // Visualizer - optimized for portrait with increased height
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Linear3DVisualizer(
+            audioPlayer: _player,
+            height: 180, // Increased from 150 to 180 (30px more)
+            width: constraints.maxWidth,
+            barCount: 50,
+            enableBeatDetection: true,
+            enable3DEffects: true,
+          ),
+        ),
+        
+        // Spacer to push widgets down
+        const Spacer(),
+        
+        // Metadata Widget - positioned above turntable
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          child: MetadataDisplay(),
+        ),
+        
+        // 1px spacing
+        const SizedBox(height: 1),
+        
+        // Current DJ Widget - positioned above turntable
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          child: CurrentDJWidget(),
+        ),
+        
+        // 1px spacing
+        const SizedBox(height: 1),
+        
+        // Next DJ Widget - positioned above turntable
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          child: NextDJWidget(),
+        ),
+        
+        // Turntable section - positioned above play button
+        Center(
+          child: SizedBox(
+            width: constraints.maxWidth * 0.65,
+            height: constraints.maxWidth * 0.65,
+            child: TurntableWidget(
+              size: constraints.maxWidth * 0.65,
+              isPlaying: _isPlaying,
+              isLandscape: false,
+            ),
+          ),
+        ),
+        
+        // Small spacing above play button
+        const SizedBox(height: 1),
+        
+        // Play/Pause button
+        Center(
+          child: IconButton(
+            iconSize: 80,
+            color: Colors.white,
+            icon: _isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 6,
+                  )
+                : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+            onPressed: _isLoading ? null : _togglePlayPause,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Dedicated landscape layout - placeholder for now
+  Widget _buildLandscapeLayout(BoxConstraints constraints) {
+    return Column(
+      children: [
+        // Top spacing
+        const SizedBox(height: 4),
+        
+        // Title - optimized for landscape
+        const Center(
+          child: Text(
+            'Trax Radio UK',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 1),
+        
+        // Visualizer - optimized for landscape
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Linear3DVisualizer(
+            audioPlayer: _player,
+            height: 40,
+            width: constraints.maxWidth,
+            barCount: 40,
+            enableBeatDetection: true,
+            enable3DEffects: true,
+          ),
+        ),
+
+        // Metadata Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: MetadataDisplay(),
+        ),
+
+        // Current DJ Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: CurrentDJWidget(),
+        ),
+        
+        // Next DJ Widget
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: Transform.scale(
+            scale: 0.75,
+            child: const NextDJWidget(),
+          ),
+        ),
+        
+        // Play/Pause button and version info
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: IconButton(
+                  iconSize: 50,
+                  color: Colors.white,
+                  icon: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        )
+                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  onPressed: _isLoading ? null : _togglePlayPause,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: isExtraSmallScreen ? 2 : (isSmallScreen ? 4 : (isLandscape ? 8 : (isA54 ? 2 : (isTallScreen ? 8 : 12))))),
-                  // Title - responsive sizing
-                  Center(
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
                     child: Text(
-                      'Trax Radio UK',
+                      'V1.0.0 Beta',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: isExtraSmallScreen ? 18 : (isSmallScreen ? 22 : (isLandscape ? 28 : (isA54 ? 16 : (isTallScreen ? 30 : 36)))),
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isLandscape ? 6 : (isA54 ? 1 : (isTallScreen ? 4 : 8))))),
-                  // Beta expiration warning
-                  // Container(
-                  //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.orange.withOpacity(0.2),
-                  //     borderRadius: BorderRadius.circular(12),
-                  //     border: Border.all(color: Colors.orange.withOpacity(0.5)),
-                  //   ),
-                  //   child: Row(
-                  //     mainAxisSize: MainAxisSize.min,
-                  //     children: [
-                  //       const Icon(
-                  //         Icons.warning_amber_rounded,
-                  //         color: Colors.orange,
-                  //         size: 20,
-                  //       ),
-                  //       const SizedBox(width: 8),
-                  //       Text(
-                  //         'Beta expires in ${_getDaysUntilExpiration()} days',
-                  //         style: const TextStyle(
-                  //           color: Colors.orange,
-                  //           fontSize: 14,
-                  //           fontWeight: FontWeight.w600,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // Visualizer and DJ Widgets - responsive sizing
-                  Flexible(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
-                      child: Column(
-                        children: [
-                          Linear3DVisualizer(
-                            audioPlayer: _player,
-                            height: isExtraSmallScreen ? 40 : (isSmallScreen ? 55 : (isLandscape ? 50 : (isA54 ? 30 : (isTallScreen ? 60 : 90)))),
-                            width: constraints.maxWidth,
-                            barCount: isLandscape ? 30 : 40, // Reduced bar count
-                            enableBeatDetection: true,
-                            enable3DEffects: true,
-                          ),
-                          SizedBox(height: isLandscape ? 2 : 8), // Reduced spacing in landscape
-                          // Current DJ Widget - directly under visualizer
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final widgetWidth = isLandscape 
-                                ? constraints.maxWidth * 0.9
-                                : constraints.maxWidth * 0.95;
-                              
-                              return SizedBox(
-                                width: widgetWidth,
-                                child: Transform.scale(
-                                  scale: isExtraSmallScreen ? 0.7 : (isSmallScreen ? 0.8 : (isLandscape ? 0.7 : (isA54 ? 0.6 : (isTallScreen ? 0.75 : 0.95)))),
-                                  child: const CurrentDJWidget(),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: isLandscape ? 1 : 6), // Reduced spacing in landscape
-                          // Next DJ Widget - directly under Now Playing
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final widgetWidth = isLandscape 
-                                ? constraints.maxWidth * 0.9
-                                : constraints.maxWidth * 0.95;
-                              
-                              return SizedBox(
-                                width: widgetWidth,
-                                child: Transform.scale(
-                                  scale: isExtraSmallScreen ? 0.7 : (isSmallScreen ? 0.8 : (isLandscape ? 0.7 : (isA54 ? 0.6 : (isTallScreen ? 0.75 : 0.95)))),
-                                  child: const NextDJWidget(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      'Developed by DJXSR',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ),
-                  // Turntable section - responsive sizing (hidden in landscape)
-                  if (!isLandscape) ...[
-                    Expanded(
-                      child: Center(
-                        child: LayoutBuilder(
-                          builder: (context, turntableConstraints) {
-                            final widgetWidth = isLandscape 
-                              ? turntableConstraints.maxWidth * 0.8
-                              : turntableConstraints.maxWidth * 0.9;
-                            
-                            // Use the smaller dimension to ensure proper fit
-                            final availableSize = turntableConstraints.maxHeight < turntableConstraints.maxWidth 
-                              ? turntableConstraints.maxHeight 
-                              : turntableConstraints.maxWidth;
-                            
-                            final size = isLandscape 
-                              ? availableSize * (isExtraSmallScreen ? 0.3 : (isSmallScreen ? 0.35 : 0.45))
-                              : availableSize * (isA54 ? 0.5 : (isTallScreen ? 0.6 : 0.7));
-                            const recordFactor = 0.7;
-                            
-                            return Center(
-                              child: SizedBox(
-                                width: size,
-                                height: size,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Transform.translate(
-                                      offset: Offset(-0.13 * size, -0.014 * size),
-                                      child: FractionallySizedBox(
-                                        widthFactor: recordFactor,
-                                        heightFactor: recordFactor,
-                                        child: RotationTransition(
-                                          turns: _controller,
-                                          child: Image.asset(
-                                            'assets/record.png',
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Image.asset(
-                                      'assets/turntable.png',
-                                      fit: BoxFit.contain,
-                                      width: size,
-                                      height: size,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                  // Play/Pause button and version info
-                  Padding(
-                    padding: EdgeInsets.only(bottom: isExtraSmallScreen ? 3.0 : (isSmallScreen ? 8.0 : (isA54 ? 2.0 : (isTallScreen ? 10.0 : 15.0)))),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Center(
-                          child: IconButton(
-                            iconSize: isExtraSmallScreen ? 45 : (isSmallScreen ? 55 : (isTallScreen ? 60 : 70)),
-                            color: Colors.white,
-                            icon: _isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 6,
-                                  )
-                                : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-                            onPressed: _isLoading ? null : _togglePlayPause,
-                          ),
-                        ),
-                        SizedBox(height: isExtraSmallScreen ? 1 : (isSmallScreen ? 3 : (isTallScreen ? 2 : 6))),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 16.0),
-                              child: Text(
-                                'V1.0.0 Beta',
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(right: 16.0),
-                              child: Text(
-                                'Developed by DJXSR',
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
                     ),
                   ),
                 ],
-              );
-            },
+              ),
+            ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

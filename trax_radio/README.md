@@ -1,230 +1,146 @@
-# Trax Radio UK - Mobile App
+# Trax Radio - Professional Internet Radio App
 
-**Version**: V1.0.0 Beta  
-**Platform**: Android (iOS coming soon)  
-**Status**: Beta Testing Ready  
-**Last Updated**: 30th July 2025
+A Flutter-based internet radio application for Trax Radio UK, featuring real-time DJ scheduling, live metadata, and advanced audio visualization.
 
----
+## 🎵 Features
 
-## 🎵 **About Trax Radio UK**
+### Professional UI/UX
+- **Multi-color accent system** with blue, green, and orange themes
+- **4px thick borders** on all widgets for professional appearance
+- **Responsive design** that adapts to different screen sizes
+- **Scrolling text animations** for long content display
+- **Overflow handling** with tooltips and ellipsis for clean layout
 
-Trax Radio UK is a professional internet radio station broadcasting live DJ shows 24/7. This mobile app provides listeners with a premium streaming experience, real-time DJ information, and interactive features.
+### Live Audio Streaming
+- **High-quality streaming** from Trax Radio UK
+- **Real-time play/pause controls** with smooth transitions
+- **Volume control** with persistent settings
+- **Background playback** support for continuous listening
+- **Animated turntable** with perfectly aligned spinning record
 
-### **Key Features:**
-- 🎧 **Live Audio Streaming** - High-quality radio broadcast
-- 🎤 **Real-time DJ Information** - Current and upcoming DJ details
-- 🎨 **3D Audio Visualizer** - Interactive music visualization
-- 📱 **Responsive Design** - Works perfectly on all Android devices
-- 🔄 **Auto DJ Detection** - Seamless transitions between shows
-- 🌍 **UK Timezone Support** - All times displayed in UK time
+### Advanced Audio Visualization
+- **Real-time visualizer bars** that react to streaming audio
+- **Simplified pulse system** with reliable 500ms timing
+- **Frequency-based colors**: Red (bass), Orange (mid), Yellow (high)
+- **Controlled animations** with 50ms update frequency
+- **State-aware behavior** - stops when paused, starts when playing
 
----
+### Enhanced Beat Detection
+- **Multi-frequency analysis** with bass, snare, and hi-hat patterns
+- **Advanced BPM calculation** with outlier filtering and weighted averaging
+- **Real-time beat detection** with 50ms analysis frequency
+- **Adaptive smoothing** for accurate tempo tracking
 
-## 📱 **App Information**
+### DJ Scheduling System
+- **Real-time DJ schedule** with UK timezone handling
+- **Current DJ display** with live status updates
+- **Next DJ preview** with countdown information
+- **Accurate scheduling** across different time zones
 
-### **Installation Size:**
-- **APK Size**: ~25MB
-- **Installed Size**: ~45MB
-- **Minimum Storage**: 50MB recommended
+### Live Metadata Integration
+- **Real-time track information** from Trax Radio UK
+- **Scrolling text display** for long artist/title combinations
+- **Auto-refresh system** every 15 seconds
+- **Overflow protection** with proper layout constraints
 
-### **Device Compatibility:**
-- **Android Version**: 8.0 (API 26) and above
-- **Screen Sizes**: All sizes supported (phone, tablet, foldable)
-- **Orientations**: Portrait and landscape
-- **Bluetooth**: Full compatibility with car systems and speakers
+## 🛠️ Technical Implementation
 
-### **Network Requirements:**
-- **Minimum**: 3G connection
-- **Recommended**: 4G/5G or WiFi
-- **Data Usage**: ~60MB per hour of streaming
+### Widgets
+- **MetadataDisplay**: Live track info with scrolling text
+- **CurrentDJWidget**: Real-time DJ information
+- **NextDJWidget**: Upcoming DJ preview
+- **TurntableWidget**: Animated turntable and record
+- **Linear3DVisualizer**: Advanced audio visualization
+- **BPMDisplay**: Real-time beat detection display
 
----
+### Services
+- **DJService**: DJ scheduling and timezone management
+- **MetadataService**: Live track data fetching
+- **BMPService**: Enhanced beat detection and BPM calculation
+- **MonitoringService**: UI performance tracking
 
-## 🎯 **Current Features**
+### Audio Analysis
+- **Multi-window energy calculation** (25ms, 50ms, 200ms windows)
+- **Outlier filtering** for accurate beat detection
+- **Weighted averaging** with recent beats having higher weight
+- **Frequency-based patterns** for realistic audio simulation
 
-### **Audio Streaming:**
-- ✅ **Live Radio Broadcast** - 24/7 streaming
-- ✅ **High-Quality Audio** - Optimized for mobile
-- ✅ **Background Playback** - Continue listening while using other apps
-- ✅ **Bluetooth Support** - Works with car systems and wireless speakers
-- ✅ **Audio Controls** - Play/pause functionality
+## 📱 Platform Support
 
-### **DJ Information:**
-- ✅ **Current DJ Display** - Shows who's currently on air
-- ✅ **Next DJ Information** - Upcoming show details
-- ✅ **Smart Day Names** - Short, clear day display (Mon, Tue, Wed, etc.)
-- ✅ **UK Time Display** - All times in UK timezone
-- ✅ **Auto DJ Detection** - Handles gaps between shows
+### Primary Platform
+- **Android**: Full feature support with optimized performance
 
-### **Visual Features:**
-- ✅ **3D Audio Visualizer** - Real-time music visualization
-- ✅ **Beat Detection** - Synchronized with music
-- ✅ **Turntable Animation** - Professional DJ aesthetic
-- ✅ **Responsive Design** - Adapts to all screen sizes
-- ✅ **Landscape Support** - Optimized for both orientations
+### Future Platforms
+- **iOS**: Planned for future development
+- **Web**: Responsive web interface under consideration
 
-### **User Interface:**
-- ✅ **Professional Design** - Modern, clean interface
-- ✅ **Responsive Layout** - Works on all device sizes
-- ✅ **Touch-Friendly** - Easy to use on mobile devices
-- ✅ **Accessibility** - Clear text and contrast
-- ✅ **Smooth Animations** - Polished user experience
+## 🚀 Getting Started
 
----
+### Prerequisites
+- Flutter SDK (latest stable version)
+- Android Studio / VS Code
+- Android device or emulator
 
-## 🚀 **Getting Started**
+### Installation
+1. Clone the repository
+2. Run `flutter pub get`
+3. Connect Android device or start emulator
+4. Run `flutter run`
 
-### **For Users:**
-1. **Download** the APK file
-2. **Install** on your Android device
-3. **Launch** the app
-4. **Enjoy** live Trax Radio UK!
+### Configuration
+- No API keys required
+- Automatic DJ schedule loading
+- Real-time metadata from Trax Radio UK
 
-### **For Developers:**
-1. **Clone** the repository
-2. **Install** Flutter dependencies
-3. **Run** `flutter pub get`
-4. **Launch** on device or emulator
+## 🎯 Current Status
 
-### **For Beta Testers:**
-1. **Receive** APK file via email
-2. **Install** on your device
-3. **Test** all features
-4. **Report** any issues found
+### Completed Features ✅
+- Professional UI styling with 4px borders
+- Real-time audio streaming and visualization
+- Enhanced beat detection with multi-frequency analysis
+- Simplified pulse system for reliable operation
+- DJ scheduling with accurate timezone handling
+- Live metadata integration with scrolling text
+- Responsive layout with overflow protection
 
----
+### Performance Optimizations ✅
+- 50ms update frequency for smooth animations
+- Controlled bar expansion (max 60% height)
+- Efficient state management
+- Memory-optimized audio analysis
+- Clean code with removed complexity
 
-## 📊 **Device Testing Status**
+### Development Status 🟡
+- Core features implemented and in testing
+- Professional UI/UX with consistent styling
+- Audio visualization system functional
+- Error handling implemented
+- Performance optimization ongoing
 
-### **Tested Devices:**
-- ✅ **Samsung S21 5G** - Perfect performance
-- ✅ **Samsung Galaxy A32 5G** - Excellent compatibility
-- ✅ **Samsung Galaxy A54** - Great performance
-- ✅ **Pixel 9** - Minor landscape adjustments
-- ✅ **Motorola Razr 50 Ultra** - Foldable device support
+## 📊 Project Metrics
 
-### **Screen Size Support:**
-- ✅ **Small Phones** (320dp-480dp) - Optimized layout
-- ✅ **Medium Phones** (480dp-600dp) - Perfect fit
-- ✅ **Large Phones** (600dp+) - Enhanced experience
-- ✅ **Tablets** - Responsive design
-- ✅ **Foldables** - Adaptive layout
+### Code Quality
+- **Files**: 15+ core files
+- **Widgets**: 6 main UI components
+- **Services**: 4 core services
+- **Performance**: Optimized for smooth operation
 
----
+### User Experience
+- **UI Responsiveness**: Optimized
+- **Audio Performance**: Stable
+- **Visualization**: Smooth and responsive
+- **Error Handling**: Robust
 
-## 🎨 **UI Improvements (Latest)**
+## 🤝 Contributing
 
-### **Recent Updates (30th July 2025):**
-- ✅ **Larger DJ Widgets** - More prominent and readable
-- ✅ **Short Day Names** - Mon, Tue, Wed instead of full names
-- ✅ **Smart Time Display** - No "Today" prefix, actual day names
-- ✅ **Reduced Spacing** - Tighter, more efficient layout
-- ✅ **Increased Widths** - 95% portrait, 90% landscape usage
-- ✅ **Landscape Splash Screen** - Responsive orientation support
+This project is currently in active development. For development opportunities, please contact the development team.
 
-### **Design Philosophy:**
-- **Clean & Modern** - Professional appearance
-- **User-Friendly** - Intuitive navigation
-- **Responsive** - Works on all devices
-- **Accessible** - Clear and readable
-- **Performance** - Smooth and fast
+## 📄 License
 
----
-
-## 🔧 **Technical Details**
-
-### **Built With:**
-- **Framework**: Flutter 3.x
-- **Language**: Dart
-- **Audio**: just_audio package
-- **Visualization**: Custom 3D visualizer
-- **State Management**: Provider pattern
-- **Platform**: Android (iOS in development)
-
-### **Architecture:**
-- **Clean Architecture** - Well-structured codebase
-- **Service Layer** - DJ and audio services
-- **Widget System** - Reusable UI components
-- **Responsive Design** - Adaptive layouts
-- **Error Handling** - Robust error management
+This project is proprietary software developed for Trax Radio UK.
 
 ---
 
-## 📋 **Beta Testing**
-
-### **Current Testers:**
-1. **Clive Ward** - Samsung S21 5G (Developer)
-2. **Phil Monteiro-Sampson** - Motorola Razr 50 Ultra
-3. **Gaynor Horner** - Samsung Galaxy A32 5G
-4. **Tammie Russell** - Samsung S25
-5. **Taylor Russell** - Samsung A5
-
-### **Testing Focus:**
-- **Audio Quality** - Streaming performance
-- **UI Responsiveness** - All screen sizes
-- **DJ Information** - Accuracy and display
-- **Performance** - Smooth operation
-- **User Experience** - Overall usability
-
----
-
-## 🗺️ **Roadmap**
-
-### **Immediate (This Week):**
-- [ ] **Beta Testing** - Distribute to testers
-- [ ] **Feedback Collection** - Gather user input
-- [ ] **Bug Fixes** - Address any issues
-- [ ] **Final Polish** - UI refinements
-
-### **Short Term (Next 2 Weeks):**
-- [ ] **iOS Development** - Begin iOS version
-- [ ] **Website Integration** - Connect to Trax Radio site
-- [ ] **Social Media** - Auto-posting features
-- [ ] **Playlist Generation** - Show recording features
-
-### **Long Term (Next Month):**
-- [ ] **App Store Release** - Public Android release
-- [ ] **iOS App Store** - iOS version release
-- [ ] **Advanced Features** - Enhanced functionality
-- [ ] **Marketing** - Promotion and growth
-
----
-
-## 📞 **Support & Contact**
-
-### **For Users:**
-- **Email**: support@trax-radio-uk.com
-- **Website**: https://trax-radio-uk.com
-- **Social Media**: @TraxRadioUK
-
-### **For Developers:**
-- **Repository**: https://github.com/xsrpython/traxradionew
-- **Issues**: GitHub Issues page
-- **Documentation**: See project docs
-
-### **For Beta Testers:**
-- **Feedback**: Email to clive.ward@hotmail.com
-- **Bug Reports**: Detailed issue descriptions
-- **Feature Requests**: User experience suggestions
-
----
-
-## 📄 **License**
-
-This project is proprietary software developed for Trax Radio UK. All rights reserved.
-
----
-
-## 🙏 **Acknowledgments**
-
-- **Trax Radio UK** - For the amazing radio content
-- **Flutter Team** - For the excellent framework
-- **Beta Testers** - For valuable feedback and testing
-- **DJ Community** - For the incredible music and shows
-
----
-
-**Last Updated**: 30th July 2025  
-**Version**: V1.0.0 Beta  
-**Status**: Ready for Beta Testing
+**Last Updated**: December 2024  
+**Version**: 1.0.0  
+**Status**: In development 🎵
