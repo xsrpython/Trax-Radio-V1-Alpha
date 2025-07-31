@@ -6,6 +6,7 @@ import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
 import 'widgets/metadata_display.dart';
+import 'widgets/turntable_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
-  late AnimationController _controller;
   late AnimationController _fadeController; // Add fade controller
 
   // Beta expiration date - DISABLED FOR NOW
@@ -56,11 +56,6 @@ class _RadioHomePageState extends State<RadioHomePage>
     // if (_isBetaExpired()) {
     //   return; // Don't initialize audio if expired
     // }
-    
-    _controller = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
     
     _fadeController = AnimationController( // Initialize fade controller
       vsync: this,
@@ -79,11 +74,6 @@ class _RadioHomePageState extends State<RadioHomePage>
         _isPlaying = state.playing;
         _isLoading = state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
-        if (_isPlaying) {
-          _controller.repeat();
-        } else {
-          _controller.stop();
-        }
       });
     });
   }
@@ -124,7 +114,6 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   void dispose() {
-    _controller.dispose();
     _fadeController.dispose(); // Dispose fade controller
     _player.dispose();
     super.dispose();
@@ -205,169 +194,253 @@ class _RadioHomePageState extends State<RadioHomePage>
                 builder: (context, constraints) {
                   final isLandscape = constraints.maxWidth > constraints.maxHeight;
                   
-                  return Stack(
-                    children: [
-                      Column(
-                        children: [
-                          SizedBox(height: isLandscape ? 8 : 8), // Further reduced spacing
-                          // Title - responsive sizing
-                          Center(
-                            child: Text(
-                              'Trax Radio UK',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: isLandscape ? 32 : 40, // Much smaller font size
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: isLandscape ? 2 : 2), // Minimal spacing
-                          // Visualizer and BPM Display - responsive sizing
-                          Padding(
-                            padding: EdgeInsets.only(bottom: isLandscape ? 8.0 : 12.0), // Reduced padding in portrait
-                            child: Column(
-                              children: [
-                                Linear3DVisualizer(
-                                  audioPlayer: _player,
-                                  height: isLandscape ? 40 : 60, // Much smaller height
-                                  width: constraints.maxWidth,
-                                  barCount: isLandscape ? 40 : 50, // Increased bar count for better visual coverage
-                                  enableBeatDetection: true,
-                                  enable3DEffects: true,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Metadata Widget - Live track information
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 2 : 4),
-                            child: const MetadataDisplay(),
-                          ),
-
-                          // Now Playing DJ Widget - Centered with more spacing to push down
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 4 : 8),
-                            child: const CurrentDJWidget(),
-                          ),
-                          // Next DJ Widget - directly underneath Now Playing
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 2 : 4),
-                            child: Transform.scale(
-                              scale: isLandscape ? 0.8 : 0.75,
-                              child: const NextDJWidget(),
-                            ),
-                          ),
-                          // Turntable section - responsive sizing
-                          Expanded(
-                            child: Center(
-                              child: LayoutBuilder(
-                                builder: (context, turntableConstraints) {
-                                  final size = isLandscape
-                                      ? turntableConstraints.maxHeight * 0.4 // Much smaller size
-                                      : turntableConstraints.maxWidth * 0.45; // Much smaller size
-                                  const recordFactor = 0.7;
-                                  
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        width: size,
-                                        height: size,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Transform.translate(
-                                              offset: Offset(-0.13 * size, -0.014 * size),
-                                              child: FractionallySizedBox(
-                                                widthFactor: recordFactor,
-                                                heightFactor: recordFactor,
-                                                child: RotationTransition(
-                                                  turns: _controller,
-                                                  child: Image.asset(
-                                                    'assets/record.png',
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Image.asset(
-                                              'assets/turntable.png',
-                                              fit: BoxFit.contain,
-                                              width: size,
-                                              height: size,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          // Play/Pause button and version info
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 6.0), // Final adjustment to eliminate 19px overflow
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Center(
-                                  child: IconButton(
-                                    iconSize: 100,
-                                    color: Colors.white,
-                                    icon: _isLoading
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 6,
-                                          )
-                                        : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-                                    onPressed: _isLoading ? null : _togglePlayPause,
-                                  ),
-                                ),
-                                const SizedBox(height: 8), // Reduced spacing
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 16.0),
-                                      child: Text(
-                                        'V1.0.0 Beta',
-                                        style: TextStyle(
-                                          color: Colors.white54,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 16.0),
-                                      child: Text(
-                                        'Developed by DJXSR',
-                                        style: TextStyle(
-                                          color: Colors.white54,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    ],
-                  );
+                  // Use separate layouts for portrait and landscape
+                  if (isLandscape) {
+                    return _buildLandscapeLayout(constraints);
+                  } else {
+                    return _buildPortraitLayout(constraints);
+                  }
                 },
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  // Dedicated portrait layout - optimized and locked down
+  Widget _buildPortraitLayout(BoxConstraints constraints) {
+    return Column(
+      children: [
+        // Top spacing
+        const SizedBox(height: 8),
+        
+        // Title - optimized for portrait
+        const Center(
+          child: Text(
+            'Trax Radio UK',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 2),
+        
+        // Visualizer - optimized for portrait
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Linear3DVisualizer(
+            audioPlayer: _player,
+            height: 60,
+            width: constraints.maxWidth,
+            barCount: 50,
+            enableBeatDetection: true,
+            enable3DEffects: true,
+          ),
+        ),
+
+        // Metadata Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: MetadataDisplay(),
+        ),
+
+        // Current DJ Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: CurrentDJWidget(),
+        ),
+        
+        // Next DJ Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: NextDJWidget(),
+        ),
+        
+        // Spacer to push turntable down
+        const Spacer(),
+        
+        // Turntable section - moved above play button, increased size
+        Center(
+          child: SizedBox(
+            width: constraints.maxWidth * 0.65, // Increased from 0.45 to 0.65
+            height: constraints.maxWidth * 0.65, // Maintain aspect ratio
+            child: TurntableWidget(
+              size: constraints.maxWidth * 0.65,
+              isPlaying: _isPlaying,
+              isLandscape: false,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 16), // Spacing between turntable and play button
+        
+        // Play/Pause button and version info
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: IconButton(
+                  iconSize: 80,
+                  color: Colors.white,
+                  icon: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 6,
+                        )
+                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  onPressed: _isLoading ? null : _togglePlayPause,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'V1.0.0 Beta',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      'Developed by DJXSR',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Dedicated landscape layout - placeholder for now
+  Widget _buildLandscapeLayout(BoxConstraints constraints) {
+    return Column(
+      children: [
+        // Top spacing
+        const SizedBox(height: 4),
+        
+        // Title - optimized for landscape
+        const Center(
+          child: Text(
+            'Trax Radio UK',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 1),
+        
+        // Visualizer - optimized for landscape
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Linear3DVisualizer(
+            audioPlayer: _player,
+            height: 40,
+            width: constraints.maxWidth,
+            barCount: 40,
+            enableBeatDetection: true,
+            enable3DEffects: true,
+          ),
+        ),
+
+        // Metadata Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: MetadataDisplay(),
+        ),
+
+        // Current DJ Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: CurrentDJWidget(),
+        ),
+        
+        // Next DJ Widget
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: Transform.scale(
+            scale: 0.75,
+            child: const NextDJWidget(),
+          ),
+        ),
+        
+        // Play/Pause button and version info
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: IconButton(
+                  iconSize: 50,
+                  color: Colors.white,
+                  icon: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        )
+                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  onPressed: _isLoading ? null : _togglePlayPause,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'V1.0.0 Beta',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      'Developed by DJXSR',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
