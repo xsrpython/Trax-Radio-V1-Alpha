@@ -121,7 +121,7 @@ class DJService {
     final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
     
-    print('DEBUG: Current UK time: $currentTime ($currentMinutes minutes) on $currentDay');
+
 
     // Get all slots for today
     List<Map<String, dynamic>> todaySlots = [];
@@ -146,18 +146,18 @@ class DJService {
     // Sort by start time
     todaySlots.sort((a, b) => a['startMinutes'].compareTo(b['startMinutes']));
     
-    print('DEBUG: Today\'s slots: ${todaySlots.map((s) => '${s['dj']} ${s['start']}-${s['end']} (${s['startMinutes']}min)').join(', ')}');
+
 
     // Find the next slot that starts after current time
     for (final slot in todaySlots) {
       final startMinutes = slot['startMinutes'];
       final endMinutes = slot['endMinutes'];
       
-      print('DEBUG: Checking slot ${slot['dj']} ${slot['start']} (${startMinutes}min) vs current ${currentMinutes}min');
+
 
       // If this slot starts in the future, it's the next one
       if (startMinutes > currentMinutes) {
-        print('DEBUG: Found next DJ: ${slot['dj']} at ${slot['start']}');
+
         return {'name': slot['dj'], 'startTime': slot['start']};
       }
 

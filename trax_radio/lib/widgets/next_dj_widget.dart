@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../dj_service.dart';
-import '../monitoring_service.dart';
 
 class NextDJWidget extends StatefulWidget {
   const NextDJWidget({super.key});
@@ -15,7 +14,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
   String _nextStartTime = '';
   bool _isLoading = true;
   Timer? _timer;
-  final MonitoringService _monitoringService = MonitoringService();
+
 
   @override
   void initState() {
@@ -105,8 +104,7 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       timeText = 'Coming Soon';
     }
 
-    // Check for overflow and record it
-    _checkAndRecordOverflow(displayText, timeText);
+
 
     return Transform.scale(
       scale: 1.0,
@@ -183,24 +181,4 @@ class _NextDJWidgetState extends State<NextDJWidget> {
     );
   }
 
-  void _checkAndRecordOverflow(String displayText, String timeText) {
-    // Check if text might overflow (rough estimation)
-    final totalTextLength = displayText.length + timeText.length;
-    const maxRecommendedLength = 40; // Increased for longer DJ names
-    
-    if (totalTextLength > maxRecommendedLength) {
-      _monitoringService.recordOverflow(
-        widgetName: 'NextDJWidget',
-        content: '$displayText $timeText',
-        overflowType: 'text_length',
-        resolution: 'tooltip_and_ellipsis',
-        additionalData: {
-          'displayTextLength': displayText.length,
-          'timeTextLength': timeText.length,
-          'totalLength': totalTextLength,
-          'maxRecommendedLength': maxRecommendedLength,
-        },
-      );
-    }
-  }
 } 

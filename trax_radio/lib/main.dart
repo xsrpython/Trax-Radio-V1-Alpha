@@ -2,21 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dj_service.dart';
 import 'splash_screen.dart';
-import 'monitoring_service.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
-import 'widgets/current_track_widget.dart';
-import 'widgets/monitoring_dashboard.dart';
+import 'widgets/metadata_display.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DJService.initialize();
-  
-  // Initialize and start monitoring service
-  final monitoringService = MonitoringService();
-  monitoringService.startMonitoring();
-  
   runApp(const TraxRadioApp());
 }
 
@@ -114,12 +107,9 @@ class _RadioHomePageState extends State<RadioHomePage>
       await _player.pause();
     } else {
       try {
-        print('Attempting to play stream: $streamUrl');
         await _player.setUrl(streamUrl);
         await _player.play();
-        print('Stream started successfully');
       } catch (e) {
-        print('Error playing stream: $e');
         if (!mounted) return; // Fix for "BuildContexts across async gaps"
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -226,9 +216,9 @@ class _RadioHomePageState extends State<RadioHomePage>
                               'Trax Radio UK',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: isLandscape ? 60 : 72, // Reduced font size in portrait
+                                fontSize: isLandscape ? 32 : 40, // Much smaller font size
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 2,
+                                letterSpacing: 1,
                               ),
                             ),
                           ),
@@ -249,26 +239,34 @@ class _RadioHomePageState extends State<RadioHomePage>
                               ],
                             ),
                           ),
-                          // Metadata Widget
+
+                          // Metadata Widget - Live track information
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 1 : 2),
-                            child: const CurrentTrackWidget(),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 2 : 4),
+                            child: const MetadataDisplay(),
                           ),
-                          // Extra space between metadata and DJ widget
-                          SizedBox(height: isLandscape ? 8 : 12),
+
                           // Now Playing DJ Widget - Centered with more spacing to push down
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 4 : 8),
                             child: const CurrentDJWidget(),
+                          ),
+                          // Next DJ Widget - directly underneath Now Playing
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: isLandscape ? 2 : 4),
+                            child: Transform.scale(
+                              scale: isLandscape ? 0.8 : 0.75,
+                              child: const NextDJWidget(),
+                            ),
                           ),
                           // Turntable section - responsive sizing
                           Expanded(
                             child: Center(
                               child: LayoutBuilder(
                                 builder: (context, turntableConstraints) {
-                                                                final size = isLandscape
-                                ? turntableConstraints.maxHeight * 0.4 // Much smaller size
-                                : turntableConstraints.maxWidth * 0.45; // Much smaller size
+                                  final size = isLandscape
+                                      ? turntableConstraints.maxHeight * 0.4 // Much smaller size
+                                      : turntableConstraints.maxWidth * 0.45; // Much smaller size
                                   const recordFactor = 0.7;
                                   
                                   return Column(
@@ -303,12 +301,6 @@ class _RadioHomePageState extends State<RadioHomePage>
                                           ],
                                         ),
                                       ),
-                                                                SizedBox(height: isLandscape ? 2 : 1), // Very minimal spacing
-                          // Next DJ Widget - responsive scaling
-                          Transform.scale(
-                                                          scale: isLandscape ? 0.8 : 0.75, // Even smaller scale
-                            child: const NextDJWidget(),
-                          ),
                                     ],
                                   );
                                 },
@@ -367,8 +359,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                           ),
                         ],
                       ),
-                      // Monitoring Dashboard
-                      const MonitoringDashboard(),
+
                     ],
                   );
                 },
