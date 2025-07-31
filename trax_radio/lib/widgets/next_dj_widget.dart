@@ -58,10 +58,10 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       return Transform.scale(
         scale: 1.0,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: Colors.orange.withOpacity(0.5),
               width: 4,
@@ -112,10 +112,10 @@ class _NextDJWidgetState extends State<NextDJWidget> {
       scale: 1.0,
       child: Container(
         width: double.infinity, // Fill available width
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.7),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: Colors.orange.withOpacity(0.5),
             width: 4,
