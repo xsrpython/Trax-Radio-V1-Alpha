@@ -81,13 +81,6 @@ class _MetadataDisplayState extends State<MetadataDisplay>
         color: Colors.black.withOpacity(0.7),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 4),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.2),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ],
       ),
              child: Row(
          mainAxisSize: MainAxisSize.max,
@@ -108,37 +101,34 @@ class _MetadataDisplayState extends State<MetadataDisplay>
              ),
            ),
           const SizedBox(width: 8),
-                     Expanded(
-             child: SizedBox(
-               height: 20,
-               child: ClipRect(
-                 child: AnimatedBuilder(
-                   animation: _scrollAnimation,
-                   builder: (context, child) {
-                     // Only scroll if text is long enough to need it
-                     final shouldScroll = _currentTrack.length > 15;
-                     final offset = shouldScroll ? -(_scrollAnimation.value * 300) : 0.0;
-                     
-                     return Transform.translate(
-                       offset: Offset(offset, 0),
-                       child: Text(
-                         _currentTrack,
-                         style: const TextStyle(
-                           color: Colors.blueAccent,
-                           fontSize: 16,
-                           fontWeight: FontWeight.bold,
-                           letterSpacing: 0.5,
-                         ),
-                         overflow: TextOverflow.visible,
-                         maxLines: 1,
-                         softWrap: false,
-                       ),
-                     );
-                   },
-                 ),
-               ),
-             ),
-           ),
+          Expanded(
+            child: ClipRect(
+              child: AnimatedBuilder(
+                animation: _scrollAnimation,
+                builder: (context, child) {
+                  // Only scroll if text is long enough to need it
+                  final shouldScroll = _currentTrack.length > 15;
+                  final offset = shouldScroll ? -(_scrollAnimation.value * 300) : 0.0;
+                  
+                  return Transform.translate(
+                    offset: Offset(offset, 0),
+                    child: Text(
+                      _currentTrack,
+                      style: const TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                      overflow: TextOverflow.visible,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
