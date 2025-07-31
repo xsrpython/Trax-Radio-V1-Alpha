@@ -78,10 +78,10 @@ class DJService {
   static DJ? getCurrentDJ() {
     if (!_isInitialized || _djs.isEmpty || _userLocation == null) return null;
 
-    final now = tz.TZDateTime.now(_userLocation!);
+    final ukNow = tz.TZDateTime.now(_ukLocation);
     
-    final currentDay = _getDayName(now.weekday);
-    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    final currentDay = _getDayName(ukNow.weekday);
+    final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
 
     // Find the current DJ slot
