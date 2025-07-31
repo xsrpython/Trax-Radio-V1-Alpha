@@ -46,11 +46,15 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(
+        minWidth: 250,
+        maxWidth: 400,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 1),
+        border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 4),
         boxShadow: [
           BoxShadow(
             color: Colors.blueAccent.withOpacity(0.2),
@@ -59,9 +63,9 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+             child: Row(
+         mainAxisSize: MainAxisSize.max,
+         children: [
           const Icon(
             Icons.music_note,
             color: Colors.blueAccent,
@@ -69,10 +73,10 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
           ),
           const SizedBox(width: 8),
           const Text(
-            'NOW PLAYING: ',
+            'CURRENT TRACK: ',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),
@@ -83,7 +87,7 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
               _currentTrack,
               style: const TextStyle(
                 color: Colors.blueAccent,
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
               ),
@@ -102,7 +106,7 @@ class _MetadataDisplayState extends State<MetadataDisplay> {
               'LIVE',
               style: TextStyle(
                 color: Colors.blueAccent,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
               ),

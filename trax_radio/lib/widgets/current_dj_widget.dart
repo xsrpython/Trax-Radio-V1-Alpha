@@ -85,23 +85,27 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
+          constraints: const BoxConstraints(
+            minWidth: 250,
+            maxWidth: 400,
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1),
+            border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 4),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+                     child: Row(
+             mainAxisSize: MainAxisSize.max,
+             children: [
               const Icon(
-                Icons.music_note,
+                Icons.mic,
                 color: Colors.white,
                 size: 16,
               ),
               const SizedBox(width: 8),
               const Text(
-                'Now Playing (UK): ',
+                'ON AIR: ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -128,7 +132,7 @@ class _CurrentDJWidgetState extends State<CurrentDJWidget>
                             color: Colors.greenAccent,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
+                            letterSpacing: 0.5,
                             shadows: [
                               Shadow(
                                 offset: Offset(1, 1),
