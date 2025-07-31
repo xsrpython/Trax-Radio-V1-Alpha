@@ -10,23 +10,52 @@ class NextDJWidget extends StatefulWidget {
   State<NextDJWidget> createState() => _NextDJWidgetState();
 }
 
-class _NextDJWidgetState extends State<NextDJWidget> {
+class _NextDJWidgetState extends State<NextDJWidget>
+    with TickerProviderStateMixin {
   String _nextDJ = '';
   String _nextStartTime = '';
   bool _isLoading = true;
   Timer? _timer;
   final MonitoringService _monitoringService = MonitoringService();
+  late AnimationController _scrollController;
+  late Animation<double> _scrollAnimation;
 
   @override
   void initState() {
     super.initState();
+    _setupScrollAnimation();
     _updateNextDJ();
     _startTimer();
+  }
+
+  void _setupScrollAnimation() {
+    _scrollController = AnimationController(
+      duration: const Duration(seconds: 8), // Slower animation
+      vsync: this,
+    );
+
+    _scrollAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scrollController,
+      curve: Curves.easeInOut, // Smoother curve
+    ));
+
+    _scrollController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _scrollController.reset();
+        _scrollController.forward();
+      }
+    });
+
+    _scrollController.forward();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -140,18 +169,30 @@ class _NextDJWidgetState extends State<NextDJWidget> {
               ),
             ),
             Flexible(
-              child: Tooltip(
-                message: displayText,
-                child: Text(
-                  displayText,
-                  style: const TextStyle(
-                    color: Colors.orange,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+              child: ClipRect(
+                child: AnimatedBuilder(
+                  animation: _scrollAnimation,
+                  builder: (context, child) {
+                    // Only scroll if text is long enough to need it
+                    final shouldScroll = displayText.length > 8;
+                    final offset = shouldScroll ? -(_scrollAnimation.value * 200) : 0.0;
+                    
+                    return Transform.translate(
+                      offset: Offset(offset, 0),
+                      child: Text(
+                        displayText,
+                        style: const TextStyle(
+                          color: Colors.orange,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                        overflow: TextOverflow.visible,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
