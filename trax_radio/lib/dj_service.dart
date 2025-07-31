@@ -104,7 +104,13 @@ class DJService {
     }
 
     if (currentDJ == null) {
-      // Auto DJ active
+      // Auto DJ active - return a default DJ object
+      return DJ(
+        name: 'Auto DJ',
+        schedule: [],
+        bio: 'Automated music selection',
+        image: '',
+      );
     }
 
     return currentDJ;
