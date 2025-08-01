@@ -1,13 +1,13 @@
-# Trax Radio - Professional Internet Radio App
+# Trax Radio V1 Alpha - Professional Internet Radio App
 
-A Flutter-based internet radio application for Trax Radio UK, featuring real-time DJ scheduling, live metadata, and advanced audio visualization.
+A Flutter-based internet radio application for Trax Radio UK, featuring real-time DJ scheduling, live metadata, and advanced audio visualization. Currently in Alpha development phase with portrait-first design optimized for all phone sizes.
 
 ## 🎵 Features
 
 ### Professional UI/UX
 - **Multi-color accent system** with blue, green, and orange themes
 - **4px thick borders** on all widgets for professional appearance
-- **Responsive design** that adapts to different screen sizes
+- **Portrait-first design** optimized for portrait mode on all phone sizes
 - **Scrolling text animations** for long content display
 - **Overflow handling** with tooltips and ellipsis for clean layout
 
@@ -83,6 +83,10 @@ A Flutter-based internet radio application for Trax Radio UK, featuring real-tim
 
 ### Installation
 1. Clone the repository
+   ```bash
+   git clone https://github.com/xsrpython/Trax-Radio-V1-Alpha.git
+   cd Trax-Radio-V1-Alpha
+   ```
 2. Run `flutter pub get`
 3. Connect Android device or start emulator
 4. Run `flutter run`
@@ -101,7 +105,8 @@ A Flutter-based internet radio application for Trax Radio UK, featuring real-tim
 - Simplified pulse system for reliable operation
 - DJ scheduling with accurate timezone handling
 - Live metadata integration with scrolling text
-- Responsive layout with overflow protection
+- Portrait-first layout with overflow protection
+- Repository management with Alpha branch
 
 ### Performance Optimizations ✅
 - 50ms update frequency for smooth animations
@@ -116,6 +121,7 @@ A Flutter-based internet radio application for Trax Radio UK, featuring real-tim
 - Audio visualization system functional
 - Error handling implemented
 - Performance optimization ongoing
+- Alpha testing phase preparation
 
 ## 📊 Project Metrics
 
@@ -131,9 +137,15 @@ A Flutter-based internet radio application for Trax Radio UK, featuring real-tim
 - **Visualization**: Smooth and responsive
 - **Error Handling**: Robust
 
+### Repository Status
+- **Current Branch**: Trax-Radio-V1-Alpha
+- **Repository**: https://github.com/xsrpython/Trax-Radio-V1-Alpha
+- **Status**: Alpha Development
+- **Version Control**: Proper git workflow established
+
 ## 🤝 Contributing
 
-This project is currently in active development. For development opportunities, please contact the development team.
+This project is currently in Alpha development phase. For development opportunities, please contact the development team.
 
 ## 📄 License
 
