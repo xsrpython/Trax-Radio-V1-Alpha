@@ -6,7 +6,7 @@ import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
 import 'widgets/linear_3d_visualizer.dart';
 import 'widgets/metadata_display.dart';
-import 'widgets/turntable_widget.dart';
+// import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -213,8 +213,8 @@ class _RadioHomePageState extends State<RadioHomePage>
   Widget _buildPortraitLayout(BoxConstraints constraints) {
     return Column(
       children: [
-        // Top spacing - reduced
-        const SizedBox(height: 4),
+        // Top spacing
+        const SizedBox(height: 8),
         
         // Title - optimized for portrait
         const Center(
@@ -229,206 +229,214 @@ class _RadioHomePageState extends State<RadioHomePage>
           ),
         ),
         
-        const SizedBox(height: 11), // Reduced from 21 to 11 (10px less)
+        const SizedBox(height: 2),
         
-        // Visualizer - optimized for portrait with balanced height
+        // Visualizer - optimized for portrait
         Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: 12.0),
           child: Linear3DVisualizer(
             audioPlayer: _player,
-            height: 150, // Reduced from 180 to 150 for better compatibility
+            height: 60,
             width: constraints.maxWidth,
             barCount: 50,
             enableBeatDetection: true,
             enable3DEffects: true,
           ),
         ),
-        
-        // Minimal spacer to fix overflow
-        const SizedBox(height: 20),
-        
-        // Metadata Widget - positioned above turntable
+
+        // Metadata Widget
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: MetadataDisplay(),
         ),
-        
-        // 1px spacing
-        const SizedBox(height: 1),
-        
-        // Current DJ Widget - positioned above turntable
+
+        // Current DJ Widget
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: CurrentDJWidget(),
         ),
         
-        // 1px spacing
-        const SizedBox(height: 1),
-        
-        // Next DJ Widget - positioned above turntable
+        // Next DJ Widget
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: NextDJWidget(),
         ),
         
-        // Turntable section - positioned above play button
-        Center(
-          child: SizedBox(
-            width: constraints.maxWidth * 0.52,
-            height: constraints.maxWidth * 0.52,
-            child: TurntableWidget(
-              size: constraints.maxWidth * 0.52,
-              isPlaying: _isPlaying,
-              isLandscape: false,
-            ),
-          ),
-        ),
+        // Turntable section - temporarily removed for Alpha testing
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 1),
+        //   child: Center(
+        //     child: SizedBox(
+        //       width: constraints.maxWidth * 0.65,
+        //       height: constraints.maxWidth * 0.65,
+        //       child: TurntableWidget(
+        //         size: constraints.maxWidth * 0.65,
+        //         isPlaying: _isPlaying,
+        //         isLandscape: false,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         
-        // Small spacing above play button
-        const SizedBox(height: 1),
+        // Spacing to fill turntable area
+        const SizedBox(height: 40),
         
-        // Play/Pause button
-        Center(
-          child: IconButton(
-            iconSize: 65,
-            color: Colors.white,
-            icon: _isLoading
-                ? const CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 6,
-                  )
-                : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-            onPressed: _isLoading ? null : _togglePlayPause,
+        // Play/Pause button and version info
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: IconButton(
+                  iconSize: 80,
+                  color: Colors.white,
+                  icon: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 6,
+                        )
+                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  onPressed: _isLoading ? null : _togglePlayPause,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'V1.0.0 Beta',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      'Developed by DJXSR',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  // Dedicated landscape layout - optimized for horizontal space
+  // Dedicated landscape layout - placeholder for now
   Widget _buildLandscapeLayout(BoxConstraints constraints) {
-    return Row(
+    return Column(
       children: [
-        // Left side - Visualizer and controls
-        Expanded(
-          flex: 3,
-          child: Column(
-            children: [
-              // Top spacing
-              const SizedBox(height: 4),
-              
-              // Title - optimized for landscape
-              const Center(
-                child: Text(
-                  'Trax Radio UK',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 8),
-              
-              // Visualizer - optimized for landscape with more height
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-                child: Linear3DVisualizer(
-                  audioPlayer: _player,
-                  height: 120,
-                  width: constraints.maxWidth * 0.6,
-                  barCount: 60,
-                  enableBeatDetection: true,
-                  enable3DEffects: true,
-                ),
-              ),
+        // Top spacing
+        const SizedBox(height: 4),
+        
+        // Title - optimized for landscape
+        const Center(
+          child: Text(
+            'Trax Radio UK',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 1),
+        
+        // Visualizer - optimized for landscape
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Linear3DVisualizer(
+            audioPlayer: _player,
+            height: 40,
+            width: constraints.maxWidth,
+            barCount: 40,
+            enableBeatDetection: true,
+            enable3DEffects: true,
+          ),
+        ),
 
-              // Play/Pause button
+        // Metadata Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: MetadataDisplay(),
+        ),
+
+        // Current DJ Widget
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: CurrentDJWidget(),
+        ),
+        
+        // Next DJ Widget
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+          child: Transform.scale(
+            scale: 0.75,
+            child: const NextDJWidget(),
+          ),
+        ),
+        
+        // Play/Pause button and version info
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Center(
                 child: IconButton(
-                  iconSize: 70,
+                  iconSize: 50,
                   color: Colors.white,
                   icon: _isLoading
                       ? const CircularProgressIndicator(
                           color: Colors.white,
-                          strokeWidth: 4,
+                          strokeWidth: 3,
                         )
                       : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
                   onPressed: _isLoading ? null : _togglePlayPause,
                 ),
               ),
-
-              // Version info
-              const Spacer(),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  'V1.0.0 Beta',
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Right side - DJ info and turntable
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              // Top spacing
               const SizedBox(height: 4),
-              
-              // Metadata Widget
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: MetadataDisplay(),
-              ),
-
-              // Current DJ Widget
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                child: CurrentDJWidget(),
-              ),
-              
-              // Next DJ Widget
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                child: NextDJWidget(),
-              ),
-
-              // Turntable - smaller for landscape
-              Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: constraints.maxWidth * 0.25,
-                    height: constraints.maxWidth * 0.25,
-                    child: TurntableWidget(
-                      size: constraints.maxWidth * 0.25,
-                      isPlaying: _isPlaying,
-                      isLandscape: true,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'V1.0.0 Beta',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
-              ),
-
-              // Developer info
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  'Developed by DJXSR',
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      'Developed by DJXSR',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
