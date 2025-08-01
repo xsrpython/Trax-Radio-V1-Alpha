@@ -4,7 +4,7 @@ import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
-import 'widgets/equalizer_visualizer.dart';
+
 import 'widgets/metadata_display.dart';
 // import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
@@ -177,6 +177,7 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   Widget build(BuildContext context) {
+    print('🔍 DEBUG: Main build method executing!');
     // Check if beta has expired - DISABLED FOR NOW
     // if (_isBetaExpired()) {
     //   return _buildExpirationScreen();
@@ -192,12 +193,16 @@ class _RadioHomePageState extends State<RadioHomePage>
             child: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
+                  print('🔍 DEBUG: LayoutBuilder executing!');
+                  print('🔍 DEBUG: Constraints: ${constraints.maxWidth} x ${constraints.maxHeight}');
                   final isLandscape = constraints.maxWidth > constraints.maxHeight;
                   
                   // Use separate layouts for portrait and landscape
                   if (isLandscape) {
+                    print('🔍 DEBUG: Using landscape layout');
                     return _buildLandscapeLayout(constraints);
                   } else {
+                    print('🔍 DEBUG: Using portrait layout');
                     return _buildPortraitLayout(constraints);
                   }
                 },
@@ -209,72 +214,90 @@ class _RadioHomePageState extends State<RadioHomePage>
     );
   }
 
-  // Dedicated portrait layout - optimized and locked down
+  // Dedicated portrait layout - dynamic and responsive
   Widget _buildPortraitLayout(BoxConstraints constraints) {
+    // Dynamic sizing based on screen dimensions
+    final screenHeight = constraints.maxHeight;
+    final screenWidth = constraints.maxWidth;
+    
+    // Calculate dynamic sizes
+    final titleFontSize = screenHeight * 0.05; // 5% of screen height
+    final topSpacing = screenHeight * 0.01; // 1% of screen height
+    final visualizerHeight = screenHeight * 0.02; // 2% of screen height
+    final visualizerSpacing = screenHeight * 0.01; // 1% of screen height
+    final widgetSpacing = screenHeight * 0.015; // 1.5% of screen height
+    final playButtonSize = screenWidth * 0.25; // 25% of screen width
+    final bottomPadding = screenHeight * 0.02; // 2% of screen height
+    final horizontalPadding = screenWidth * 0.02; // 2% of screen width
+    
+    // DEBUG: Print all calculations
+    print('=== PORTRAIT LAYOUT DEBUG ===');
+    print('Screen Height: $screenHeight');
+    print('Screen Width: $screenWidth');
+    print('Title Font Size: $titleFontSize');
+    print('Top Spacing: $topSpacing');
+    print('Widget Spacing: $widgetSpacing');
+    print('Play Button Size: $playButtonSize');
+    print('Bottom Padding: $bottomPadding');
+    print('Horizontal Padding: $horizontalPadding');
+    
+    // Calculate total space used
+    final totalSpaceUsed = topSpacing + titleFontSize + (screenHeight * 0.02) + (widgetSpacing * 0.1 * 3) + 20; // 20px for play button padding
+    print('Total Space Used: $totalSpaceUsed');
+    print('Remaining Space: ${screenHeight - totalSpaceUsed}');
+    print('========================');
+    
     return Column(
       children: [
-        // Top spacing
-        const SizedBox(height: 8),
+        // Top spacing - dynamic
+        SizedBox(height: topSpacing),
         
-        // Title - optimized for portrait
-        const Center(
+        // Title - dynamic font size
+        Center(
           child: Text(
             'Trax Radio UK',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 40,
+              fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
           ),
         ),
         
-        const SizedBox(height: 2),
+        // Spacing to move widgets down
+        SizedBox(height: screenHeight * 0.02), // 2% of screen height
         
-        // Visualizer - moved down by 100px
+        // All widgets positioned under title
+        // Current DJ Widget - dynamic padding
         Padding(
-          padding: const EdgeInsets.only(top: 100.0, bottom: 12.0),
-          child: EqualizerVisualizer(
-            audioPlayer: _player,
-            height: 72,
-            width: constraints.maxWidth,
-            barCount: 20,
-            enableBeatDetection: true,
-            enable3DEffects: true,
-          ),
-        ),
-
-        // Spacer to push widgets to bottom area
-        const Spacer(),
-        
-        // All widgets positioned above play button
-        // Metadata Widget
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: MetadataDisplay(),
-        ),
-
-        // Current DJ Widget
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: CurrentDJWidget(),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
+          child: const CurrentDJWidget(),
         ),
         
-        // Next DJ Widget
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: NextDJWidget(),
-        ),
-        
-        // Small spacing before play button
-        const SizedBox(height: 20),
-        
-        // Play/Pause button at the very bottom
+        // Metadata Widget - dynamic padding
         Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
+          child: const MetadataDisplay(),
+        ),
+        
+        // Next DJ Widget - dynamic padding
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
+          child: const NextDJWidget(),
+        ),
+        
+        // Flexible space that adapts to content
+        Flexible(
+          child: Container(), // Empty container takes available space but doesn't force it
+        ),
+        
+        // Play/Pause button with minimal bottom padding
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20),
           child: Center(
             child: IconButton(
-              iconSize: 150,
+                                iconSize: playButtonSize,
               color: Colors.white,
               icon: _isLoading
                   ? const CircularProgressIndicator(
@@ -290,51 +313,69 @@ class _RadioHomePageState extends State<RadioHomePage>
     );
   }
 
-  // Dedicated landscape layout - placeholder for now
+  // Dedicated landscape layout - dynamic and responsive
   Widget _buildLandscapeLayout(BoxConstraints constraints) {
+    // Dynamic sizing based on screen dimensions
+    final screenHeight = constraints.maxHeight;
+    final screenWidth = constraints.maxWidth;
+    
+    // Calculate dynamic sizes for landscape
+    final titleFontSize = screenHeight * 0.06; // 6% of screen height
+    final topSpacing = screenHeight * 0.01; // 1% of screen height
+    final visualizerHeight = screenHeight * 0.015; // 1.5% of screen height
+    final visualizerSpacing = screenHeight * 0.01; // 1% of screen height
+    final widgetSpacing = screenHeight * 0.015; // 1.5% of screen height
+    final playButtonSize = screenWidth * 0.15; // 15% of screen width
+    final bottomPadding = screenHeight * 0.01; // 1% of screen height
+    final horizontalPadding = screenWidth * 0.02; // 2% of screen width
+    
+    // DEBUG: Print all calculations
+    print('=== LANDSCAPE LAYOUT DEBUG ===');
+    print('Screen Height: $screenHeight');
+    print('Screen Width: $screenWidth');
+    print('Title Font Size: $titleFontSize');
+    print('Top Spacing: $topSpacing');
+    print('Widget Spacing: $widgetSpacing');
+    print('Play Button Size: $playButtonSize');
+    print('Bottom Padding: $bottomPadding');
+    print('Horizontal Padding: $horizontalPadding');
+    
+    // Calculate total space used
+    final totalSpaceUsed = topSpacing + titleFontSize + (widgetSpacing * 0.3) + (widgetSpacing * 0.6) + 1 + 20; // 1px for Next DJ, 20px for play button padding
+    print('Total Space Used: $totalSpaceUsed');
+    print('Remaining Space: ${screenHeight - totalSpaceUsed}');
+    print('========================');
+    
     return Column(
       children: [
-        // Top spacing
-        const SizedBox(height: 4),
+        // Top spacing - dynamic
+        SizedBox(height: topSpacing),
         
-        // Title - optimized for landscape
-        const Center(
+        // Title - dynamic font size
+        Center(
           child: Text(
             'Trax Radio UK',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
           ),
         ),
         
-        const SizedBox(height: 1),
-        
-        // Visualizer - optimized for landscape
+
+
+        // Metadata Widget - dynamic padding
         Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: EqualizerVisualizer(
-            audioPlayer: _player,
-            height: 40,
-            width: constraints.maxWidth,
-            barCount: 15,
-            enableBeatDetection: true,
-            enable3DEffects: true,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.3),
+          child: const MetadataDisplay(),
         ),
 
-        // Metadata Widget
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
-          child: MetadataDisplay(),
-        ),
-
-        // Current DJ Widget
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-          child: CurrentDJWidget(),
+        // Current DJ Widget - dynamic padding
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.6),
+          child: const CurrentDJWidget(),
         ),
         
         // Next DJ Widget
@@ -346,15 +387,20 @@ class _RadioHomePageState extends State<RadioHomePage>
           ),
         ),
         
-        // Play/Pause button and version info
+        // Flexible space that adapts to content
+        Flexible(
+          child: Container(), // Empty container takes available space but doesn't force it
+        ),
+        
+        // Play/Pause button with minimal bottom padding
         Padding(
-          padding: const EdgeInsets.only(bottom: 2.0),
+          padding: const EdgeInsets.only(bottom: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Center(
                 child: IconButton(
-                  iconSize: 70,
+                  iconSize: playButtonSize,
                   color: Colors.white,
                   icon: _isLoading
                       ? const CircularProgressIndicator(

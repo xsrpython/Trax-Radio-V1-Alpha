@@ -131,7 +131,7 @@ class _SplashScreenState extends State<SplashScreen>
               
               // Version
               Text(
-                'V1.0.0 Beta',
+                'V1.0.0 Alpha',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: versionFontSize,
