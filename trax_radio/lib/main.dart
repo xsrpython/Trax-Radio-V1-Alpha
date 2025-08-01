@@ -20,7 +20,7 @@ class TraxRadioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trax Radio V1.0.0 Beta',
+      title: 'Trax Radio',
       theme: ThemeData(
         primarySwatch: Colors.orange,
         brightness: Brightness.dark,
@@ -300,34 +300,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                   onPressed: _isLoading ? null : _togglePlayPause,
                 ),
               ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      'V1.0.0 Beta',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Text(
-                      'Developed by DJXSR',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Version and developer info removed for Alpha testing
             ],
           ),
         ),
@@ -410,34 +383,7 @@ class _RadioHomePageState extends State<RadioHomePage>
                   onPressed: _isLoading ? null : _togglePlayPause,
                 ),
               ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      'V1.0.0 Beta',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Text(
-                      'Developed by DJXSR',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Version and developer info removed for Alpha testing
             ],
           ),
         ),
