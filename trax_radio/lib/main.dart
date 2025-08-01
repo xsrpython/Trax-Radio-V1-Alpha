@@ -4,7 +4,7 @@ import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
 import 'widgets/next_dj_widget.dart';
-import 'widgets/linear_3d_visualizer.dart';
+import 'widgets/equalizer_visualizer.dart';
 import 'widgets/metadata_display.dart';
 // import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
@@ -231,19 +231,23 @@ class _RadioHomePageState extends State<RadioHomePage>
         
         const SizedBox(height: 2),
         
-        // Visualizer - optimized for portrait
+        // Visualizer - moved down by 100px
         Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: Linear3DVisualizer(
+          padding: const EdgeInsets.only(top: 100.0, bottom: 12.0),
+          child: EqualizerVisualizer(
             audioPlayer: _player,
-            height: 60,
+            height: 72,
             width: constraints.maxWidth,
-            barCount: 50,
+            barCount: 20,
             enableBeatDetection: true,
             enable3DEffects: true,
           ),
         ),
 
+        // Spacer to push widgets to bottom area
+        const Spacer(),
+        
+        // All widgets positioned above play button
         // Metadata Widget
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -262,46 +266,24 @@ class _RadioHomePageState extends State<RadioHomePage>
           child: NextDJWidget(),
         ),
         
-        // Turntable section - temporarily removed for Alpha testing
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: 1),
-        //   child: Center(
-        //     child: SizedBox(
-        //       width: constraints.maxWidth * 0.65,
-        //       height: constraints.maxWidth * 0.65,
-        //       child: TurntableWidget(
-        //         size: constraints.maxWidth * 0.65,
-        //         isPlaying: _isPlaying,
-        //         isLandscape: false,
-        //       ),
-        //     ),
-        //   ),
-        // ),
+        // Small spacing before play button
+        const SizedBox(height: 20),
         
-        // Spacing to fill turntable area
-        const SizedBox(height: 40),
-        
-        // Play/Pause button and version info
+        // Play/Pause button at the very bottom
         Padding(
-          padding: const EdgeInsets.only(bottom: 6.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: IconButton(
-                  iconSize: 80,
-                  color: Colors.white,
-                  icon: _isLoading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 6,
-                        )
-                      : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
-                  onPressed: _isLoading ? null : _togglePlayPause,
-                ),
-              ),
-              // Version and developer info removed for Alpha testing
-            ],
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Center(
+            child: IconButton(
+              iconSize: 150,
+              color: Colors.white,
+              icon: _isLoading
+                  ? const CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 6,
+                    )
+                  : Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+              onPressed: _isLoading ? null : _togglePlayPause,
+            ),
           ),
         ),
       ],
@@ -333,11 +315,11 @@ class _RadioHomePageState extends State<RadioHomePage>
         // Visualizer - optimized for landscape
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
-          child: Linear3DVisualizer(
+          child: EqualizerVisualizer(
             audioPlayer: _player,
             height: 40,
             width: constraints.maxWidth,
-            barCount: 40,
+            barCount: 15,
             enableBeatDetection: true,
             enable3DEffects: true,
           ),
@@ -372,7 +354,7 @@ class _RadioHomePageState extends State<RadioHomePage>
             children: [
               Center(
                 child: IconButton(
-                  iconSize: 50,
+                  iconSize: 70,
                   color: Colors.white,
                   icon: _isLoading
                       ? const CircularProgressIndicator(
