@@ -142,5 +142,5 @@ This project is proprietary software developed for Trax Radio UK.
 ---
 
 **Last Updated**: December 2024  
-**Version**: 1.0.0  
-**Status**: In development 🎵
+**Version**: 1.0.0-Alpha  
+**Status**: Alpha Development 🎵

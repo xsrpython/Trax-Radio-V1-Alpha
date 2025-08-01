@@ -1,4 +1,4 @@
-# TODO - Trax Radio Development
+# TODO - Trax Radio V1 Alpha Development
 
 ## ✅ COMPLETED TASKS
 
@@ -34,7 +34,7 @@
 - **Error Handling**: Robust error management with graceful fallbacks
 - **Code Cleanup**: Removed complex BPM integration for reliability
 
-## 🎯 CURRENT STATUS: IN DEVELOPMENT 🟡
+## 🎯 CURRENT STATUS: ALPHA DEVELOPMENT 🟡
 
 ### App State
 - **Core Features**: Implemented and in testing
@@ -105,5 +105,5 @@
 ---
 
 **Last Updated**: December 2024  
-**Status**: In development 🎵  
-**Next Milestone**: Complete internal testing and feature polish 
+**Status**: Alpha Development 🎵  
+**Next Milestone**: Complete internal testing and feature polish for Alpha release 
