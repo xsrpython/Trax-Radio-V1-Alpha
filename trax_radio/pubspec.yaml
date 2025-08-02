@@ -38,6 +38,11 @@ dependencies:
   timezone: ^0.10.1
   http: ^1.1.0
   path_provider: ^2.1.1
+  
+  # Firebase dependencies for app distribution and analytics
+  firebase_core: ^2.24.2
+  firebase_analytics: ^10.7.4
+  firebase_crashlytics: ^3.4.8
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "676772085724",
+    "project_id": "trax-radio-uk-v1-alpha",
+    "storage_bucket": "trax-radio-uk-v1-alpha.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676772085724:android:95cfea0c434826581f5919",
+        "android_client_info": {
+          "package_name": "com.alphatest.trax_radio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVVs-FUDgXdRiXjbXbQ1GToEy_ewu9Foc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

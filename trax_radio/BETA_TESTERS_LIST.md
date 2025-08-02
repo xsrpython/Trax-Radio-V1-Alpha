@@ -75,12 +75,12 @@
   - Will be included when iOS version is developed
 
 ### **7. Martyn Hixon**
-- **Email**: [Email needed]
+- **Email**: hicky73@sky.com
 - **Device**: [Device needed]
 - **Experience Level**: [Tech level needed]
 - **Status**: Pending
 - **Notes**: 
-  - Need complete information
+  - Need device and experience level information
 
 ### **8. [Name needed]**
 - **Email**: [Email needed]
