@@ -348,6 +348,10 @@ class DJService {
     if (parts.length == 2) {
       final hours = int.tryParse(parts[0]) ?? 0;
       final minutes = int.tryParse(parts[1]) ?? 0;
+      // Handle 00:00 as 24:00 (1440 minutes) for end times
+      if (hours == 0 && minutes == 0) {
+        return 1440; // 24 hours in minutes
+      }
       return hours * 60 + minutes;
     }
     return 0;
@@ -359,6 +363,10 @@ class DJService {
   }
 
   static String _minutesToTimeString(int minutes) {
+    // Handle 1440 minutes (24:00) as 00:00 for display
+    if (minutes == 1440) {
+      return '00:00';
+    }
     final hours = (minutes / 60).floor();
     final remainingMinutes = minutes % 60;
     return '${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}';

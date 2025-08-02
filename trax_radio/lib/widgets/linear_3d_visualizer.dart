@@ -222,15 +222,19 @@ class _Linear3DVisualizerState extends State<Linear3DVisualizer>
         _isBeat = averageHeight > 0.6 && beatIntensity > 0.4; // Increased thresholds (was 0.5 and 0.3)
         
       } else {
-        // When not playing, create very subtle idle animation or static bars
+        // When not playing, create idle animation with subtle movement
         for (int i = 0; i < widget.barCount; i++) {
-          // Static bars with minimal height when not playing
-          _barHeights[i] = 0.05; // Very low static height
-          _beatIntensities[i] = 0.0;
-          _barScales[i] = 1.0;
+          // Create subtle wave pattern when not playing
+          final waveOffset = (DateTime.now().millisecondsSinceEpoch / 1000) % (2 * math.pi);
+          final wavePosition = (i / widget.barCount) * 2 * math.pi;
+          final waveValue = math.sin(waveOffset + wavePosition) * 0.3 + 0.3; // Subtle wave between 0.0 and 0.6
           
-          // No animation when not playing
-          // _controllers[i].forward(from: 0.0); // Commented out - no animation
+          _barHeights[i] = waveValue;
+          _beatIntensities[i] = 0.0;
+          _barScales[i] = 1.0 + (waveValue * 0.1); // Slight scale variation
+          
+          // Trigger subtle animation
+          _controllers[i].forward(from: 0.0);
         }
         _isBeat = false;
       }
