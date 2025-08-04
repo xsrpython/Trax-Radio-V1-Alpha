@@ -135,7 +135,7 @@ class _EqualizerVisualizerState extends State<EqualizerVisualizer>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: widget.height,
       width: widget.width,
       child: Row(
@@ -144,7 +144,7 @@ class _EqualizerVisualizerState extends State<EqualizerVisualizer>
           final barHeight = _barHeights[index];
           final barWidth = (widget.width / widget.barCount) * 0.8;
           
-          return Container(
+          return SizedBox(
             width: barWidth,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,

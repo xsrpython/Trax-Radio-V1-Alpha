@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
@@ -15,16 +11,7 @@ import 'widgets/linear_3d_visualizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  
-  // Initialize Crashlytics
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  
-  // Initialize DJ Service
   await DJService.initialize();
-  
   runApp(const TraxRadioApp());
 }
 
@@ -57,7 +44,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
-  late AnimationController _fadeController; // Add fade controller
   bool _hasShownLandscapeMessage = false; // Track if we've shown the message
 
   // Beta expiration date - DISABLED FOR NOW
@@ -67,23 +53,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   void initState() {
     super.initState();
     
-    // Check if beta has expired - DISABLED FOR NOW
-    // if (_isBetaExpired()) {
-    //   return; // Don't initialize audio if expired
-    // }
-    
-    _fadeController = AnimationController( // Initialize fade controller
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-    
-    // Start fade-in after a brief delay
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) {
-        _fadeController.forward();
-      }
-    });
-    
     _player.playerStateStream.listen((state) {
       setState(() {
         _isPlaying = state.playing;
@@ -91,50 +60,6 @@ class _RadioHomePageState extends State<RadioHomePage>
             state.processingState == ProcessingState.buffering;
       });
     });
-  }
-
-  // Check orientation and show message if needed
-  void _checkOrientationAndShowMessage(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-    final size = MediaQuery.of(context).size;
-    
-    // Check if in landscape mode
-    if (orientation == Orientation.landscape || size.width > size.height) {
-      if (!_hasShownLandscapeMessage) {
-        _hasShownLandscapeMessage = true;
-        
-        // Show toast message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.screen_rotation, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text('Landscape view coming soon!'),
-              ],
-            ),
-            duration: Duration(seconds: 3),
-            backgroundColor: Colors.orange,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
-        
-        // Reset flag after delay
-        Future.delayed(Duration(seconds: 4), () {
-          if (mounted) {
-            setState(() {
-              _hasShownLandscapeMessage = false;
-            });
-          }
-        });
-      }
-    } else {
-      // Reset flag when back to portrait
-      _hasShownLandscapeMessage = false;
-    }
   }
 
   // Beta expiration methods - DISABLED FOR NOW
@@ -156,10 +81,28 @@ class _RadioHomePageState extends State<RadioHomePage>
       await _player.pause();
     } else {
       try {
-        await _player.setUrl(streamUrl);
+        setState(() {
+          _isLoading = true;
+        });
+        
+        // Set audio session for better compatibility
+        await _player.setAudioSource(
+          AudioSource.uri(Uri.parse(streamUrl)),
+          preload: false,
+        );
+        
         await _player.play();
+        
+        setState(() {
+          _isLoading = false;
+        });
       } catch (e) {
-        if (!mounted) return; // Fix for "BuildContexts across async gaps"
+        setState(() {
+          _isLoading = false;
+        });
+        
+        if (!mounted) return;
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error playing stream: $e'),
@@ -173,7 +116,6 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   void dispose() {
-    _fadeController.dispose(); // Dispose fade controller
     _player.dispose();
     super.dispose();
   }
@@ -236,28 +178,13 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   Widget build(BuildContext context) {
-    // Check orientation and show message if needed - AFTER build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkOrientationAndShowMessage(context);
-    });
-    
     return Scaffold(
       backgroundColor: Colors.black,
-      body: FadeTransition(
-        opacity: _fadeController,
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isLandscape = constraints.maxWidth > constraints.maxHeight;
-              
-              // Use different layouts for portrait and landscape
-              if (isLandscape) {
-                return _buildSimpleLandscapeLayout(constraints);
-              } else {
-                return _buildPortraitLayout(constraints);
-              }
-            },
-          ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return _buildPortraitLayout(constraints);
+          },
         ),
       ),
     );
@@ -344,7 +271,7 @@ class _RadioHomePageState extends State<RadioHomePage>
           padding: const EdgeInsets.only(bottom: 20),
           child: Center(
             child: IconButton(
-              iconSize: playButtonSize,
+                                iconSize: playButtonSize,
               color: Colors.white,
               icon: _isLoading
                   ? const CircularProgressIndicator(
@@ -360,46 +287,7 @@ class _RadioHomePageState extends State<RadioHomePage>
     );
   }
 
-  // New simple landscape layout for the build method
-  Widget _buildSimpleLandscapeLayout(BoxConstraints constraints) {
-    final screenHeight = constraints.maxHeight;
-    final screenWidth = constraints.maxWidth;
 
-    final titleFontSize = screenHeight * 0.05;
-    final topSpacing = screenHeight * 0.02;
-    final widgetSpacing = screenHeight * 0.015;
-    final horizontalPadding = screenWidth * 0.03;
-
-    return Column(
-      children: [
-        SizedBox(height: topSpacing),
-        Center(
-          child: Text(
-            'Trax Radio UK',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: titleFontSize,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
-        ),
-        SizedBox(height: screenHeight * 0.02),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
-          child: const CurrentDJWidget(),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
-          child: const MetadataDisplay(),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
-          child: const NextDJWidget(),
-        ),
-      ],
-    );
-  }
 }
 
 

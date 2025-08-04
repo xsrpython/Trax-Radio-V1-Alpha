@@ -1,4 +1,4 @@
-package com.example.trax_radio
+package com.alphatest.trax_radio
 
 import io.flutter.embedding.android.FlutterActivity
 

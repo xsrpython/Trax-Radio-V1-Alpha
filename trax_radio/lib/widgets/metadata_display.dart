@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../metadata_service.dart';
 
 class MetadataDisplay extends StatefulWidget {
-  const MetadataDisplay({Key? key}) : super(key: key);
+  const MetadataDisplay({super.key});
 
   @override
   State<MetadataDisplay> createState() => _MetadataDisplayState();

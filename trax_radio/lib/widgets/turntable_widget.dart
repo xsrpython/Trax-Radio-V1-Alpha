@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class TurntableWidget extends StatefulWidget {
   final double size;
   final bool isPlaying;
-  final bool isLandscape;
 
   const TurntableWidget({
     super.key,
     required this.size,
     required this.isPlaying,
-    required this.isLandscape,
   });
 
   @override
@@ -50,7 +48,7 @@ class _TurntableWidgetState extends State<TurntableWidget>
     const recordFactor = 0.77; // Increased from 0.75 to make record 2px bigger
     final adjustedHeight = widget.size * 0.95;
     
-    return Container(
+    return SizedBox(
       width: widget.size,
       height: adjustedHeight,
       child: Stack(

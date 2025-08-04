@@ -56,17 +56,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     
-    // Responsive sizing
-    final iconSize = isLandscape ? 120.0 : 200.0;
-    final titleFontSize = isLandscape ? 24.0 : 32.0;
-    final versionFontSize = isLandscape ? 14.0 : 18.0;
-    final developerFontSize = isLandscape ? 14.0 : 18.0;
-    final spacing = isLandscape ? 20.0 : 50.0;
-    final bottomSpacing = isLandscape ? 40.0 : 120.0;
+    // Fixed sizing for portrait mode only
+    final iconSize = 200.0;
+    final titleFontSize = 32.0;
+    final versionFontSize = 18.0;
+    final developerFontSize = 18.0;
+    final spacing = 50.0;
+    final bottomSpacing = 120.0;
     
     return Scaffold(
       backgroundColor: Colors.black,
@@ -123,7 +122,7 @@ class _SplashScreenState extends State<SplashScreen>
                   color: Colors.white,
                   fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: isLandscape ? 1 : 2,
+                  letterSpacing: 2,
                 ),
               ),
               
