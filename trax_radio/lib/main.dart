@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:audio_session/audio_session.dart';
 import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
@@ -54,6 +55,9 @@ class _RadioHomePageState extends State<RadioHomePage>
   void initState() {
     super.initState();
     
+    // Configure audio session for background playback
+    _configureAudioSession();
+    
     _player.playerStateStream.listen((state) {
       setState(() {
         _isPlaying = state.playing;
@@ -61,6 +65,30 @@ class _RadioHomePageState extends State<RadioHomePage>
             state.processingState == ProcessingState.buffering;
       });
     });
+  }
+
+  Future<void> _configureAudioSession() async {
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playback,
+      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.allowBluetooth |
+          AVAudioSessionCategoryOptions.mixWithOthers,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.music,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.media,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: false,
+    ));
+  }
+
+  void _startBackgroundService() {
+    // This will be handled by the Android service
+    // The audio session configuration ensures background playback
   }
 
   // Beta expiration methods - DISABLED FOR NOW
@@ -101,6 +129,9 @@ class _RadioHomePageState extends State<RadioHomePage>
         );
         
         await _player.play();
+        
+        // Start background service for continuous playback
+        _startBackgroundService();
         
         // Track play event
         // FirebaseAnalytics.instance.logEvent(

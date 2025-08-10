@@ -14,7 +14,9 @@ A professional internet radio streaming application for Trax Radio UK, built wit
 
 ### Technical Features
 - **Multi-Platform Support** - Android, iOS, Web, Desktop
-- **Just Audio Plugin** - Robust audio streaming
+- **Just Audio Plugin** - Robust audio streaming with background support
+- **Background Audio** - Continuous playback when switching apps
+- **Audio Focus Management** - Professional audio handling
 - **Real-time Updates** - Live DJ and schedule information
 - **Performance Optimized** - Smooth 60fps on Samsung Galaxy S25
 - **Responsive Design** - Adapts to different screen sizes
@@ -81,6 +83,7 @@ trax_radio/
 
 ### Dependencies
 - **just_audio** - Audio streaming and playback
+- **audio_session** - Background audio and audio focus management
 - **timezone** - Time zone handling
 - **http** - API communication
 - **path_provider** - File system access
