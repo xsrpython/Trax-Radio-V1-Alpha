@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
@@ -13,12 +11,6 @@ import 'widgets/linear_3d_visualizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  
-  // Initialize Firebase Analytics
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   
   await DJService.initialize();
   runApp(const TraxRadioApp());
@@ -62,15 +54,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   void initState() {
     super.initState();
     
-    // Track app open event
-    FirebaseAnalytics.instance.logEvent(
-      name: 'app_open',
-      parameters: {
-        'app_version': '1.0.0',
-        'device_type': 'mobile',
-      },
-    );
-    
     _player.playerStateStream.listen((state) {
       setState(() {
         _isPlaying = state.playing;
@@ -99,12 +82,12 @@ class _RadioHomePageState extends State<RadioHomePage>
       await _player.pause();
       
       // Track pause event
-      FirebaseAnalytics.instance.logEvent(
-        name: 'radio_pause',
-        parameters: {
-          'session_duration': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
+      // FirebaseAnalytics.instance.logEvent(
+      //   name: 'radio_pause',
+      //   parameters: {
+      //     'session_duration': DateTime.now().millisecondsSinceEpoch,
+      //   },
+      // );
     } else {
       try {
         setState(() {
@@ -120,13 +103,13 @@ class _RadioHomePageState extends State<RadioHomePage>
         await _player.play();
         
         // Track play event
-        FirebaseAnalytics.instance.logEvent(
-          name: 'radio_play',
-          parameters: {
-            'stream_url': streamUrl,
-            'device_type': 'mobile',
-          },
-        );
+        // FirebaseAnalytics.instance.logEvent(
+        //   name: 'radio_play',
+        //   parameters: {
+        //     'stream_url': streamUrl,
+        //     'device_type': 'mobile',
+        //   },
+        // );
         
         setState(() {
           _isLoading = false;
@@ -137,13 +120,13 @@ class _RadioHomePageState extends State<RadioHomePage>
         });
         
         // Track error event
-        FirebaseAnalytics.instance.logEvent(
-          name: 'radio_error',
-          parameters: {
-            'error_message': e.toString(),
-            'stream_url': streamUrl,
-          },
-        );
+        // FirebaseAnalytics.instance.logEvent(
+        //   name: 'radio_error',
+        //   parameters: {
+        //     'error_message': e.toString(),
+        //     'stream_url': streamUrl,
+        //   },
+        // );
         
         if (!mounted) return;
         

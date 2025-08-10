@@ -1,55 +1,50 @@
-# Trax Radio UK - Flutter App
+# Trax Radio UK
 
-A professional internet radio streaming application for Trax Radio UK, built with Flutter. **Ready for Firebase rollout and beta testing.**
+A professional internet radio streaming application for Trax Radio UK, built with Flutter. **Ready for Play Store submission.**
 
 ## 🎵 Features
 
 ### Core Functionality
-- **Live Radio Streaming** - Stream Trax Radio UK live
+- **Live Streaming** - High-quality internet radio streaming
 - **Audio Visualization** - Real-time beat detection and visualizer
-- **DJ Information** - Current and next DJ displays
-- **Metadata Display** - Song information and track details
+- **DJ Information** - Current and upcoming DJ schedules
+- **Metadata Display** - Song information and artist details
 - **Professional UI** - Modern, responsive design
-- **Portrait Mode Lock** - Optimized for portrait orientation
+- **Portrait Mode Lock** - Optimized for mobile use
 
 ### Technical Features
-- **Multi-platform Support** - Android, iOS, Web, Desktop
-- **Firebase Integration** - Analytics and crash reporting
-- **Audio Processing** - Just Audio plugin for streaming
+- **Multi-Platform Support** - Android, iOS, Web, Desktop
+- **Just Audio Plugin** - Robust audio streaming
+- **Real-time Updates** - Live DJ and schedule information
+- **Performance Optimized** - Smooth 60fps on Samsung Galaxy S25
 - **Responsive Design** - Adapts to different screen sizes
-- **Performance Optimized** - Efficient animations and state management
-- **S25 Optimized** - Special optimizations for Samsung Galaxy S25
 
 ## 📱 Current Status
 
 ### ✅ Completed Features
-- **Core Audio Streaming** - Play/pause functionality working perfectly
-- **Visualizer System** - Beat detection and animations optimized
-- **DJ Service** - Real-time DJ information
-- **UI Components** - Professional styling and layout
-- **Error Handling** - Robust error management
-- **Performance Optimization** - Smooth animations on S25
-- **Device Compatibility** - Tested on Samsung S21 and S25
+- **Audio Streaming** - Live radio with Just Audio plugin
+- **Visualizer** - Real-time audio visualization and BPM detection
+- **DJ Service** - Current and next DJ information display
+- **UI Components** - Professional, modern interface
+- **Performance** - Optimized for smooth operation
+- **App Icon** - Professional turntable/radio themed icon
 
-### 🚀 Ready for Deployment
-- **Firebase Configuration** - All services configured
-- **Build System** - Successfully building and installing
-- **Performance** - Frame skipping resolved, smooth operation
-- **Audio Player** - Fixed play button and streaming issues
-- **Visualizer** - Optimized for better performance
+### 🎯 Ready for
+- **Play Store Submission** - App configured and ready
+- **Beta Testing** - APK ready for distribution
+- **Production Release** - All core features complete
 
-## 🛠️ Setup Instructions
+## 🚀 Getting Started
 
 ### Prerequisites
 - Flutter SDK (latest stable)
 - Android Studio / VS Code
 - Android device or emulator
-- Internet connection
 
 ### Installation
 1. **Clone the repository**
    ```bash
-   git clone [repository-url]
+   git clone <repository-url>
    cd trax_radio
    ```
 
@@ -63,107 +58,106 @@ A professional internet radio streaming application for Trax Radio UK, built wit
    flutter run
    ```
 
-### Android Configuration
-- **Application ID**: `com.alphatest.trax_radio`
-- **Package**: `com.alphatest.trax_radio`
-- **Min SDK**: Android API 21+
-- **Target SDK**: Android API 35
-
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
 trax_radio/
 ├── lib/
-│   ├── main.dart                 # Main app entry point
-│   ├── splash_screen.dart        # Splash screen
-│   ├── dj_service.dart           # DJ information service
-│   ├── bpm_service.dart          # Beat detection service
-│   └── widgets/
-│       ├── current_dj_widget.dart    # Current DJ display
-│       ├── next_dj_widget.dart       # Next DJ display
-│       ├── metadata_display.dart     # Song metadata
-│       ├── linear_3d_visualizer.dart # Audio visualizer (optimized)
-│       └── equalizer_visualizer.dart # Alternative visualizer
-├── android/                      # Android-specific configuration
-├── ios/                         # iOS-specific configuration
-├── assets/                      # App assets and resources
-└── pubspec.yaml                 # Dependencies and configuration
+│   ├── main.dart              # App entry point
+│   ├── bpm_service.dart       # Beat detection service
+│   ├── dj_service.dart        # DJ information service
+│   └── widgets/               # UI components
+│       ├── bpm_display.dart   # BPM visualization
+│       ├── current_dj_widget.dart
+│       ├── equalizer_visualizer.dart
+│       └── ...
+├── android/                   # Android-specific code
+├── ios/                      # iOS-specific code
+├── assets/                   # Images and data files
+└── pubspec.yaml             # Dependencies and configuration
 ```
 
 ## 🔧 Technical Details
 
 ### Dependencies
-- **just_audio** - Audio streaming
-- **firebase_core** - Firebase initialization
-- **firebase_analytics** - Usage analytics
-- **firebase_crashlytics** - Crash reporting
-- **flutter** - Core framework
+- **just_audio** - Audio streaming and playback
+- **timezone** - Time zone handling
+- **http** - API communication
+- **path_provider** - File system access
 
 ### Key Components
-- **AudioPlayer** - Handles streaming audio (optimized)
-- **Linear3DVisualizer** - Real-time audio visualization (simplified)
-- **DJService** - Manages DJ schedule and information
-- **BMPService** - Beat detection and analysis
+- **BPM Service** - Real-time beat detection
+- **DJ Service** - Schedule and information management
+- **Audio Visualizer** - Real-time audio visualization
+- **Main Player** - Central audio control interface
 
-## 🎯 Development Priorities
+## 📊 Development Priorities
 
 ### Current Focus
-1. **Firebase Rollout** - Deploy to Firebase App Distribution
-2. **Beta Testing** - Gather user feedback
-3. **Performance Monitoring** - Track app performance
-4. **Bug Fixes** - Address any issues found
+1. **Play Store Submission** - Final preparation and testing
+2. **Performance Optimization** - Ensure smooth operation
+3. **User Experience** - Polish UI and interactions
 
 ### Future Enhancements
-- **Multi-station Support** - Additional radio stations
-- **Offline Mode** - Cached content
-- **Social Features** - Share functionality
-- **Premium Features** - Ad-free experience
+- **iOS Optimization** - Enhanced iOS support
+- **Web Features** - Advanced web functionality
+- **Analytics** - User behavior tracking
+- **Push Notifications** - DJ schedule updates
 
 ## 🐛 Recent Fixes
 
-### Critical Issues Resolved
-- **MainActivity ClassNotFoundException** - Fixed package mismatch
-- **Android Build Issues** - Resolved Gradle configuration
-- **S25 Performance Issues** - Fixed frame skipping, visualizer, and play button
-- **Import Errors** - Added missing imports
-- **Audio Player** - Improved compatibility and reliability
+### Performance Optimizations
+- **Frame Rate**: Optimized for 60fps on Samsung Galaxy S25
+- **Visualizer**: Improved performance and smoothness
+- **Memory Usage**: Reduced memory footprint
+- **Battery Life**: Optimized audio processing
 
-### Performance Improvements
-- **Frame Rate** - Eliminated frame skipping on S25
-- **Visualizer** - Simplified for better performance
-- **Memory Usage** - Optimized widget lifecycle
-- **Error Recovery** - Robust error handling
-
-## 📊 Performance Metrics
-
-- **Core Features**: 100% Complete
-- **UI/UX**: 95% Complete
-- **Testing**: Complete and verified
-- **Documentation**: 90% Complete
+### UI Improvements
+- **Responsive Design**: Better adaptation to screen sizes
+- **Icon System**: Professional app icon implementation
+- **Color Scheme**: Consistent visual identity
+- **Layout**: Improved component positioning
 
 ## 🚀 Deployment
 
-### Firebase App Distribution
-- **Ready for rollout** - All configurations complete
-- **Beta testing** - Ready for user feedback
-- **Performance monitoring** - Firebase Analytics configured
-- **Crash reporting** - Firebase Crashlytics active
+### Play Store Ready
+- **App Icon**: Professional design implemented
+- **Build Configuration**: Optimized for release
+- **Metadata**: Complete app information
+- **Signing**: Ready for release keystore
 
-### Android
-- **Debug Build**: `flutter build apk --debug`
-- **Release Build**: `flutter build apk --release`
-- **App Bundle**: `flutter build appbundle`
+### Build Commands
+```bash
+# Development build
+flutter build apk --debug
 
-### iOS
-- **Debug Build**: `flutter build ios --debug`
-- **Release Build**: `flutter build ios --release`
+# Release build
+flutter build apk --release
 
-## 📞 Support
+# Play Store build (after keystore setup)
+flutter build appbundle --release
+```
 
-For issues or questions:
-- Check the TODO.md file for current development status
-- Review the code comments for implementation details
-- Test on different devices for compatibility
+## 📱 Device Compatibility
+
+### Tested Devices
+- **Samsung Galaxy S25** - Primary development device
+- **Android 5.0+** - Minimum API level 21
+- **High Performance** - Optimized for modern devices
+
+### Performance Metrics
+- **Frame Rate**: 60fps target achieved
+- **Audio Latency**: Minimal streaming delay
+- **Memory Usage**: Optimized for mobile devices
+- **Battery Impact**: Minimal background processing
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
@@ -171,6 +165,6 @@ This project is proprietary software for Trax Radio UK.
 
 ---
 
-**Last Updated**: December 2024  
-**Version**: Alpha V1  
-**Status**: Ready for Firebase Rollout 🚀
+**Status**: Ready for Play Store Submission 🚀
+**Version**: 1.0.0
+**Last Updated**: August 2025

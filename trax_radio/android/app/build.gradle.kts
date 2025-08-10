@@ -3,7 +3,6 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -29,14 +28,17 @@ android {
         
         // Enable multidex for larger apps
         multiDexEnabled = true
+        
+        // App metadata
+        manifestPlaceholders["appName"] = "Trax Radio UK"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("debug") // Change to "release" for Play Store
         }
         debug {
             isDebuggable = true
@@ -47,8 +49,13 @@ android {
     // Ensure APK is properly signed for distribution
     signingConfigs {
         create("release") {
-            // For Firebase App Distribution, you can use debug signing initially
-            // In production, you should use a proper release keystore
+            // For Play Store, you need to create a proper release keystore
+            // storeFile = file("release-keystore.jks") // Uncomment when you have release keystore
+            // storePassword = "your-store-password"
+            // keyAlias = "your-key-alias"
+            // keyPassword = "your-key-password"
+            
+            // For now, using debug signing (change this for Play Store)
             storeFile = file("debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
