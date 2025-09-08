@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'dart:async';
 import 'dj_service.dart';
 import 'splash_screen.dart';
 import 'widgets/current_dj_widget.dart';
@@ -8,6 +10,7 @@ import 'widgets/next_dj_widget.dart';
 
 import 'widgets/metadata_display.dart';
 import 'widgets/linear_3d_visualizer.dart';
+import 'metadata_service.dart';
 // import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
 void main() async {
@@ -44,6 +47,7 @@ class RadioHomePage extends StatefulWidget {
 class _RadioHomePageState extends State<RadioHomePage>
     with TickerProviderStateMixin {
   final AudioPlayer _player = AudioPlayer();
+  final MetadataService _metadataService = MetadataService();
   bool _isPlaying = false;
   bool _isLoading = false;
   bool _hasShownLandscapeMessage = false; // Track if we've shown the message
@@ -64,6 +68,13 @@ class _RadioHomePageState extends State<RadioHomePage>
         _isLoading = state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
       });
+    });
+    
+    // Start periodic metadata updates for Bluetooth devices
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (_isPlaying) {
+        _updateBluetoothMetadata();
+      }
     });
   }
 
@@ -89,6 +100,35 @@ class _RadioHomePageState extends State<RadioHomePage>
   void _startBackgroundService() {
     // This will be handled by the Android service
     // The audio session configuration ensures background playback
+  }
+
+  Future<void> _updateBluetoothMetadata() async {
+    try {
+      final currentTrack = _metadataService.currentTrack;
+      final currentArtist = _metadataService.currentArtist;
+      final currentTitle = _metadataService.currentTitle;
+      
+      // Update the audio player metadata for Bluetooth devices
+      if (currentTitle.isNotEmpty) {
+        // Set metadata that Bluetooth devices can read
+        await _player.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(streamUrl),
+            tag: MediaItem(
+              id: 'trax_radio_live',
+              album: 'Trax Radio UK',
+              title: currentTitle,
+              artist: currentArtist.isNotEmpty ? currentArtist : 'Trax Radio UK',
+              duration: Duration.zero, // Live stream
+            ),
+          ),
+          preload: false,
+        );
+      }
+    } catch (e) {
+      // Metadata update failed, continue with normal playback
+      print('Metadata update failed: $e');
+    }
   }
 
   // Beta expiration methods - DISABLED FOR NOW
@@ -122,6 +162,9 @@ class _RadioHomePageState extends State<RadioHomePage>
           _isLoading = true;
         });
         
+        // Start metadata service for live updates
+        _metadataService.startMetadataUpdates();
+        
         // Set audio session for better compatibility
         await _player.setAudioSource(
           AudioSource.uri(Uri.parse(streamUrl)),
@@ -132,6 +175,11 @@ class _RadioHomePageState extends State<RadioHomePage>
         
         // Start background service for continuous playback
         _startBackgroundService();
+        
+        // Update Bluetooth metadata after a short delay to ensure metadata is loaded
+        Future.delayed(const Duration(seconds: 2), () {
+          _updateBluetoothMetadata();
+        });
         
         // Track play event
         // FirebaseAnalytics.instance.logEvent(
@@ -174,6 +222,7 @@ class _RadioHomePageState extends State<RadioHomePage>
 
   @override
   void dispose() {
+    _metadataService.stopMetadataUpdates();
     _player.dispose();
     super.dispose();
   }

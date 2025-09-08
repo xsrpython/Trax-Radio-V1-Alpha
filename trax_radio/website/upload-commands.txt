@@ -1,0 +1,4 @@
+# Git Commands to Upload Fixed Files
+git add .
+git commit -m "Fix APK download link and upload correct APK file"
+git push origin main
