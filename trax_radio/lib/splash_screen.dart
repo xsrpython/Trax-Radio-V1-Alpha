@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,10 +13,12 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  String _version = 'V1.0.0 Alpha'; // Default version
 
   @override
   void initState() {
     super.initState();
+    _loadVersionInfo();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500), // Faster initial fade-in
       vsync: this,
@@ -46,6 +49,18 @@ class _SplashScreenState extends State<SplashScreen>
         );
       }
     });
+  }
+
+  Future<void> _loadVersionInfo() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        _version = 'V${packageInfo.version}';
+      });
+    } catch (e) {
+      // Keep default version if loading fails
+      debugPrint('Failed to load version info: $e');
+    }
   }
 
   @override
@@ -130,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
               
               // Version
               Text(
-                'V1.0.0 Alpha',
+                _version,
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: versionFontSize,
