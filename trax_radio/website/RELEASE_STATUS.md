@@ -1,25 +1,26 @@
 # Trax Radio UK - Release Status
 
-## Current Release: v1.0.0+1
+## Current Release: v1.0.1+2
 
-**Status**: ✅ **Released to Trax DJs and Owners**  
+**Status**: 🚀 **Ready for Release - Auto-Update System**  
 **Date**: January 2025  
-**Build**: 1.0.0+1  
+**Build**: 1.0.1+2  
 
 ---
 
 ## Release Distribution
 
-### ✅ **Released To:**
-- Trax Radio DJs
-- Trax Radio Owners
-- Internal testing team
-
-### 📱 **Current APK:**
+### ✅ **Previous Release (v1.0.0):**
+- **Released To**: Trax Radio DJs and Owners
 - **File**: `trax-radio-uk-v1.0.0.apk`
-- **Version**: 1.0.0+1
-- **Status**: Stable release
-- **Distribution**: Direct APK distribution
+- **Status**: Superseded by v1.0.1
+
+### 🚀 **Current Release (v1.0.1):**
+- **File**: `trax-radio-uk-v1.0.1.apk`
+- **Version**: 1.0.1+2
+- **Status**: Ready for distribution
+- **Features**: Auto-update system included
+- **Distribution**: Direct APK download + auto-updates
 
 ---
 

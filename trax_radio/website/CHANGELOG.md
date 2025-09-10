@@ -17,6 +17,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved website deployment process
 - Enhanced version control integration
 
+## [1.0.1] - 2025-01-XX
+
+### Added
+- **Auto-update system** - Automatic update notifications and downloads
+- **Background download** - Updates download while app is in use
+- **One-tap installation** - Simple update process for users
+- **Release notes display** - Users can see what's new in each update
+- **Version comparison** - Smart detection of new versions
+- **Update progress tracking** - Visual download progress indicators
+
+### Changed
+- **Enhanced user experience** - Smoother animations and interactions
+- **Improved performance** - Better error handling and stability
+- **Future-proof architecture** - Seamless updates for all future versions
+
+### Technical
+- Added `package_info_plus` dependency for version management
+- Implemented GitHub API integration for release checking
+- Added Android permissions for APK installation
+- Created comprehensive update service with background downloads
+
 ## [1.0.0] - 2025-01-XX
 
 ### Added

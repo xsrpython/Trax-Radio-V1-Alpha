@@ -82,13 +82,16 @@
 - **Notes**: 
   - Need device and experience level information
 
-### **8. [Name needed]**
-- **Email**: [Email needed]
-- **Device**: [Device needed]
-- **Experience Level**: [Tech level needed]
+### **8. Mark Whyteman**
+- **Email**: Mark_whyteman@hotmail.com
+- **Device**: Samsung Galaxy S23
+- **Experience Level**: Advanced
 - **Status**: Pending
 - **Notes**: 
-  - Need complete information
+  - Samsung Galaxy S23 is a premium flagship device
+  - Android 13/14, 6.1" display, 1080p resolution
+  - Advanced user - excellent for technical feedback
+  - High-end device testing for performance optimization
 
 ---
 
@@ -97,6 +100,7 @@
 ### **Current Coverage:**
 - ✅ **Motorola Razr 50 Ultra** - Premium foldable (Phil)
 - ✅ **Samsung Galaxy A32 5G** - Mid-range 5G (Gaynor)
+- ✅ **Samsung Galaxy S23** - Premium flagship (Mark)
 - 🔄 **Samsung Galaxy A54** - Mid-range (Testing)
 - 🔄 **Samsung Galaxy S24** - Premium (Testing)
 
@@ -125,6 +129,13 @@
   - [ ] 5G streaming quality
   - [ ] Android 13 compatibility
   - [ ] Mid-range device performance
+
+- [ ] **Samsung Galaxy S23** (Mark)
+  - [ ] 6.1" display optimization
+  - [ ] 1080p resolution performance
+  - [ ] Premium device performance
+  - [ ] Android 13/14 compatibility
+  - [ ] Advanced user feedback collection
 
 ### **Core Functionality Testing:**
 - [ ] App launch and loading
