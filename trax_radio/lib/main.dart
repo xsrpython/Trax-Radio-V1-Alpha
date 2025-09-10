@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+
 import 'dart:async';
 import 'dj_service.dart';
 import 'splash_screen.dart';
@@ -70,12 +70,7 @@ class _RadioHomePageState extends State<RadioHomePage>
       });
     });
     
-    // Start periodic metadata updates for Bluetooth devices
-    Timer.periodic(const Duration(seconds: 30), (timer) {
-      if (_isPlaying) {
-        _updateBluetoothMetadata();
-      }
-    });
+    // Metadata service handles periodic updates for display
   }
 
   Future<void> _configureAudioSession() async {
@@ -102,34 +97,7 @@ class _RadioHomePageState extends State<RadioHomePage>
     // The audio session configuration ensures background playback
   }
 
-  Future<void> _updateBluetoothMetadata() async {
-    try {
-      final currentTrack = _metadataService.currentTrack;
-      final currentArtist = _metadataService.currentArtist;
-      final currentTitle = _metadataService.currentTitle;
-      
-      // Update the audio player metadata for Bluetooth devices
-      if (currentTitle.isNotEmpty) {
-        // Set metadata that Bluetooth devices can read
-        await _player.setAudioSource(
-          AudioSource.uri(
-            Uri.parse(streamUrl),
-            tag: MediaItem(
-              id: 'trax_radio_live',
-              album: 'Trax Radio UK',
-              title: currentTitle,
-              artist: currentArtist.isNotEmpty ? currentArtist : 'Trax Radio UK',
-              duration: Duration.zero, // Live stream
-            ),
-          ),
-          preload: false,
-        );
-      }
-    } catch (e) {
-      // Metadata update failed, continue with normal playback
-      print('Metadata update failed: $e');
-    }
-  }
+  // Metadata service handles all track information updates
 
   // Beta expiration methods - DISABLED FOR NOW
   // bool _isBetaExpired() {
@@ -165,7 +133,14 @@ class _RadioHomePageState extends State<RadioHomePage>
         // Start metadata service for live updates
         _metadataService.startMetadataUpdates();
         
-        // Set audio session for better compatibility
+        // Wait a moment for initial metadata to load
+        await Future.delayed(const Duration(milliseconds: 500));
+        
+        // Get current metadata for initial setup
+        final initialTitle = _metadataService.currentTitle;
+        final initialArtist = _metadataService.currentArtist;
+        
+        // Set audio source for streaming
         await _player.setAudioSource(
           AudioSource.uri(Uri.parse(streamUrl)),
           preload: false,
@@ -176,10 +151,7 @@ class _RadioHomePageState extends State<RadioHomePage>
         // Start background service for continuous playback
         _startBackgroundService();
         
-        // Update Bluetooth metadata after a short delay to ensure metadata is loaded
-        Future.delayed(const Duration(seconds: 2), () {
-          _updateBluetoothMetadata();
-        });
+        // Metadata service handles track information display
         
         // Track play event
         // FirebaseAnalytics.instance.logEvent(

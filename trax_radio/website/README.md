@@ -1,47 +1,33 @@
-# 🌐 Trax Radio UK Website Setup Guide
+# 🌐 Trax Radio UK Website
 
-## **Quick Setup Options**
+## **Current Status: v1.0.0 Released** ✅
 
-### **Option 1: GitHub Pages (RECOMMENDED - FREE)**
+Trax Radio UK website with automated versioning and release management system.
 
-1. **Create GitHub Repository**
-   - Go to [GitHub.com](https://github.com)
-   - Click "New Repository"
-   - Name: `trax-radio-website`
-   - Make it public
-   - Initialize with README
+---
 
-2. **Upload Website Files**
-   - Upload all files from `website/` folder
-   - Keep the folder structure intact
+## **Quick Start**
 
-3. **Enable GitHub Pages**
-   - Go to repository Settings
-   - Scroll to "Pages" section
-   - Source: "Deploy from a branch"
-   - Branch: "main"
-   - Folder: "/ (root)"
-   - Click "Save"
+### **🚀 Release Commands**
+```bash
+# Quick patch release (1.0.0 → 1.0.1)
+quick-release.bat patch
 
-4. **Your Website URL**
-   - `https://[your-username].github.io/trax-radio-website`
+# Quick minor release (1.0.0 → 1.1.0)  
+quick-release.bat minor
 
-### **Option 2: Netlify (FREE & EASY)**
+# Quick major release (1.0.0 → 2.0.0)
+quick-release.bat major
 
-1. **Go to [Netlify.com](https://netlify.com)**
-2. **Sign up with GitHub**
-3. **Click "New site from Git"**
-4. **Connect your GitHub repository**
-5. **Deploy automatically**
-6. **Custom domain available**
+# Just build APK
+quick-release.bat build
+```
 
-### **Option 3: Vercel (FREE & FAST)**
-
-1. **Go to [Vercel.com](https://vercel.com)**
-2. **Sign up with GitHub**
-3. **Import your repository**
-4. **Deploy with one click**
-5. **Automatic HTTPS**
+### **📦 Manual Release**
+```bash
+# Full control over versioning
+.\version-manager.ps1 -VersionType minor -Build -Release
+```
 
 ---
 
@@ -51,176 +37,62 @@
 website/
 ├── index.html              # Main homepage
 ├── privacy-policy.html     # Privacy policy page
-├── styles.css             # All CSS styles
+├── styles.css             # CSS styles
 ├── script.js              # JavaScript functionality
-├── assets/                # Images and icons
-│   ├── traxicon.png       # App icon (512x512)
-│   ├── phone-mockup.png   # Phone mockup image
-│   └── app-screenshot.png # App screenshot
+├── quick-release.bat      # Quick release commands
+├── version-manager.ps1    # Advanced version management
+├── CHANGELOG.md           # Version history
+├── RELEASE_STATUS.md      # Current release status
+├── README.md              # This file
 └── releases/              # APK files
     └── trax-radio-uk-v1.0.0.apk
 ```
 
 ---
 
-## **Required Images to Create**
+## **Automated Features**
 
-### **1. Phone Mockup (phone-mockup.png)**
-- **Size**: 300x600 pixels
-- **Content**: Phone showing Trax Radio app
-- **Style**: Modern phone frame with app screenshot
+### **✅ Version Management**
+- Automatic version bumping (patch/minor/major)
+- Git tagging and commits
+- Website version updates
 
-### **2. App Screenshot (app-screenshot.png)**
-- **Size**: 300x600 pixels
-- **Content**: Main app interface
-- **Style**: Clean app screenshot
+### **✅ APK Building**
+- Flutter APK building
+- Automatic file copying
+- Download link updates
 
-### **3. App Icon (traxicon.png)**
-- **Size**: 512x512 pixels
-- **Status**: ✅ Already exists in your project
+### **✅ Release Management**
+- GitHub release creation
+- Release notes generation
+- Automated website deployment
 
----
-
-## **APK Upload Process**
-
-### **1. Build Release APK**
-```bash
-cd trax_radio
-flutter build apk --release
-```
-
-### **2. Copy APK to Website**
-```bash
-# Copy APK to website releases folder
-cp build/app/outputs/flutter-apk/app-release.apk website/releases/trax-radio-uk-v1.0.0.apk
-```
-
-### **3. Update Download Links**
-- Update `index.html` with correct APK filename
-- Update version numbers as needed
+### **✅ GitHub Actions**
+- Continuous integration
+- Automated testing
+- Release workflows
 
 ---
 
-## **Customization**
+## **Current Release: v1.0.0+1**
 
-### **Update Contact Information**
-1. **Edit `index.html`**
-   - Replace `[Your Email]` with your email
-   - Replace `[Your Website]` with your website
-   - Replace `[Your Business Address]` with your address
-
-2. **Edit `privacy-policy.html`**
-   - Update contact information
-   - Add your business details
-
-### **Update App Information**
-1. **Version numbers** in download section
-2. **App size** information
-3. **Release notes** for new versions
-4. **Feature descriptions** as needed
+**Status**: Released to Trax DJs and owners  
+**Features**: Live streaming, DJ info, audio visualization  
+**Distribution**: Direct APK download  
 
 ---
 
-## **Testing Checklist**
+## **Next Steps**
 
-### **Before Going Live**
-- [ ] All images are uploaded and display correctly
-- [ ] APK download link works
-- [ ] Privacy policy page loads
-- [ ] Mobile responsive design works
-- [ ] Contact information is updated
-- [ ] All links work properly
-
-### **Mobile Testing**
-- [ ] Test on Android phone
-- [ ] Test on iPhone (for website viewing)
-- [ ] Test download functionality
-- [ ] Test responsive design
-
----
-
-## **SEO Optimization**
-
-### **Meta Tags (Already Included)**
-- Title tag
-- Description tag
-- Viewport tag
-- Favicon
-
-### **Additional SEO**
-- Add Google Analytics (optional)
-- Submit to Google Search Console
-- Add structured data (optional)
-
----
-
-## **Analytics (Optional)**
-
-### **Google Analytics**
-1. **Create Google Analytics account**
-2. **Get tracking code**
-3. **Add to `index.html` before closing `</head>` tag**
-
-### **Basic Analytics Code**
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID');
-</script>
-```
-
----
-
-## **Domain Setup (Optional)**
-
-### **Custom Domain**
-1. **Buy domain** (GoDaddy, Namecheap, etc.)
-2. **Point DNS** to your hosting provider
-3. **Update website** with custom domain
-4. **Add SSL certificate** (usually automatic)
-
-### **Popular Domain Options**
-- `traxradiouk.com`
-- `traxradio.app`
-- `traxradio.uk`
-- `traxradio.download`
-
----
-
-## **Maintenance**
-
-### **Regular Updates**
-- Update APK files for new versions
-- Update version numbers
-- Update release notes
-- Test download functionality
-
-### **Backup**
-- Keep local copies of all files
-- Use Git for version control
-- Regular backups of hosting account
+1. **Collect feedback** from Trax DJs
+2. **Use release commands** for updates
+3. **Monitor GitHub Actions** for automation
+4. **Update documentation** as needed
 
 ---
 
 ## **Support**
 
-### **If You Need Help**
-- Check hosting provider documentation
-- GitHub Pages: [GitHub Docs](https://docs.github.com/en/pages)
-- Netlify: [Netlify Docs](https://docs.netlify.com)
-- Vercel: [Vercel Docs](https://vercel.com/docs)
-
----
-
-**Your website is ready to go live!** 🚀
-
-**Next steps:**
-1. Choose hosting option (GitHub Pages recommended)
-2. Upload files
-3. Test everything
-4. Share your website URL!
-
+- **Documentation**: See individual files for detailed guides
+- **Version Control**: Full Git integration with automated workflows
+- **Releases**: Automated GitHub release management

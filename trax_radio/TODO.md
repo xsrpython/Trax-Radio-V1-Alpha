@@ -27,6 +27,18 @@
 - **Permissions Added**: WAKE_LOCK, FOREGROUND_SERVICE
 - **Cross-platform Support**: iOS and Android audio compatibility
 
+### Future Enhancements 🔄
+- **Bluetooth Metadata for Cars**: A2DP metadata injection for car displays
+- **Car Bluetooth Compatibility**: Support for modern car Bluetooth systems
+- **Metadata Standardization**: ICY metadata support for external devices
+
+### Play Store Preparation 🔄
+- **Release Keystore**: Create for app signing
+- **App Bundle (AAB)**: Build for Play Store submission
+- **Store Assets**: Screenshots, descriptions, feature graphic
+- **Privacy Policy**: Create if required
+- **Store Listing**: Complete app description and keywords
+
 ### User Experience ✅
 - **Professional UI** - Modern, responsive design
 - **Audio Visualization** - Real-time beat detection and visualizer

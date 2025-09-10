@@ -50,7 +50,8 @@ android {
     signingConfigs {
         create("release") {
             // For Play Store, you need to create a proper release keystore
-            // storeFile = file("release-keystore.jks") // Uncomment when you have release keystore
+            // TODO: Create release keystore when ready for Play Store
+            // storeFile = file("release-keystore.jks")
             // storePassword = "your-store-password"
             // keyAlias = "your-key-alias"
             // keyPassword = "your-key-password"

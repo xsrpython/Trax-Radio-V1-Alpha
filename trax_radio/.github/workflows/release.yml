@@ -1,0 +1,135 @@
+name: 🚀 Release Trax Radio UK
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for proper versioning
+    
+    - name: 🏗️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+        cache: true
+    
+    - name: 📦 Get dependencies
+      run: |
+        cd trax_radio
+        flutter pub get
+    
+    - name: 🔍 Analyze code
+      run: |
+        cd trax_radio
+        flutter analyze
+    
+    - name: 🧪 Run tests
+      run: |
+        cd trax_radio
+        flutter test
+    
+    - name: 🔨 Build APK
+      run: |
+        cd trax_radio
+        flutter build apk --release --build-name=${{ github.ref_name }}
+    
+    - name: 📱 Prepare release assets
+      run: |
+        cd trax_radio
+        mkdir -p release-assets
+        
+        # Copy APK
+        cp build/app/outputs/flutter-apk/app-release.apk release-assets/trax-radio-uk-${{ github.ref_name }}.apk
+        
+        # Get APK size
+        APK_SIZE=$(du -h release-assets/trax-radio-uk-${{ github.ref_name }}.apk | cut -f1)
+        echo "APK_SIZE=$APK_SIZE" >> $GITHUB_ENV
+        
+        # Create release notes
+        cat > release-assets/RELEASE_NOTES.md << EOF
+        ## Trax Radio UK ${{ github.ref_name }}
+        
+        ### 📱 Download
+        - **APK File**: trax-radio-uk-${{ github.ref_name }}.apk
+        - **Size**: $APK_SIZE
+        - **Build Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        ### 🚀 Installation
+        1. Download the APK file
+        2. Enable "Install from unknown sources" in Android settings
+        3. Install the APK file
+        4. Enjoy Trax Radio UK!
+        
+        ### 🔧 Technical Details
+        - **Flutter Version**: 3.16.0
+        - **Build Type**: Release
+        - **Architecture**: Universal APK
+        
+        ### 📋 Changes
+        Check the commit history for detailed changes.
+        EOF
+    
+    - name: 📊 Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          trax_radio/release-assets/trax-radio-uk-${{ github.ref_name }}.apk
+          trax_radio/release-assets/RELEASE_NOTES.md
+        body_path: trax_radio/release-assets/RELEASE_NOTES.md
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: 🌐 Update website
+      run: |
+        # Update website with new release info
+        cd trax_radio/website
+        
+        # Update index.html with new version
+        sed -i "s/trax-radio-uk-v[0-9]\+\.[0-9]\+\.[0-9]\+\.apk/trax-radio-uk-${{ github.ref_name }}.apk/g" index.html
+        sed -i "s/Version [0-9]\+\.[0-9]\+\.[0-9]\+/Version ${{ github.ref_name }}/g" index.html
+        
+        # Update version.json
+        cat > version.json << EOF
+        {
+          "version": "${{ github.ref_name }}",
+          "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+          "apkSize": "$APK_SIZE",
+          "downloadUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/trax-radio-uk-${{ github.ref_name }}.apk"
+        }
+        EOF
+        
+        # Commit website updates
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update website for release ${{ github.ref_name }}" || exit 0
+        git push
+    
+    - name: 📈 Update download stats
+      run: |
+        echo "Release ${{ github.ref_name }} completed successfully!"
+        echo "APK Size: $APK_SIZE"
+        echo "Download URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/trax-radio-uk-${{ github.ref_name }}.apk"

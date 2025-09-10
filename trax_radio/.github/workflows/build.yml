@@ -1,0 +1,83 @@
+name: 🔨 Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🏗️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+        cache: true
+    
+    - name: 📦 Get dependencies
+      run: |
+        cd trax_radio
+        flutter pub get
+    
+    - name: 🔍 Analyze code
+      run: |
+        cd trax_radio
+        flutter analyze
+    
+    - name: 🧪 Run tests
+      run: |
+        cd trax_radio
+        flutter test
+    
+    - name: 🔨 Build APK (debug)
+      run: |
+        cd trax_radio
+        flutter build apk --debug
+    
+    - name: 📊 Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: debug-apk
+        path: trax_radio/build/app/outputs/flutter-apk/app-debug.apk
+        retention-days: 7
+
+  build-website:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🌐 Build website
+      run: |
+        cd trax_radio/website
+        
+        # Create version info
+        cat > version.json << EOF
+        {
+          "version": "dev-$(date +%Y%m%d-%H%M%S)",
+          "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+          "commit": "${{ github.sha }}",
+          "branch": "${{ github.ref_name }}"
+        }
+        EOF
+        
+        # Update website with build info
+        sed -i "s/Version [0-9]\+\.[0-9]\+\.[0-9]\+/Version dev-$(date +%Y%m%d-%H%M%S)/g" index.html
+    
+    - name: 📤 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./trax_radio/website
+        cname: # Add your custom domain here if you have one
