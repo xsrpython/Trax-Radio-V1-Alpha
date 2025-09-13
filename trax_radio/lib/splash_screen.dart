@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,12 +12,10 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  String _version = 'V1.0.0 Alpha'; // Default version
 
   @override
   void initState() {
     super.initState();
-    _loadVersionInfo();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500), // Faster initial fade-in
       vsync: this,
@@ -51,17 +48,6 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  Future<void> _loadVersionInfo() async {
-    try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      setState(() {
-        _version = 'V${packageInfo.version}';
-      });
-    } catch (e) {
-      // Keep default version if loading fails
-      debugPrint('Failed to load version info: $e');
-    }
-  }
 
   @override
   void dispose() {
@@ -77,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen>
     // Fixed sizing for portrait mode only
     final iconSize = 200.0;
     final titleFontSize = 32.0;
-    final versionFontSize = 18.0;
     final developerFontSize = 18.0;
     final spacing = 50.0;
     final bottomSpacing = 120.0;
@@ -138,18 +123,6 @@ class _SplashScreenState extends State<SplashScreen>
                   fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
-                ),
-              ),
-              
-              SizedBox(height: spacing * 0.3),
-              
-              // Version
-              Text(
-                _version,
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: versionFontSize,
-                  fontWeight: FontWeight.w300,
                 ),
               ),
               
