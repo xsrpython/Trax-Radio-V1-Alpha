@@ -151,24 +151,24 @@ git commit -m "Initial website upload"
 
 ### 2. Connect to GitHub
 ```bash
-git remote add origin https://github.com/xerpython/trax-radio-website.git
+git remote add origin https://github.com/xsrpython/trax-radio-website.git
 git branch -M main
 git push -u origin main
 ```
 
 ### 3. Enable GitHub Pages
-1. Go to: https://github.com/xerpython/trax-radio-website/settings/pages
+1. Go to: https://github.com/xsrpython/trax-radio-website/settings/pages
 2. Source: "Deploy from a branch"
 3. Branch: "main"
 4. Folder: "/ (root)"
 5. Click "Save"
 
 ### 4. Your Website URL
-https://xerpython.github.io/trax-radio-website
+https://xsrpython.github.io/trax-radio-website
 
 ## Manual Upload Alternative
 If you prefer to upload via GitHub web interface:
-1. Go to: https://github.com/xerpython/trax-radio-website
+1. Go to: https://github.com/xsrpython/trax-radio-website
 2. Click "uploading an existing file"
 3. Drag and drop all files from this folder
 4. Commit changes
@@ -209,12 +209,12 @@ Write-Host "`n🚀 Next Steps:" -ForegroundColor Cyan
 Write-Host "1. Run: git init" -ForegroundColor White
 Write-Host "2. Run: git add ." -ForegroundColor White
 Write-Host "3. Run: git commit -m 'Initial website upload'" -ForegroundColor White
-Write-Host "4. Run: git remote add origin https://github.com/xerpython/trax-radio-website.git" -ForegroundColor White
+Write-Host "4. Run: git remote add origin https://github.com/xsrpython/trax-radio-website.git" -ForegroundColor White
 Write-Host "5. Run: git push -u origin main" -ForegroundColor White
 Write-Host "6. Enable GitHub Pages in repository settings" -ForegroundColor White
 
 Write-Host "`n📖 See DEPLOYMENT_INSTRUCTIONS.md for detailed steps" -ForegroundColor Yellow
-Write-Host "🌐 Your website will be at: https://xerpython.github.io/trax-radio-website" -ForegroundColor Cyan
+Write-Host "🌐 Your website will be at: https://xsrpython.github.io/trax-radio-website" -ForegroundColor Cyan
 
 Write-Host "`nPress any key to continue..." -ForegroundColor Gray
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

@@ -30,7 +30,7 @@ git commit -m "Initial website upload"
 
 echo.
 echo 🔗 Connecting to GitHub...
-git remote add origin https://github.com/xerpython/trax-radio-website.git
+git remote add origin https://github.com/xsrpython/trax-radio-website.git
 git branch -M main
 
 echo.
@@ -39,10 +39,10 @@ git push -u origin main
 
 echo.
 echo ✅ Upload complete!
-echo 🌐 Your website: https://xerpython.github.io/trax-radio-website
+echo 🌐 Your website: https://xsrpython.github.io/trax-radio-website
 echo.
 echo 📋 Next step: Enable GitHub Pages
-echo 1. Go to: https://github.com/xerpython/trax-radio-website/settings/pages
+echo 1. Go to: https://github.com/xsrpython/trax-radio-website/settings/pages
 echo 2. Source: Deploy from a branch
 echo 3. Branch: main
 echo 4. Folder: / (root)
@@ -55,7 +55,7 @@ goto end
 echo.
 echo 📋 Manual Upload Instructions:
 echo.
-echo 1. Go to: https://github.com/xerpython/trax-radio-website
+echo 1. Go to: https://github.com/xsrpython/trax-radio-website
 echo 2. Click "uploading an existing file"
 echo 3. Drag and drop ALL files from this folder
 echo 4. Add commit message: "Initial website upload"
