@@ -168,6 +168,7 @@ This project is proprietary software for Trax Radio UK.
 
 ---
 
-**Status**: Ready for Play Store Submission 🚀
-**Version**: 1.0.0
+**Status**: Production Ready - Website Live 🚀
+**Version**: 1.0.1
 **Last Updated**: August 2025
+**Distribution**: https://xsrpython.github.io/trax-radio-website/

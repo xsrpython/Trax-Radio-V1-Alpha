@@ -33,7 +33,8 @@ $apkDestination = "releases/trax-radio-uk-v1.0.0.apk"
 if (Test-Path $apkSource) {
     Copy-Item $apkSource $apkDestination -Force
     Write-Host "📱 Copied APK file to releases folder" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  APK file not found at: $apkSource" -ForegroundColor Yellow
     Write-Host "   Please build the APK first with: flutter build apk --release" -ForegroundColor Yellow
 }
@@ -45,7 +46,8 @@ $iconDestination = "assets/traxicon.png"
 if (Test-Path $iconSource) {
     Copy-Item $iconSource $iconDestination -Force
     Write-Host "🎨 Copied app icon to assets folder" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  App icon not found at: $iconSource" -ForegroundColor Yellow
 }
 

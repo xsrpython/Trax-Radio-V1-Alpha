@@ -1,98 +1,69 @@
-# 🌐 Trax Radio UK Website
+# Trax Radio UK Website
 
-## **Current Status: v1.0.0 Released** ✅
+Professional download website for Trax Radio UK mobile app.
 
-Trax Radio UK website with automated versioning and release management system.
+## 🌐 Live Website
+**URL**: https://xsrpython.github.io/trax-radio-website/
 
----
+## 📱 Current Version
+- **Version**: 1.0.1
+- **APK Size**: 24MB
+- **Platform**: Android 5.0+
+- **Features**: Live DJ Schedule, Auto-Update System, Background Downloads
 
-## **Quick Start**
+## 🚀 Deployment
 
-### **🚀 Release Commands**
+### Automated Deployment
 ```bash
-# Quick patch release (1.0.0 → 1.0.1)
-quick-release.bat patch
-
-# Quick minor release (1.0.0 → 1.1.0)  
-quick-release.bat minor
-
-# Quick major release (1.0.0 → 2.0.0)
-quick-release.bat major
-
-# Just build APK
-quick-release.bat build
+cd trax_radio/website
+./auto-deploy.bat
 ```
 
-### **📦 Manual Release**
+### Manual Deployment
 ```bash
-# Full control over versioning
-.\version-manager.ps1 -VersionType minor -Build -Release
+cd trax_radio/website
+git init
+git add .
+git commit -m "Update website"
+git remote add origin https://github.com/xsrpython/trax-radio-website.git
+git branch -M main
+git push -u origin main --force
 ```
 
----
-
-## **File Structure**
-
+## 📁 Website Structure
 ```
 website/
-├── index.html              # Main homepage
-├── privacy-policy.html     # Privacy policy page
-├── styles.css             # CSS styles
-├── script.js              # JavaScript functionality
-├── quick-release.bat      # Quick release commands
-├── version-manager.ps1    # Advanced version management
-├── CHANGELOG.md           # Version history
-├── RELEASE_STATUS.md      # Current release status
-├── README.md              # This file
-└── releases/              # APK files
-    └── trax-radio-uk-v1.0.0.apk
+├── index.html              # Main download page
+├── styles.css             # Website styling
+├── script.js              # Interactive features
+├── privacy-policy.html     # Privacy policy
+├── releases/              # APK files
+│   └── trax-radio-uk-v1.0.1.apk
+├── auto-deploy.bat        # Automated deployment script
+└── deploy-to-github.ps1   # PowerShell deployment script
 ```
 
----
+## 🔧 Features
+- **Professional Design**: Modern, responsive layout
+- **Direct Download**: One-tap APK installation
+- **Version Display**: Always shows current version
+- **Feature List**: Highlights new app capabilities
+- **Mobile Optimized**: Responsive design for all devices
 
-## **Automated Features**
+## 📊 Deployment Status
+- ✅ **GitHub Pages**: Active and live
+- ✅ **Version 1.0.1**: Successfully deployed
+- ✅ **APK Download**: Working correctly
+- ✅ **Cross-Browser**: Compatible with all modern browsers
 
-### **✅ Version Management**
-- Automatic version bumping (patch/minor/major)
-- Git tagging and commits
-- Website version updates
-
-### **✅ APK Building**
-- Flutter APK building
-- Automatic file copying
-- Download link updates
-
-### **✅ Release Management**
-- GitHub release creation
-- Release notes generation
-- Automated website deployment
-
-### **✅ GitHub Actions**
-- Continuous integration
-- Automated testing
-- Release workflows
+## 🎯 Next Steps
+- Monitor download statistics
+- Update for future app versions
+- Maintain website performance
+- Prepare for Play Store integration
 
 ---
 
-## **Current Release: v1.0.0+1**
-
-**Status**: Released to Trax DJs and owners  
-**Features**: Live streaming, DJ info, audio visualization  
-**Distribution**: Direct APK download  
-
----
-
-## **Next Steps**
-
-1. **Collect feedback** from Trax DJs
-2. **Use release commands** for updates
-3. **Monitor GitHub Actions** for automation
-4. **Update documentation** as needed
-
----
-
-## **Support**
-
-- **Documentation**: See individual files for detailed guides
-- **Version Control**: Full Git integration with automated workflows
-- **Releases**: Automated GitHub release management
+**Status**: Live and Active ✅  
+**Last Updated**: August 2025  
+**Repository**: https://github.com/xsrpython/trax-radio-website
