@@ -10,16 +10,12 @@ import 'widgets/next_dj_widget.dart';
 import 'widgets/metadata_display.dart';
 import 'widgets/linear_3d_visualizer.dart';
 import 'metadata_service.dart';
-import 'update_service.dart';
-import 'widgets/update_dialog.dart';
-import 'widgets/update_notification.dart';
 // import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await DJService.initialize();
-  await UpdateService().initialize();
   runApp(const TraxRadioApp());
 }
 
@@ -51,12 +47,9 @@ class _RadioHomePageState extends State<RadioHomePage>
     with TickerProviderStateMixin {
   final AudioPlayer _player = AudioPlayer();
   final MetadataService _metadataService = MetadataService();
-  final UpdateService _updateService = UpdateService();
   bool _isPlaying = false;
   bool _isLoading = false;
   bool _hasShownLandscapeMessage = false; // Track if we've shown the message
-  bool _hasCheckedForUpdates = false;
-  Timer? _updateCheckTimer;
   Timer? _scheduleRefreshTimer;
 
   // Beta expiration date - DISABLED FOR NOW
@@ -79,9 +72,6 @@ class _RadioHomePageState extends State<RadioHomePage>
     
     // Metadata service handles periodic updates for display
     
-    // Check for updates after a delay
-    _scheduleUpdateCheck();
-    
     // Schedule periodic DJ schedule refresh
     _scheduleRefreshTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
       if (mounted) {
@@ -90,50 +80,6 @@ class _RadioHomePageState extends State<RadioHomePage>
     });
   }
 
-  void _scheduleUpdateCheck() {
-    // Check for updates 30 seconds after app starts
-    Timer(Duration(seconds: 30), () {
-      if (mounted && !_hasCheckedForUpdates) {
-        _checkForUpdates();
-      }
-    });
-
-    // Set up periodic update checks (every 6 hours)
-    _updateCheckTimer = Timer.periodic(Duration(hours: 6), (timer) {
-      if (mounted) {
-        _checkForUpdates();
-      }
-    });
-  }
-
-  Future<void> _checkForUpdates() async {
-    if (_hasCheckedForUpdates) return;
-    
-    _hasCheckedForUpdates = true;
-    
-    try {
-      final hasUpdate = await _updateService.checkForUpdates();
-      if (hasUpdate && mounted) {
-        _showUpdateNotification();
-      }
-    } catch (e) {
-      debugPrint('Update check failed: $e');
-    }
-  }
-
-  void _showUpdateNotification() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => UpdateDialog(
-        updateService: _updateService,
-        onUpdateInstalled: () {
-          // Handle post-installation actions if needed
-          debugPrint('Update installed successfully');
-        },
-      ),
-    );
-  }
 
   Future<void> _configureAudioSession() async {
     final session = await AudioSession.instance;
@@ -258,7 +204,6 @@ class _RadioHomePageState extends State<RadioHomePage>
   void dispose() {
     _metadataService.stopMetadataUpdates();
     _player.dispose();
-    _updateCheckTimer?.cancel();
     _scheduleRefreshTimer?.cancel();
     super.dispose();
   }

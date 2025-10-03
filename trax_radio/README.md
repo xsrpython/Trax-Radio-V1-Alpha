@@ -7,10 +7,11 @@ A professional internet radio streaming application for Trax Radio UK, built wit
 ### Core Functionality
 - **Live Streaming** - High-quality internet radio streaming
 - **Audio Visualization** - Real-time beat detection and visualizer
-- **DJ Information** - Current and upcoming DJ schedules
+- **DJ Information** - Auto-syncs with official website schedule
 - **Metadata Display** - Song information and artist details
 - **Professional UI** - Modern, responsive design
 - **Portrait Mode Lock** - Optimized for mobile use
+- **Auto-Schedule Updates** - No app updates needed for DJ changes
 
 ### Technical Features
 - **Multi-Platform Support** - Android, iOS, Web, Desktop
@@ -90,7 +91,7 @@ trax_radio/
 
 ### Key Components
 - **BPM Service** - Real-time beat detection
-- **DJ Service** - Schedule and information management
+- **DJ Service** - Auto-fetches schedule from official website
 - **Audio Visualizer** - Real-time audio visualization
 - **Main Player** - Central audio control interface
 
@@ -170,5 +171,6 @@ This project is proprietary software for Trax Radio UK.
 
 **Status**: Production Ready - Website Live 🚀
 **Version**: 1.0.1
-**Last Updated**: August 2025
+**Last Updated**: January 2025
 **Distribution**: https://xsrpython.github.io/trax-radio-website/
+**Auto-Schedule Sync**: Enabled ✅
