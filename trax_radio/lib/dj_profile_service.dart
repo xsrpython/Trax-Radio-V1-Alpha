@@ -59,7 +59,7 @@ class DJProfileService {
   
   // Cache management
   static const String _cacheKey = 'dj_profiles_cache';
-  static const Duration _cacheTimeout = Duration(minutes: 15);
+  static const Duration _cacheTimeout = Duration(minutes: 1); // Reduced for faster updates
   
   DJProfile? _currentDJProfile;
   DateTime? _lastFetch;
@@ -69,7 +69,7 @@ class DJProfileService {
   Future<void> initialize() async {
     // Start periodic updates
     _updateTimer = Timer.periodic(
-      const Duration(minutes: 5),
+      const Duration(seconds: 30), // Check every 30 seconds for faster updates
       (_) => _updateCurrentDJProfile(),
     );
     
@@ -93,27 +93,37 @@ class DJProfileService {
   /// Update current DJ profile with smart detection
   Future<void> _updateCurrentDJProfile() async {
     try {
-      // Try to detect if there's a live DJ based on current time and schedule
-      final currentTime = DateTime.now();
-      final isLiveDJTime = _isLiveDJTime(currentTime);
+      // Get current DJ from DJService
+      final currentDJ = DJService.getCurrentDJ();
+      final currentDJName = currentDJ?.name ?? 'Auto DJ';
       
-      if (isLiveDJTime) {
-        // Try to fetch live DJ profile
-        final liveDJ = await _fetchLiveDJProfile();
-        if (liveDJ != null) {
-          _currentDJProfile = liveDJ;
-          _lastFetch = DateTime.now();
-          await _cacheProfile(liveDJ);
-          return;
-        }
+      print('DJProfileService: Current DJ detected: $currentDJName');
+      
+      // Check if this is a live DJ (not Auto DJ)
+      if (currentDJName.toLowerCase() != 'auto dj' && currentDJName.isNotEmpty) {
+        // Create a live DJ profile with the current DJ's information
+        _currentDJProfile = DJProfile(
+          name: currentDJName,
+          bio: 'Live DJ Session - Professional DJ at Trax Radio UK',
+          picture: _getDJImageUrl(currentDJName), // Try to get DJ's image
+          status: 'live',
+          socialMedia: [],
+          lastUpdated: DateTime.now(),
+        );
+        _lastFetch = DateTime.now();
+        await _cacheProfile(_currentDJProfile!);
+        print('DJProfileService: Set live DJ profile for $currentDJName');
+        return;
       }
       
       // Fall back to Auto DJ profile
       _currentDJProfile = await _fetchAutoDJProfile();
       _lastFetch = DateTime.now();
       await _cacheProfile(_currentDJProfile!);
+      print('DJProfileService: Set Auto DJ profile');
       
     } catch (e) {
+      print('DJProfileService: Error updating profile: $e');
       // Use cached profile if available, otherwise default Auto DJ
       _currentDJProfile = await _getCachedProfile() ?? _getDefaultAutoDJProfile();
     }
@@ -257,6 +267,24 @@ class DJProfileService {
     }
     
     return await _getCachedProfile() ?? _getDefaultAutoDJProfile();
+  }
+
+  /// Get DJ image URL based on DJ name
+  String _getDJImageUrl(String djName) {
+    // Get all DJs to find the image for this specific DJ
+    final djs = DJService.getAllDJs();
+    for (final dj in djs) {
+      if (dj.name.toLowerCase() == djName.toLowerCase()) {
+        // If DJ has an image, use it
+        if (dj.image.isNotEmpty) {
+          return dj.image;
+        }
+      }
+    }
+    
+    // Fallback: try to construct image path based on DJ name
+    final cleanName = djName.toLowerCase().replaceAll(' ', '_').replaceAll(RegExp(r'[^a-z0-9_]'), '');
+    return 'assets/images/${cleanName}.png'; // Will fallback to default icon if not found
   }
 
   /// Get default Auto DJ profile (only image stored internally)

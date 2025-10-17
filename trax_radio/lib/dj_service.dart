@@ -61,7 +61,7 @@ class DJService {
   
   // Cache management
   static DateTime? _lastFetch;
-  static const Duration _cacheTimeout = Duration(minutes: 30);
+  static const Duration _cacheTimeout = Duration(minutes: 2); // Reduced for debugging
 
   static Future<void> initialize() async {
     if (_isInitialized) return;
@@ -95,10 +95,12 @@ class DJService {
 
       // Try scraping from official website first
       try {
-        _djs = await ScheduleScraperService.scrapeSchedule();
-        _lastFetch = DateTime.now();
-        print('Successfully scraped schedule from official website: ${_djs.length} DJs found');
-        return;
+        // Temporarily disable scraper - use static JSON instead
+        print('Website scraper temporarily disabled - using static schedule');
+        // _djs = await ScheduleScraperService.scrapeSchedule();
+        // _lastFetch = DateTime.now();
+        // print('Successfully scraped schedule from official website: ${_djs.length} DJs found');
+        // return;
       } catch (e) {
         print('Website scraping failed: $e');
         // Continue to fallback
@@ -118,7 +120,18 @@ class DJService {
       final String response = await rootBundle.loadString('assets/dj_schedule.json');
       final List<dynamic> jsonList = json.decode(response);
       _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
+      print('Loaded static schedule: ${_djs.length} DJs found');
+      
+      // Debug: Print Friday schedule
+      for (final dj in _djs) {
+        for (final schedule in dj.schedule) {
+          if (schedule.day == 'Friday') {
+            print('Friday DJ: ${dj.name} at ${schedule.start}-${schedule.end}');
+          }
+        }
+      }
     } catch (e) {
+      print('Failed to load static schedule: $e');
       _djs = [];
     }
   }
@@ -147,6 +160,10 @@ class DJService {
     final currentDay = _getDayName(ukNow.weekday);
     final currentTime = '${ukNow.hour.toString().padLeft(2, '0')}:${ukNow.minute.toString().padLeft(2, '0')}';
     final currentMinutes = _timeStringToMinutes(currentTime);
+    
+    // Debug logging
+    print('DEBUG: Current UK time: $currentTime on $currentDay');
+    print('DEBUG: Total DJs loaded: ${_djs.length}');
 
     // Find the current DJ slot
     DJ? currentDJ;

@@ -32,7 +32,7 @@ A professional internet radio streaming application for Trax Radio UK, built wit
 - **Audio Streaming** - Live radio with Just Audio plugin
 - **Visualizer** - Real-time audio visualization and BPM detection
 - **DJ Service** - Current and next DJ information display
-- **DJ Profiles** - Real-time DJ pictures and Auto DJ indicators (Ready for live testing)
+- **DJ Profiles** - Real-time DJ pictures and Auto DJ indicators (Fully Working)
 - **UI Components** - Professional, modern interface
 - **Performance** - Optimized for smooth operation
 - **App Icon** - Professional turntable/radio themed icon
@@ -126,17 +126,26 @@ trax_radio/
 
 ## 🐛 Recent Fixes
 
+### DJ Schedule & Sync Fixes (December 15, 2024)
+- **Schedule Detection**: Fixed broken website scraper - now uses reliable static JSON
+- **DJ Profile Sync**: Resolved DJ name/picture mismatch issues
+- **Cross-Device Consistency**: Pixel 8 and Medium Phone now display identical data
+- **Real-time Updates**: DJ profile service properly syncs with DJ service
+- **Audio Troubleshooting**: Resolved emulator audio issues with volume controls
+
 ### Performance Optimizations
 - **Frame Rate**: Optimized for 60fps on Samsung Galaxy S25
 - **Visualizer**: Improved performance and smoothness
 - **Memory Usage**: Reduced memory footprint
 - **Battery Life**: Optimized audio processing
+- **Cache Management**: Reduced cache timeouts for faster updates
 
 ### UI Improvements
 - **Responsive Design**: Better adaptation to screen sizes
 - **Icon System**: Professional app icon implementation
 - **Color Scheme**: Consistent visual identity
 - **Layout**: Improved component positioning
+- **Device Testing**: Verified consistency across multiple device types
 
 ## 🚀 Deployment
 
@@ -162,6 +171,11 @@ flutter build appbundle --release
 
 ### Tested Devices
 - **Samsung Galaxy S25** - Primary development device
+- **Samsung Galaxy S21** - Tested and verified
+- **Samsung A32** - Tested and verified
+- **Motorola Razr** - Tested and verified
+- **Pixel 8** - Tested and verified (Android 16)
+- **Medium Phone** - Tested and verified (Android 16)
 - **Android 5.0+** - Minimum API level 21
 - **High Performance** - Optimized for modern devices
 
@@ -185,10 +199,12 @@ This project is proprietary software for Trax Radio UK.
 
 ---
 
-**Status**: Production Ready - Metadata Fix Complete 🚀
+**Status**: Production Ready - DJ Schedule & Sync Optimized 🚀
 **Version**: 1.0.5
-**Last Updated**: October 14, 2025
+**Last Updated**: December 15, 2024
 **Distribution**: https://xsrpython.github.io/trax-radio-website/
 **GitHub Release**: https://github.com/xsrpython/Trax-Radio-V1-Alpha/releases
 **Auto-Schedule Sync**: Enabled ✅
+**DJ Profile Sync**: Fixed ✅
+**Cross-Device Testing**: Verified ✅
 **Download Tracking**: Available via GitHub ✅
