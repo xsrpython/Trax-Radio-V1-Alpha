@@ -23,8 +23,8 @@ android {
         applicationId = "com.alphatest.trax_radio"
         minSdk = 21 // Android 5.0 (API level 21)
         targetSdk = 34 // Android 14
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 5
+        versionName = "1.0.5"
         
         // Enable multidex for larger apps
         multiDexEnabled = true
@@ -33,34 +33,27 @@ android {
         manifestPlaceholders["appName"] = "Trax Radio UK"
     }
 
+    // Ensure APK is properly signed for distribution
+    signingConfigs {
+        create("release") {
+            // Release keystore for Play Store
+            storeFile = file("trax-radio-release.jks")
+            storePassword = "TraxRadio2025"
+            keyAlias = "trax-radio-key"
+            keyPassword = "TraxRadio2025"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug") // Change to "release" for Play Store
+            signingConfig = signingConfigs.getByName("release") // Using release keystore for Play Store
         }
         debug {
             isDebuggable = true
             signingConfig = signingConfigs.getByName("debug")
-        }
-    }
-
-    // Ensure APK is properly signed for distribution
-    signingConfigs {
-        create("release") {
-            // For Play Store, you need to create a proper release keystore
-            // TODO: Create release keystore when ready for Play Store
-            // storeFile = file("release-keystore.jks")
-            // storePassword = "your-store-password"
-            // keyAlias = "your-key-alias"
-            // keyPassword = "your-key-password"
-            
-            // For now, using debug signing (change this for Play Store)
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
         }
     }
 }

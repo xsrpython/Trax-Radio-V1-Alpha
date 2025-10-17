@@ -1,0 +1,73 @@
+{
+  "auto_dj": {
+    "name": "Auto DJ",
+    "bio": "Trax Radio UK's automated music system, playing the best electronic and dance music 24/7. Curated playlists ensure continuous high-quality entertainment with seamless transitions and professional mixing.",
+    "picture": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCA3MCA3MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzUiIGN5PSIzNSIgcj0iMzUiIGZpbGw9IiM0Mjh1RkYiLz4KPHBhdGggZD0iTTM1IDIwQzQ1IDIwIDUzIDI4IDUzIDM4UzQ1IDU2IDM1IDU2UzE3IDQ4IDE3IDM4UzI1IDIwIDM1IDIwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI1IDMwSDQ1VjQ2SDI1VjMwWiIgZmlsbD0iIzQyODVGRiIvPgo8L3N2Zz4K",
+    "status": "auto",
+    "social_media": [],
+    "last_updated": "2025-10-15T23:30:00Z"
+  },
+  "live_djs": [
+    {
+      "name": "DJ Hicky",
+      "bio": "AKA The Preacher - Trax Radio UK's premier DJ with over 10 years of experience in electronic and dance music. Known for his energetic sets and deep knowledge of house, techno, and progressive genres.",
+      "picture": "https://xsrpython.github.io/trax-radio-website/assets/dj-hicky.jpg",
+      "status": "live",
+      "social_media": [
+        "https://twitter.com/djhicky",
+        "https://instagram.com/djhicky_official"
+      ],
+      "last_updated": "2025-10-15T23:30:00Z"
+    },
+    {
+      "name": "DJ Paddy",
+      "bio": "Trax Radio UK's resident DJ specializing in deep house and progressive beats. With a passion for underground sounds and smooth mixing, Paddy brings the perfect vibe for late-night listening.",
+      "picture": "https://xsrpython.github.io/trax-radio-website/assets/dj-paddy.jpg",
+      "status": "live",
+      "social_media": [
+        "https://twitter.com/djpaddy",
+        "https://instagram.com/djpaddy_official"
+      ],
+      "last_updated": "2025-10-15T23:30:00Z"
+    },
+    {
+      "name": "DJ Sidwayne",
+      "bio": "The master of electronic soundscapes and ambient beats. Sidwayne's sets take listeners on a journey through atmospheric music, perfect for those who appreciate the deeper side of electronic music.",
+      "picture": "https://xsrpython.github.io/trax-radio-website/assets/dj-sidwayne.jpg",
+      "status": "live",
+      "social_media": [
+        "https://twitter.com/djsidwayne",
+        "https://instagram.com/djsidwayne_official"
+      ],
+      "last_updated": "2025-10-15T23:30:00Z"
+    },
+    {
+      "name": "DJ Gary Hill",
+      "bio": "Trax Radio UK's veteran DJ with decades of experience in the electronic music scene. Gary's sets blend classic tracks with modern beats, creating a timeless listening experience.",
+      "picture": "https://xsrpython.github.io/trax-radio-website/assets/dj-gary-hill.jpg",
+      "status": "live",
+      "social_media": [
+        "https://twitter.com/djgaryhill",
+        "https://instagram.com/djgaryhill_official"
+      ],
+      "last_updated": "2025-10-15T23:30:00Z"
+    },
+    {
+      "name": "Stevie B",
+      "bio": "The rising star of Trax Radio UK, Stevie B brings fresh energy to the airwaves with his innovative mixing style and eclectic music selection. From deep house to tech house, he's got it covered.",
+      "picture": "https://xsrpython.github.io/trax-radio-website/assets/stevie-b.jpg",
+      "status": "live",
+      "social_media": [
+        "https://twitter.com/stevieb_dj",
+        "https://instagram.com/stevieb_official"
+      ],
+      "last_updated": "2025-10-15T23:30:00Z"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2025-10-15T23:30:00Z",
+    "total_djs": 5,
+    "api_version": "1.0"
+  }
+}

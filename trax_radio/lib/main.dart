@@ -10,12 +10,20 @@ import 'widgets/next_dj_widget.dart';
 import 'widgets/metadata_display.dart';
 import 'widgets/linear_3d_visualizer.dart';
 import 'metadata_service.dart';
+import 'stream_service.dart';
+import 'performance_optimizer.dart';
+import 'dj_profile_service.dart';
 // import 'widgets/turntable_widget.dart'; // Temporarily removed for Alpha testing
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await DJService.initialize();
+  // Initialize performance optimizations first
+  await PerformanceOptimizer.initialize();
+  
+  // Initialize DJ service with lazy loading
+  unawaited(DJService.initialize());
+  
   runApp(const TraxRadioApp());
 }
 
@@ -47,6 +55,7 @@ class _RadioHomePageState extends State<RadioHomePage>
     with TickerProviderStateMixin {
   final AudioPlayer _player = AudioPlayer();
   final MetadataService _metadataService = MetadataService();
+  final StreamService _streamService = StreamService();
   bool _isPlaying = false;
   bool _isLoading = false;
   bool _hasShownLandscapeMessage = false; // Track if we've shown the message
@@ -59,24 +68,44 @@ class _RadioHomePageState extends State<RadioHomePage>
   void initState() {
     super.initState();
     
-    // Configure audio session for background playback
-    _configureAudioSession();
+    // Initialize services asynchronously to improve startup time
+    _initializeServicesAsync();
     
+    // Set up player state listener
+    _setupPlayerListener();
+    
+    // Start battery optimization monitoring
+    BatteryOptimizer.startMonitoring();
+  }
+
+  /// Initialize services asynchronously for better startup performance
+  Future<void> _initializeServicesAsync() async {
+    // Configure audio session for background playback
+    await _configureAudioSession();
+    
+    // Metadata service initializes automatically
+    
+    // Initialize DJ profile service (lazy loading)
+    unawaited(DJProfileService().initialize());
+    
+    // Schedule periodic DJ schedule refresh with optimized interval
+    _scheduleRefreshTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
+      if (mounted) {
+        DJService.refreshSchedule();
+      }
+    });
+  }
+
+  /// Set up player state listener with optimized updates
+  void _setupPlayerListener() {
     _player.playerStateStream.listen((state) {
+      if (!mounted) return;
+      
       setState(() {
         _isPlaying = state.playing;
         _isLoading = state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering;
       });
-    });
-    
-    // Metadata service handles periodic updates for display
-    
-    // Schedule periodic DJ schedule refresh
-    _scheduleRefreshTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
-      if (mounted) {
-        DJService.refreshSchedule();
-      }
     });
   }
 
@@ -119,7 +148,32 @@ class _RadioHomePageState extends State<RadioHomePage>
   //   return difference.inDays.toString();
   // }
 
-  final String streamUrl = 'https://hello.citrus3.com:8138/stream';
+  Future<void> _prepareAndPlayWithFallback() async {
+    try {
+      // Get stream URLs from auto-detection service
+      final streamUrls = await _streamService.getStreamUrls();
+      Object? lastError;
+      
+      for (final url in streamUrls) {
+        try {
+          await _player.setAudioSource(
+            AudioSource.uri(Uri.parse(url)),
+            preload: false,
+          );
+          await _player.play();
+          return; // success
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      
+      if (!mounted) return;
+      throw lastError ?? Exception('Unable to connect to any stream URL');
+    } catch (e) {
+      if (!mounted) return;
+      throw Exception('Failed to get stream configuration: $e');
+    }
+  }
 
   Future<void> _togglePlayPause() async {
     if (_isPlaying) {
@@ -148,13 +202,8 @@ class _RadioHomePageState extends State<RadioHomePage>
         final initialTitle = _metadataService.currentTitle;
         final initialArtist = _metadataService.currentArtist;
         
-        // Set audio source for streaming
-        await _player.setAudioSource(
-          AudioSource.uri(Uri.parse(streamUrl)),
-          preload: false,
-        );
-        
-        await _player.play();
+        // Prepare and play with HTTPS→HTTP fallback
+        await _prepareAndPlayWithFallback();
         
         // Start background service for continuous playback
         _startBackgroundService();
@@ -165,7 +214,7 @@ class _RadioHomePageState extends State<RadioHomePage>
         // FirebaseAnalytics.instance.logEvent(
         //   name: 'radio_play',
         //   parameters: {
-        //     'stream_url': streamUrl,
+        //     'stream_url': _primaryStreamUrl,
         //     'device_type': 'mobile',
         //   },
         // );
@@ -200,13 +249,6 @@ class _RadioHomePageState extends State<RadioHomePage>
     }
   }
 
-  @override
-  void dispose() {
-    _metadataService.stopMetadataUpdates();
-    _player.dispose();
-    _scheduleRefreshTimer?.cancel();
-    super.dispose();
-  }
 
   // Beta expiration screen - DISABLED FOR NOW
   // Widget _buildExpirationScreen() {
@@ -343,15 +385,22 @@ class _RadioHomePageState extends State<RadioHomePage>
           child: const MetadataDisplay(),
         ),
         
-        // Next DJ Widget - dynamic padding
+        // DJ Profile Widget - Expanded to fill space (Live or Auto DJ)
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.5),
+            child: const DJProfileWidget(
+              showPicture: true,
+              showBio: false,
+              showSocialMedia: false,
+            ),
+          ),
+        ),
+        
+        // Next DJ Widget - moved above play/pause button
         Padding(
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: widgetSpacing * 0.1),
           child: const NextDJWidget(),
-        ),
-        
-        // Flexible space that adapts to content
-        Flexible(
-          child: Container(), // Empty container takes available space but doesn't force it
         ),
         
         // Play/Pause button with minimal bottom padding
@@ -375,7 +424,18 @@ class _RadioHomePageState extends State<RadioHomePage>
     );
   }
 
-
+  @override
+  void dispose() {
+    // Clean up resources for better memory management
+    _metadataService.stopMetadataUpdates();
+    _player.dispose();
+    _scheduleRefreshTimer?.cancel();
+    
+    // Stop performance optimization monitoring
+    BatteryOptimizer.stopMonitoring();
+    
+    super.dispose();
+  }
 }
 
 

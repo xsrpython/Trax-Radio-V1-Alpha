@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:http/http.dart' as http;
+import 'schedule_scraper_service.dart';
 
 class DJ {
   final String name;
@@ -55,9 +56,8 @@ class DJService {
   static tz.Location? _userLocation;
   static final tz.Location _ukLocation = tz.getLocation('Europe/London');
   
-  // API endpoints for live data
-  static const String _scheduleApiUrl = 'https://trax-radio-uk.com/wp-json/wp/v2/dj_schedule';
-  static const String _fallbackApiUrl = 'https://trax-radio-uk.com/api/dj-schedule.json';
+  // Primary source: Official website scraper
+  // Fallback: Static JSON file
   
   // Cache management
   static DateTime? _lastFetch;
@@ -84,7 +84,7 @@ class DJService {
     }
   }
 
-  // Fetch live schedule data from website
+  // Fetch live schedule data from official website
   static Future<void> _fetchLiveSchedule() async {
     try {
       // Check if we need to refresh cache
@@ -93,39 +93,18 @@ class DJService {
         return; // Use cached data
       }
 
-      // Try primary API endpoint
-      final response = await http.get(
-        Uri.parse(_scheduleApiUrl),
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'TraxRadio/1.0',
-        },
-      ).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonList = json.decode(response.body);
-        _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
+      // Try scraping from official website first
+      try {
+        _djs = await ScheduleScraperService.scrapeSchedule();
         _lastFetch = DateTime.now();
+        print('Successfully scraped schedule from official website: ${_djs.length} DJs found');
         return;
+      } catch (e) {
+        print('Website scraping failed: $e');
+        // Continue to fallback
       }
 
-      // Try fallback API endpoint
-      final fallbackResponse = await http.get(
-        Uri.parse(_fallbackApiUrl),
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'TraxRadio/1.0',
-        },
-      ).timeout(const Duration(seconds: 10));
-
-      if (fallbackResponse.statusCode == 200) {
-        final List<dynamic> jsonList = json.decode(fallbackResponse.body);
-        _djs = jsonList.map((json) => DJ.fromJson(json)).toList();
-        _lastFetch = DateTime.now();
-        return;
-      }
-
-      // If both API calls fail, load fallback
+      // Fallback to static JSON file
       await _loadFallbackSchedule();
     } catch (e) {
       // Network error, load fallback
@@ -148,6 +127,16 @@ class DJService {
   static Future<void> refreshSchedule() async {
     _lastFetch = null; // Force refresh
     await _fetchLiveSchedule();
+  }
+
+  // Get all DJs (for external access)
+  static List<DJ> getAllDJs() {
+    return List.from(_djs);
+  }
+
+  // Test the scraper (for debugging)
+  static Future<void> testScraper() async {
+    await ScheduleScraperService.testScraper();
   }
 
   static DJ? getCurrentDJ() {

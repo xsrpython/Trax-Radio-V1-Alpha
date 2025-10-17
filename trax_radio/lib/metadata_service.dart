@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'stream_service.dart';
 
 class MetadataService {
   static final MetadataService _instance = MetadataService._internal();
@@ -11,6 +12,7 @@ class MetadataService {
   String _currentArtist = '';
   String _currentTitle = '';
   Timer? _updateTimer;
+  final StreamService _streamService = StreamService();
 
   String get currentTrack => _currentTrack;
   String get currentArtist => _currentArtist;
@@ -30,24 +32,44 @@ class MetadataService {
 
   Future<void> _fetchLiveMetadata() async {
     try {
+      // Get metadata URL from auto-detection service
+      final metadataUrl = await _streamService.getMetadataUrl();
+      
       // Try to fetch real metadata from the stream
       final response = await http.get(
-        Uri.parse('https://hello.citrus3.com:8138/status-json.xsl'),
+        Uri.parse(metadataUrl),
         headers: {'User-Agent': 'TraxRadio/1.0'},
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final source = data['icestats']?['source'];
+        final sources = data['icestats']?['source'];
         
-        if (source != null) {
-          final title = source['title'] ?? '';
-          final artist = source['artist'] ?? '';
+        // Find the active source with listeners
+        Map<String, dynamic>? activeSource;
+        if (sources is List) {
+          // Find source with listeners > 0
+          for (var source in sources) {
+            if (source['listeners'] != null && source['listeners'] > 0) {
+              activeSource = Map<String, dynamic>.from(source);
+              break;
+            }
+          }
+          // If no active source, use first one
+          if (activeSource == null && sources.isNotEmpty) {
+            activeSource = Map<String, dynamic>.from(sources[0]);
+          }
+        } else if (sources is Map) {
+          activeSource = Map<String, dynamic>.from(sources);
+        }
+        
+        if (activeSource != null) {
+          final title = activeSource['title'] ?? '';
           
           if (title.isNotEmpty) {
             _currentTitle = title;
-            _currentArtist = artist.isNotEmpty ? artist : 'Unknown Artist';
-            _currentTrack = artist.isNotEmpty ? '$artist - $title' : title;
+            _currentArtist = 'Trax Radio UK';
+            _currentTrack = title;
             return;
           }
         }

@@ -37,6 +37,7 @@ dependencies:
   just_audio: ^0.10.4
   audio_session: ^0.1.18
   timezone: ^0.10.1
+  shared_preferences: ^2.2.2
   http: ^1.1.0
   path_provider: ^2.1.1
   package_info_plus: ^4.2.0
@@ -77,4 +78,5 @@ flutter:
     - assets/turntable.png
     - assets/record.png
     - assets/dj_schedule.json
+    - assets/images/
     - assets/traxicon.png

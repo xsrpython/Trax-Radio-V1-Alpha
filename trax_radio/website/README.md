@@ -64,6 +64,8 @@ website/
 
 ---
 
-**Status**: Live and Active ✅  
-**Last Updated**: August 2025  
+**Status**: Live and Active - DJ Profiles Ready ✅  
+**Last Updated**: October 16, 2025  
 **Repository**: https://github.com/xsrpython/trax-radio-website
+**GitHub Release**: https://github.com/xsrpython/Trax-Radio-V1-Alpha/releases
+**Download Tracking**: Available via GitHub releases analytics ✅

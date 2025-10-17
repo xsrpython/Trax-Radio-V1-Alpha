@@ -5,13 +5,17 @@ A professional internet radio streaming application for Trax Radio UK, built wit
 ## 🎵 Features
 
 ### Core Functionality
-- **Live Streaming** - High-quality internet radio streaming
+- **Live Streaming** - High-quality internet radio streaming with auto-detection
 - **Audio Visualization** - Real-time beat detection and visualizer
 - **DJ Information** - Auto-syncs with official website schedule
 - **Metadata Display** - Song information and artist details
 - **Professional UI** - Modern, responsive design
 - **Portrait Mode Lock** - Optimized for mobile use
 - **Auto-Schedule Updates** - No app updates needed for DJ changes
+- **Auto-Stream Detection** - Automatically adapts to stream server changes
+- **Smart Caching** - 1-hour cache for optimal performance
+- **Triple Fallback** - API → Cached → Hardcoded fallback system
+- **Live Metadata Display** - Real-time track information from stream
 
 ### Technical Features
 - **Multi-Platform Support** - Android, iOS, Web, Desktop
@@ -28,14 +32,23 @@ A professional internet radio streaming application for Trax Radio UK, built wit
 - **Audio Streaming** - Live radio with Just Audio plugin
 - **Visualizer** - Real-time audio visualization and BPM detection
 - **DJ Service** - Current and next DJ information display
+- **DJ Profiles** - Real-time DJ pictures and Auto DJ indicators (Ready for live testing)
 - **UI Components** - Professional, modern interface
 - **Performance** - Optimized for smooth operation
 - **App Icon** - Professional turntable/radio themed icon
+- **Performance Optimizations** - Fast startup, battery efficient, memory optimized
+
+### ⚡ Performance Enhancements
+- **Fast Startup** - Lazy loading and optimized initialization
+- **Battery Optimization** - Power-aware features and background optimization
+- **Memory Management** - Automatic cleanup and resource optimization
+- **Smart Caching** - Intelligent caching system for better reliability
+- **Network Optimization** - Efficient API calls with timeout management
 
 ### 🎯 Ready for
-- **Play Store Submission** - App configured and ready
+- **Play Store Submission** - App configured and ready with performance optimizations
 - **Beta Testing** - APK ready for distribution
-- **Production Release** - All core features complete
+- **Production Release** - All core features complete with performance enhancements
 
 ## 🚀 Getting Started
 
@@ -88,12 +101,15 @@ trax_radio/
 - **timezone** - Time zone handling
 - **http** - API communication
 - **path_provider** - File system access
+- **shared_preferences** - Stream config caching
 
 ### Key Components
 - **BPM Service** - Real-time beat detection
 - **DJ Service** - Auto-fetches schedule from official website
 - **Audio Visualizer** - Real-time audio visualization
 - **Main Player** - Central audio control interface
+- **Stream Service** - Dynamic stream URL management
+- **Metadata Service** - Live stream track information parsing
 
 ## 📊 Development Priorities
 
@@ -169,8 +185,10 @@ This project is proprietary software for Trax Radio UK.
 
 ---
 
-**Status**: Production Ready - Website Live 🚀
-**Version**: 1.0.1
-**Last Updated**: October 3, 2025
+**Status**: Production Ready - Metadata Fix Complete 🚀
+**Version**: 1.0.5
+**Last Updated**: October 14, 2025
 **Distribution**: https://xsrpython.github.io/trax-radio-website/
+**GitHub Release**: https://github.com/xsrpython/Trax-Radio-V1-Alpha/releases
 **Auto-Schedule Sync**: Enabled ✅
+**Download Tracking**: Available via GitHub ✅

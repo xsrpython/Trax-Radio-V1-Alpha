@@ -1,0 +1,11 @@
+{
+    "stream_url": "https://cast3.asurahosting.com/proxy/traxradi/stream",
+    "fallback_stream_url": "http://cast3.asurahosting.com/proxy/traxradi/stream",
+    "metadata_url": "https://cast3.asurahosting.com/proxy/traxradi/status-json.xsl",
+    "stream_format": "mp3",
+    "bitrate": 128,
+    "status": "active",
+    "last_updated": "2025-10-14T15:30:00Z",
+    "version": "1.0.3"
+}
+
